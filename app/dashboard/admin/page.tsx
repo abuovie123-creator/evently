@@ -28,6 +28,7 @@ import {
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface UserProfile {
     id: string;
@@ -49,6 +50,7 @@ interface SubscriptionPlan {
 
 export default function AdminDashboard() {
     const { showToast } = useToast();
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<"overview" | "branding" | "users" | "settings" | "payments">("overview");
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -121,13 +123,46 @@ export default function AdminDashboard() {
     const [pendingPlanners, setPendingPlanners] = useState<any[]>([]);
     const [bankTransfers, setBankTransfers] = useState<any[]>([]);
 
+    const logError = (context: string, error: any) => {
+        console.error(`${context}:`, error);
+        if (error?.message) {
+            showToast(`${context}: ${error.message}`, "error");
+        }
+    };
+
     useEffect(() => {
         const fetchDashboardData = async () => {
             const supabase = createClient();
 
-            // Check System Status
+            // 1. Check Authentication & Permissions
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                showToast("Please login as administrator", "error");
+                router.push("/dashboard/admin/login");
+                return;
+            }
+
+            // 2. Double check admin role in profiles
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            if (profileError || profile?.role !== 'admin') {
+                showToast("Access Denied: Admin privileges required", "error");
+                router.push("/dashboard/admin/login");
+                return;
+            }
+
+            // 3. Check System Status
             const { error: statusError } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
-            setSystemStatus(statusError ? "offline" : "online");
+            if (statusError) {
+                logError("System status check failed", statusError);
+                setSystemStatus("offline");
+            } else {
+                setSystemStatus("online");
+            }
 
             // Fetch Profiles
             const { data: profiles, error: fetchError } = await supabase
@@ -136,13 +171,8 @@ export default function AdminDashboard() {
                 .order('created_at', { ascending: false });
 
             if (fetchError) {
-                console.error("Error fetching profiles:", {
-                    message: fetchError.message,
-                    details: fetchError.details,
-                    hint: fetchError.hint,
-                    code: fetchError.code
-                });
-                showToast(`Failed to fetch live users: ${fetchError.message}`, "error");
+                logError("Error fetching profiles", fetchError);
+                showToast(`Failed to fetch live users: ${fetchError.message || fetchError.name || "Unknown Error"}`, "error");
             } else if (profiles) {
                 setUsers(profiles.map(p => ({
                     ...p,
@@ -158,11 +188,15 @@ export default function AdminDashboard() {
             }
 
             // Fetch Platform Settings
-            const { data: psData } = await supabase
+            const { data: psData, error: psError } = await supabase
                 .from('platform_settings')
                 .select('*')
                 .eq('id', 'default')
                 .single();
+
+            if (psError && psError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
+                logError("Error fetching platform settings", psError);
+            }
 
             if (psData) {
                 if (psData.branding) setBranding(psData.branding);
@@ -176,6 +210,10 @@ export default function AdminDashboard() {
                 .from('transactions')
                 .select('*, profiles(full_name)')
                 .order('created_at', { ascending: false });
+
+            if (txError) {
+                logError("Error fetching transactions", txError);
+            }
 
             if (txData) {
                 const total = txData.filter(tx => tx.status === 'completed').reduce((sum, tx) => sum + Number(tx.amount), 0);
@@ -195,11 +233,15 @@ export default function AdminDashboard() {
             }
 
             // Fetch Pending Planners
-            const { data: pendingData } = await supabase
+            const { data: pendingData, error: pendingError } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('role', 'planner')
                 .eq('verification_status', 'pending');
+
+            if (pendingError) {
+                logError("Error fetching pending planners", pendingError);
+            }
 
             if (pendingData) {
                 setPendingPlanners(pendingData.map(p => ({
@@ -212,10 +254,14 @@ export default function AdminDashboard() {
             }
 
             // Fetch Bank Transfers
-            const { data: btData } = await supabase
+            const { data: btData, error: btError } = await supabase
                 .from('bank_transfers')
                 .select('*, profiles(full_name, email)')
                 .order('created_at', { ascending: false });
+
+            if (btError) {
+                logError("Error fetching bank transfers", btError);
+            }
 
             if (btData) {
                 setBankTransfers(btData);
@@ -243,7 +289,7 @@ export default function AdminDashboard() {
 
         if (error) {
             showToast(`Failed to save ${type}`, "error");
-            console.error(error);
+            logError(`Failed to save ${type}`, error);
         } else {
             showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} changes persisted!`, "success");
         }
@@ -318,6 +364,7 @@ export default function AdminDashboard() {
             .eq('id', plannerId);
 
         if (error) {
+            logError("Failed to approve planner", error);
             showToast("Failed to approve planner", "error");
         } else {
             setPendingPlanners(prev => prev.filter(p => p.id !== plannerId));
@@ -360,6 +407,7 @@ export default function AdminDashboard() {
             setBankTransfers(prev => prev.map(bt => bt.id === transferId ? { ...bt, status: 'approved' } : bt));
             showToast("Payment approved and user upgraded!", "success");
         } catch (error: any) {
+            logError("Approval failed", error);
             showToast(error.message || "Approval failed", "error");
         } finally {
             setIsSaving(false);
@@ -379,10 +427,11 @@ export default function AdminDashboard() {
             .eq('id', transferId);
 
         if (error) {
+            logError("Failed to decline transfer", error);
             showToast("Failed to decline transfer", "error");
         } else {
             setBankTransfers(prev => prev.map(bt => bt.id === transferId ? { ...bt, status: 'declined' } : bt));
-            showToast("Transfer declined", "warning");
+            showToast("Transfer declined", "error");
         }
         setIsSaving(false);
     };
@@ -394,6 +443,7 @@ export default function AdminDashboard() {
         const { error } = await supabase.from('profiles').delete().eq('id', userId);
 
         if (error) {
+            logError("Failed to delete user", error);
             showToast("Failed to delete user", "error");
         } else {
             setUsers(prev => prev.filter(u => u.id !== userId));
@@ -865,10 +915,10 @@ export default function AdminDashboard() {
                                         <Input
                                             type="password"
                                             placeholder="whsec_xxxxxxxxxxxx"
-                                            value={gatewayKeys[selectedGateway === "manual" ? "paystack" : selectedGateway].webhookSecret}
+                                            value={gatewayKeys[selectedGateway].webhookSecret}
                                             onChange={(e) => setGatewayKeys(prev => ({
                                                 ...prev,
-                                                [(selectedGateway === "manual" ? "paystack" : selectedGateway)]: { ...prev[(selectedGateway === "manual" ? "paystack" : selectedGateway)], webhookSecret: e.target.value }
+                                                [selectedGateway]: { ...prev[selectedGateway], webhookSecret: e.target.value }
                                             }))}
                                         />
                                     </div>
@@ -927,37 +977,11 @@ export default function AdminDashboard() {
                                             }))}
                                         />
                                     </div>
-                                </Button>
-                </Card>
-
-                        {/* Recent Transactions */}
-                        <Card className="space-y-6" hover={false}>
-                            <div className="flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <h3 className="text-xl font-bold">Recent Transactions</h3>
-                                    <p className="text-sm text-gray-400">Latest subscription payments from planners.</p>
+                                    <Button className="w-full" onClick={() => saveSettings('gateways')} disabled={isSaving}>
+                                        {isSaving ? "Saving..." : "Save Bank Details"}
+                                    </Button>
                                 </div>
-                                <Button variant="outline" size="sm">View All</Button>
-                            </div>
-                            <div className="space-y-3">
-                                {recentTransactions.length === 0 ? (
-                                    <div className="p-10 text-center text-gray-500 text-xs">No recent transactions.</div>
-                                ) : recentTransactions.map((tx, i) => (
-                                    <div key={i} className="flex items-center justify-between p-4 glass-panel rounded-xl border-white/5 group hover:bg-white/[0.03] transition-all">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center font-bold text-sm text-gray-400 group-hover:text-blue-400 transition-colors">
-                                                {tx.name?.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-sm">{tx.name}</p>
-                                                <p className="text-[10px] text-gray-500">{tx.plan} Plan • {tx.method}</p>
-                                            </div>
-                                        </div>
-                                        <Button className="w-full" onClick={() => saveSettings('gateways')} disabled={isSaving}>
-                                            {isSaving ? "Saving..." : "Save Bank Details"}
-                                        </Button>
-                                    </div>
-                                )}
+                            )}
                         </Card>
 
                         {/* Recent Transactions & Approvals */}
@@ -1190,50 +1214,50 @@ export default function AdminDashboard() {
                                 ))}
                             </div>
                         </div>
-                    </div >
-                    )
-            }
+                    </div>
+                </div>
+            )}
 
-                    {/* Settings Tab Content */}
-                    {
-                        activeTab === "settings" && (
-                            <div className="max-w-3xl space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <section className="space-y-6">
-                                    <h3 className="text-xl font-bold">Security & Access</h3>
-                                    <Card className="divide-y divide-white/5 p-0" hover={false}>
-                                        {[
-                                            { title: "Two-Factor Authentication", desc: "Require a secondary code for all admin logins.", enabled: true },
-                                            { title: "Admin Login Notifications", desc: "Receive email alerts when someone logs into this panel.", enabled: true },
-                                            { title: "IP Whitelisting", desc: "Restrict admin access to specific IP addresses.", enabled: false },
-                                        ].map((setting, i) => (
-                                            <div key={i} className="flex items-center justify-between p-6">
-                                                <div>
-                                                    <p className="font-bold">{setting.title}</p>
-                                                    <p className="text-xs text-gray-500">{setting.desc}</p>
-                                                </div>
-                                                <button
-                                                    className={`w-10 h-5 rounded-full transition-all relative ${setting.enabled ? 'bg-blue-500' : 'bg-white/10'}`}
-                                                >
-                                                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${setting.enabled ? 'right-0.5' : 'left-0.5'}`} />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </Card>
-                                </section>
-
-                                <section className="space-y-6">
-                                    <h3 className="text-xl font-bold text-red-500">Danger Zone</h3>
-                                    <Card className="border-red-500/20 bg-red-500/[0.02] p-8 flex flex-col md:flex-row justify-between items-center gap-6" hover={false}>
+            {/* Settings Tab Content */}
+            {
+                activeTab === "settings" && (
+                    <div className="max-w-3xl space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <section className="space-y-6">
+                            <h3 className="text-xl font-bold">Security & Access</h3>
+                            <Card className="divide-y divide-white/5 p-0" hover={false}>
+                                {[
+                                    { title: "Two-Factor Authentication", desc: "Require a secondary code for all admin logins.", enabled: true },
+                                    { title: "Admin Login Notifications", desc: "Receive email alerts when someone logs into this panel.", enabled: true },
+                                    { title: "IP Whitelisting", desc: "Restrict admin access to specific IP addresses.", enabled: false },
+                                ].map((setting, i) => (
+                                    <div key={i} className="flex items-center justify-between p-6">
                                         <div>
-                                            <p className="font-bold">Reset Platform Data</p>
-                                            <p className="text-xs text-gray-500">Wipe all users, planners, and event albums. This action is irreversible.</p>
+                                            <p className="font-bold">{setting.title}</p>
+                                            <p className="text-xs text-gray-500">{setting.desc}</p>
                                         </div>
-                                        <Button className="bg-red-500 hover:bg-red-600 text-white border-none w-full md:w-auto">Confirm Reset</Button>
-                                    </Card>
-                                </section>
-                            </div>
-                        )
-                    }
-                </main >
-            );
+                                        <button
+                                            className={`w-10 h-5 rounded-full transition-all relative ${setting.enabled ? 'bg-blue-500' : 'bg-white/10'}`}
+                                        >
+                                            <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${setting.enabled ? 'right-0.5' : 'left-0.5'}`} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </Card>
+                        </section>
+
+                        <section className="space-y-6">
+                            <h3 className="text-xl font-bold text-red-500">Danger Zone</h3>
+                            <Card className="border-red-500/20 bg-red-500/[0.02] p-8 flex flex-col md:flex-row justify-between items-center gap-6" hover={false}>
+                                <div>
+                                    <p className="font-bold">Reset Platform Data</p>
+                                    <p className="text-xs text-gray-500">Wipe all users, planners, and event albums. This action is irreversible.</p>
+                                </div>
+                                <Button className="bg-red-500 hover:bg-red-600 text-white border-none w-full md:w-auto">Confirm Reset</Button>
+                            </Card>
+                        </section>
+                    </div>
+                )
+            }
+        </main >
+    );
 }

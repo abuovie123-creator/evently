@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function PayoutPage() {
+function PayoutContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { showToast } = useToast();
@@ -64,7 +64,7 @@ export default function PayoutPage() {
             setIsLoading(false);
         };
         initCheckout();
-    }, [tierId]);
+    }, [tierId, router, showToast]);
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -85,7 +85,7 @@ export default function PayoutPage() {
             // 1. Upload screenshot to storage
             const fileExt = screenshot.name.split('.').pop();
             const fileName = `${user.id}_${Date.now()}.${fileExt}`;
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from('payment-proofs')
                 .upload(fileName, screenshot);
 
@@ -219,73 +219,87 @@ export default function PayoutPage() {
                                 <Button
                                     className="w-full py-6 bg-amber-500 hover:bg-amber-600"
                                     size="lg"
+                                    onClick={handleSubmitManual}
+                                    disabled={isSubmitting}
+                                >
                                     {isSubmitting ? "Processing..." : "Submit Payment Proof"}
                                 </Button>
                             </section>
                         )}
 
-                    {selectedMethod === "gateway" && (
-                        <section className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                            <div className="p-10 glass-panel rounded-[2rem] text-center space-y-6 border-white/5">
-                                <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto text-blue-400">
-                                    <Zap size={40} />
+                        {selectedMethod === "gateway" && (
+                            <section className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="p-10 glass-panel rounded-[2rem] text-center space-y-6 border-white/5">
+                                    <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto text-blue-400">
+                                        <Zap size={40} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <h4 className="text-xl font-bold">Instant Activation</h4>
+                                        <p className="text-gray-400 text-sm max-w-sm mx-auto">
+                                            Pay securely using your card or bank app and get upgraded instantly.
+                                        </p>
+                                    </div>
+                                    <Button
+                                        className="w-full py-6 bg-blue-500 hover:bg-blue-600"
+                                        size="lg"
+                                        onClick={() => showToast("Online payment integration coming soon! Use manual transfer for now.", "info")}
+                                    >
+                                        Pay ₦{Number(selectedTier?.price || 0).toLocaleString()} Now
+                                    </Button>
                                 </div>
-                                <div className="space-y-2">
-                                    <h4 className="text-xl font-bold">Instant Activation</h4>
-                                    <p className="text-gray-400 text-sm max-w-sm mx-auto">
-                                        Pay securely using your card or bank app and get upgraded instantly.
-                                    </p>
+                            </section>
+                        )}
+                    </div>
+
+                    {/* Order Summary */}
+                    <div className="lg:col-span-1">
+                        <Card className="sticky top-32 space-y-6" hover={false}>
+                            <h3 className="text-lg font-bold">Order Summary</h3>
+                            <div className="space-y-4">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-500">{selectedTier?.name} Plan</span>
+                                    <span className="font-bold">₦{Number(selectedTier?.price || 0).toLocaleString()}</span>
                                 </div>
-                                <Button
-                                    className="w-full py-6 bg-blue-500 hover:bg-blue-600"
-                                    size="lg"
-                                    onClick={() => showToast("Online payment integration coming soon! Use manual transfer for now.", "info")}
-                                >
-                                    Pay ₦{Number(selectedTier?.price || 0).toLocaleString()} Now
-                                </Button>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-gray-500">Duration</span>
+                                    <span className="font-bold">1 {selectedTier?.period}</span>
+                                </div>
+                                <hr className="border-white/5" />
+                                <div className="flex justify-between items-end">
+                                    <span className="text-gray-400">Total Charged</span>
+                                    <span className="text-2xl font-bold">₦{Number(selectedTier?.price || 0).toLocaleString()}</span>
+                                </div>
                             </div>
-                        </section>
-                    )}
-                </div>
 
-                {/* Order Summary */}
-                <div className="lg:col-span-1">
-                    <Card className="sticky top-32 space-y-6" hover={false}>
-                        <h3 className="text-lg font-bold">Order Summary</h3>
-                        <div className="space-y-4">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">{selectedTier?.name} Plan</span>
-                                <span className="font-bold">₦{Number(selectedTier?.price || 0).toLocaleString()}</span>
+                            <div className="pt-4 space-y-4">
+                                <p className="text-[10px] text-gray-500 leading-relaxed font-medium">
+                                    By completing your purchase, you agree to our Terms of Service and Privacy Policy. Subscriptions renew automatically until cancelled.
+                                </p>
+                                <div className="flex items-center gap-2 text-green-400 text-[10px] font-bold uppercase tracking-widest">
+                                    <CheckCircle2 size={12} />
+                                    Secure SSL Encryption
+                                </div>
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Duration</span>
-                                <span className="font-bold">1 {selectedTier?.period}</span>
-                            </div>
-                            <hr className="border-white/5" />
-                            <div className="flex justify-between items-end">
-                                <span className="text-gray-400">Total Charged</span>
-                                <span className="text-2xl font-bold">₦{Number(selectedTier?.price || 0).toLocaleString()}</span>
-                            </div>
-                        </div>
-
-                        <div className="pt-4 space-y-4">
-                            <p className="text-[10px] text-gray-500 leading-relaxed font-medium">
-                                By completing your purchase, you agree to our Terms of Service and Privacy Policy. Subscriptions renew automatically until cancelled.
-                            </p>
-                            <div className="flex items-center gap-2 text-green-400 text-[10px] font-bold uppercase tracking-widest">
-                                <CheckCircle2 size={12} />
-                                Secure SSL Encryption
-                            </div>
-                        </div>
-                    </Card>
+                        </Card>
+                    </div>
                 </div>
             </div>
-        </div>
-        </main >
+        </main>
     );
 }
 
-// Simple Zap icon since lucide-react might not have it in the current version or I missed it
+export default function PayoutPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-black">
+                <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+        }>
+            <PayoutContent />
+        </Suspense>
+    );
+}
+
 function Zap({ size, ...props }: any) {
     return (
         <svg

@@ -35,29 +35,68 @@ export default function PlannerDashboard() {
     const [recentBookings, setRecentBookings] = useState<any[]>([]);
     const [recentMessages, setRecentMessages] = useState<any[]>([]);
 
+    const logError = (context: string, error: any) => {
+        console.error(`${context} (Raw):`, error);
+        try {
+            const errorDetails: any = {
+                typeof: typeof error,
+                isEvent: typeof Event !== 'undefined' && error instanceof Event,
+                isError: error instanceof Error,
+                constructor: error?.constructor?.name,
+                message: error?.message || (error as any)?.error_description,
+                code: error?.code || error?.status,
+                details: error?.details,
+                hint: error?.hint,
+            };
+
+            if (error && typeof error === 'object') {
+                Object.getOwnPropertyNames(error).forEach(key => {
+                    if (!errorDetails.hasOwnProperty(key)) {
+                        errorDetails[key] = (error as any)[key];
+                    }
+                });
+            }
+            console.error(`${context} (Detailed):`, errorDetails);
+        } catch (err) {
+            console.error(`${context} (Logging helper failed):`, err);
+        }
+    };
+
     useEffect(() => {
         const fetchPlannerData = async () => {
             const supabase = createClient();
 
             // Get current user session
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) return;
+            if (!session) {
+                showToast("Please login to access your dashboard", "error");
+                window.location.href = "/auth/login";
+                return;
+            }
 
             const userId = session.user.id;
 
             // Fetch Profile & Subscription Info
-            const { data: profile } = await supabase
+            const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('*, plan_id')
                 .eq('id', userId)
                 .single();
 
+            if (profileError) {
+                logError("Error fetching planner profile", profileError);
+            }
+
             // Fetch Platform Settings for plan details
-            const { data: settings } = await supabase
+            const { data: settings, error: settingsError } = await supabase
                 .from('platform_settings')
                 .select('subscription_plans')
                 .eq('id', 'default')
                 .single();
+
+            if (settingsError && settingsError.code !== 'PGRST116') {
+                logError("Error fetching platform settings", settingsError);
+            }
 
             if (profile && settings) {
                 const plans = settings.subscription_plans || [];
@@ -266,8 +305,8 @@ export default function PlannerDashboard() {
                                     <p className="text-xs text-gray-500">{booking.date} • {booking.location}</p>
                                 </div>
                                 <span className={`px-3 py-1 text-[10px] font-bold rounded-full ${booking.status === 'Approved' ? 'bg-green-500/10 text-green-400' :
-                                        booking.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-400' :
-                                            'bg-red-500/10 text-red-400'
+                                    booking.status === 'Pending' ? 'bg-yellow-500/10 text-yellow-400' :
+                                        'bg-red-500/10 text-red-400'
                                     }`}>
                                     {booking.status}
                                 </span>

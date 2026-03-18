@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState, use } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
@@ -45,6 +46,27 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
     const [planner, setPlanner] = useState<PlannerProfile | null>(null);
     const [albums, setAlbums] = useState<Album[]>([]);
 
+    const logError = (context: string, error: any) => {
+        console.error(`${context} (Raw):`, error);
+        try {
+            const errorDetails: any = {
+                typeof: typeof error,
+                isEvent: typeof Event !== 'undefined' && error instanceof Event,
+                isError: error instanceof Error,
+                constructor: error?.constructor?.name,
+            };
+
+            if (error && typeof error === 'object') {
+                Object.getOwnPropertyNames(error).forEach(key => {
+                    errorDetails[key] = (error as any)[key];
+                });
+            }
+            console.error(`${context} (Detailed):`, errorDetails);
+        } catch (err) {
+            console.error(`${context} (Logging helper failed):`, err);
+        }
+    };
+
     useEffect(() => {
         const fetchPlannerData = async () => {
             const supabase = createClient();
@@ -57,7 +79,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 .single();
 
             if (profileError || !profile) {
-                console.error("Profile not found:", profileError);
+                logError("Profile not found", profileError);
                 setIsLoading(false);
                 return;
             }
@@ -87,6 +109,10 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 `)
                 .eq('planner_id', profile.id)
                 .order('created_at', { ascending: false });
+
+            if (eventsError) {
+                logError("Error fetching events", eventsError);
+            }
 
             if (events) {
                 setAlbums(events.map(event => ({

@@ -10,7 +10,14 @@ export async function middleware(req: NextRequest) {
     // Skip session refresh for static assets to improve performance
     const isAsset = req.nextUrl.pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|css|js|woff|woff2|ttf|eot)$/)
     if (!isAsset) {
-        await supabase.auth.getSession()
+        const { data: { session } } = await supabase.auth.getSession()
+
+        // Instant Server-side redirect for Admin pages
+        if (req.nextUrl.pathname.startsWith('/dashboard/admin') && !req.nextUrl.pathname.startsWith('/dashboard/admin/login')) {
+            if (!session) {
+                return NextResponse.redirect(new URL('/dashboard/admin/login', req.url))
+            }
+        }
     }
 
     return res

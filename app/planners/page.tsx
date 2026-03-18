@@ -26,6 +26,27 @@ export default function PlannersPage() {
     const [planners, setPlanners] = useState<PlannerProfile[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const logError = (context: string, error: any) => {
+        console.error(`${context} (Raw):`, error);
+        try {
+            const errorDetails: any = {
+                typeof: typeof error,
+                isEvent: typeof Event !== 'undefined' && error instanceof Event,
+                isError: error instanceof Error,
+                constructor: error?.constructor?.name,
+            };
+
+            if (error && typeof error === 'object') {
+                Object.getOwnPropertyNames(error).forEach(key => {
+                    errorDetails[key] = (error as any)[key];
+                });
+            }
+            console.error(`${context} (Detailed):`, errorDetails);
+        } catch (err) {
+            console.error(`${context} (Logging helper failed):`, err);
+        }
+    };
+
     useEffect(() => {
         const fetchPlanners = async () => {
             const supabase = createClient();
@@ -35,7 +56,7 @@ export default function PlannersPage() {
                 .eq('role', 'planner');
 
             if (error) {
-                console.error("Error fetching planners:", error);
+                logError("Error fetching planners", error);
             } else if (data) {
                 setPlanners(data.map(p => ({
                     ...p,

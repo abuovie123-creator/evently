@@ -5,9 +5,32 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { useToast } from "@/components/ui/Toast";
 
+import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
+
 export default function ClientDashboard() {
-    console.log("Rendering Client Dashboard with Toast support");
     const { showToast } = useToast();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                showToast("Please login to access your dashboard", "error");
+                window.location.href = "/auth/login";
+                return;
+            }
+            setIsLoading(false);
+        };
+        checkAuth();
+    }, []);
+
+    if (isLoading) return (
+        <div className="min-h-screen flex items-center justify-center">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        </div>
+    );
     return (
         <main className="min-h-screen p-8 pt-32 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-500">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
