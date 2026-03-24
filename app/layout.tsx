@@ -34,8 +34,8 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     <ToastProvider>
-                        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black -z-10 dark:block hidden" />
-                        <div className="fixed inset-0 bg-white dark:hidden block -z-20" />
+                        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/10 via-black to-black -z-10 dark:block hidden transition-colors duration-700" />
+                        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-50/50 via-white to-white dark:hidden block -z-20 transition-colors duration-700" />
                         <AnimatedBackground />
                         <Navbar />
                         {children}
