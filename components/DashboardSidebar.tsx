@@ -60,41 +60,50 @@ export function DashboardSidebar() {
     const supabase = createClient();
 
     useEffect(() => {
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+        const init = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            const user = session?.user;
             setUser(user);
+
             if (user) {
+                // Fetch profile
                 const { data: profile } = await supabase
                     .from('profiles')
                     .select('role')
                     .eq('id', user.id)
                     .single();
                 setRole(profile?.role || 'client');
+
+                // Fetch unread count
+                const fetchUnread = async () => {
+                    const { count } = await supabase
+                        .from('messages')
+                        .select('*', { count: 'exact', head: true })
+                        .eq('is_read', false)
+                        .neq('sender_id', user.id);
+                    setUnreadCount(count || 0);
+                };
+                fetchUnread();
+
+                // Subscribe to changes
+                const subscription = supabase
+                    .channel('unread_messages')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => fetchUnread())
+                    .subscribe();
+
+                return () => {
+                    supabase.removeChannel(subscription);
+                };
             }
         };
-        getUser();
 
-        // Fetch unread count
-        const fetchUnread = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
-
-            const { count } = await supabase
-                .from('messages')
-                .select('*', { count: 'exact', head: true })
-                .eq('is_read', false)
-                .neq('sender_id', user.id);
-            setUnreadCount(count || 0);
-        };
-        fetchUnread();
-
-        const subscription = supabase
-            .channel('unread_messages')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => fetchUnread())
-            .subscribe();
+        let cleanup: (() => void) | undefined;
+        init().then(cleanupFn => {
+            if (cleanupFn) cleanup = cleanupFn;
+        });
 
         return () => {
-            supabase.removeChannel(subscription);
+            if (cleanup) cleanup();
         };
     }, []);
 
@@ -181,7 +190,6 @@ export function DashboardSidebar() {
                         {role} portal
                     </p>
                 </div>
-                <ThemeToggle />
             </div>
 
             <nav className="flex-1 space-y-1">
@@ -247,7 +255,10 @@ export function DashboardSidebar() {
                 })}
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-white/5 px-4 space-y-2">
+            <div className="mt-auto pt-6 border-t border-white/5 px-4 space-y-3">
+                <div className="mb-2 pl-1">
+                    <ThemeToggle />
+                </div>
                 <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
                         {user?.email?.[0].toUpperCase() || "U"}

@@ -107,5 +107,6 @@ export default function ClientDashboard() {
                     </div>
                 </Card>
             </div>
-            );
+        </div>
+    );
 }
