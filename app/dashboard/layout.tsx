@@ -3,7 +3,7 @@
 import { DashboardSidebar } from "@/components/DashboardSidebar";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
 
 import { useOnlineStatus } from "@/lib/hooks/useOnlineStatus";
@@ -16,6 +16,7 @@ export default function DashboardLayout({
     const [isLoading, setIsLoading] = useState(true);
     const [userId, setUserId] = useState<string | undefined>();
     const router = useRouter();
+    const pathname = usePathname();
     const { showToast } = useToast();
     const supabase = createClient();
 
@@ -24,6 +25,12 @@ export default function DashboardLayout({
 
     useEffect(() => {
         const checkAuth = async () => {
+            // Let the admin login page render without redirecting unauthenticated users to the standard login.
+            if (pathname === '/dashboard/admin/login') {
+                setIsLoading(false);
+                return;
+            }
+
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) {
                 showToast("Please login to access your dashboard", "error");
