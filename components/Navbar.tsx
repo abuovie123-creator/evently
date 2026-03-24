@@ -21,8 +21,9 @@ export function Navbar() {
 
 
     useEffect(() => {
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+        const initUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            const user = session?.user || null;
             setUser(user);
             if (user) {
                 const { data: profile } = await supabase
@@ -34,7 +35,7 @@ export function Navbar() {
             }
         };
 
-        getUser();
+        initUser();
         router.prefetch("/planners");
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
