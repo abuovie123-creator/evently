@@ -45,7 +45,28 @@ interface SubscriptionPlan {
     price: string;
     period: string;
     features: string[];
+    imageLimit: number;
     isEditing: boolean;
+}
+
+interface StatItem {
+    label: string;
+    value: string;
+    change: string;
+}
+
+interface TabItem {
+    id: string;
+    label: string;
+    icon: any;
+}
+
+interface PendingPlanner {
+    id: string;
+    name: string;
+    cat: string;
+    loc: string;
+    status: string;
 }
 
 export default function AdminDashboard() {
@@ -72,6 +93,7 @@ export default function AdminDashboard() {
             price: "0",
             period: "month",
             features: ["Basic public profile", "5 portfolio images", "Standard directory listing", "Booking request notifications", "Community support"],
+            imageLimit: 5,
             isEditing: false,
         },
         {
@@ -80,6 +102,7 @@ export default function AdminDashboard() {
             price: "5000",
             period: "month",
             features: ["Verified badge", "25 portfolio images", "Featured directory listing", "Advanced analytics dashboard", "Priority in search results", "Client review showcase", "Direct messaging"],
+            imageLimit: 25,
             isEditing: false,
         },
         {
@@ -88,6 +111,7 @@ export default function AdminDashboard() {
             price: "15000",
             period: "month",
             features: ["Everything in Pro", "Unlimited portfolio images", "Top placement guaranteed", "Custom profile branding", "Priority support (24/7)", "Event album sharing", "Social media integration", "Dedicated account manager"],
+            imageLimit: -1,
             isEditing: false,
         },
     ]);
@@ -174,16 +198,16 @@ export default function AdminDashboard() {
                 logError("Error fetching profiles", fetchError);
                 showToast(`Failed to fetch live users: ${fetchError.message || fetchError.name || "Unknown Error"}`, "error");
             } else if (profiles) {
-                setUsers(profiles.map(p => ({
+                setUsers(profiles.map((p: any) => ({
                     ...p,
                     email: p.email || "N/A",
                     date: new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
                     status: "Active"
                 })));
 
-                setStats(prev => ({
+                setStats((prev: any) => ({
                     ...prev,
-                    activePlanners: profiles.filter(p => p.role === 'planner').length
+                    activePlanners: profiles.filter((p: any) => p.role === 'planner').length
                 }));
             }
 
@@ -202,7 +226,11 @@ export default function AdminDashboard() {
                 if (psData.branding) setBranding(psData.branding);
                 if (psData.features) setFeatures(psData.features);
                 if (psData.gateway_keys) setGatewayKeys(psData.gateway_keys);
-                if (psData.subscription_plans) setPlans(psData.subscription_plans.map((p: any) => ({ ...p, isEditing: false })));
+                if (psData.subscription_plans) setPlans(psData.subscription_plans.map((p: any) => ({
+                    ...p,
+                    isEditing: false,
+                    imageLimit: p.imageLimit !== undefined ? p.imageLimit : (p.id === 'pro' ? 25 : p.id === 'starter' ? 5 : -1)
+                })));
             }
 
             // Fetch Real Analytics (Revenue)
@@ -216,13 +244,13 @@ export default function AdminDashboard() {
             }
 
             if (txData) {
-                const total = txData.filter(tx => tx.status === 'completed').reduce((sum, tx) => sum + Number(tx.amount), 0);
-                setStats(prev => ({
+                const total = txData.filter((tx: any) => tx.status === 'completed').reduce((sum: number, tx: any) => sum + Number(tx.amount), 0);
+                setStats((prev: any) => ({
                     ...prev,
                     platformRevenue: `₦${total.toLocaleString()}`
                 }));
 
-                setRecentTransactions(txData.slice(0, 5).map(tx => ({
+                setRecentTransactions(txData.slice(0, 5).map((tx: any) => ({
                     name: tx.profiles?.full_name || "Unknown",
                     plan: tx.plan_name,
                     amount: `₦${Number(tx.amount).toLocaleString()}`,
@@ -244,7 +272,7 @@ export default function AdminDashboard() {
             }
 
             if (pendingData) {
-                setPendingPlanners(pendingData.map(p => ({
+                setPendingPlanners(pendingData.map((p: any) => ({
                     id: p.id,
                     name: p.full_name,
                     cat: "Event Planner", // Default or fetch category
@@ -281,7 +309,7 @@ export default function AdminDashboard() {
         if (type === 'branding') payload.branding = branding;
         if (type === 'features') payload.features = features;
         if (type === 'gateways') payload.gateway_keys = gatewayKeys;
-        if (type === 'plans') payload.subscription_plans = plans.map(p => ({ ...p, isEditing: false }));
+        if (type === 'plans') payload.subscription_plans = plans.map((p: SubscriptionPlan) => ({ ...p, isEditing: false }));
 
         const { error } = await supabase
             .from('platform_settings')
@@ -309,7 +337,7 @@ export default function AdminDashboard() {
         if (error) {
             showToast(`Failed to update feature`, "error");
         } else {
-            showToast(`${key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())} ${newState ? 'Enabled' : 'Disabled'}`, newState ? "success" : "info");
+            showToast(`${String(key).replace(/([A-Z])/g, ' $1').replace(/^./, (str: string) => str.toUpperCase())} ${newState ? 'Enabled' : 'Disabled'}`, newState ? "success" : "info");
         }
     };
 
@@ -319,23 +347,23 @@ export default function AdminDashboard() {
 
     // Plan editing helpers
     const togglePlanEdit = (planId: string) => {
-        setPlans(prev => prev.map(p => p.id === planId ? { ...p, isEditing: !p.isEditing } : p));
+        setPlans((prev: SubscriptionPlan[]) => prev.map((p: SubscriptionPlan) => p.id === planId ? { ...p, isEditing: !p.isEditing } : p));
     };
 
-    const updatePlanField = (planId: string, field: "name" | "price" | "period", value: string) => {
-        setPlans(prev => prev.map(p => p.id === planId ? { ...p, [field]: value } : p));
+    const updatePlanField = (planId: string, field: "name" | "price" | "period" | "imageLimit", value: string | number) => {
+        setPlans((prev: SubscriptionPlan[]) => prev.map((p: SubscriptionPlan) => p.id === planId ? { ...p, [field]: value } : p));
     };
 
     const addFeature = (planId: string) => {
         const featureText = newFeatureInputs[planId]?.trim();
         if (!featureText) return;
-        setPlans(prev => prev.map(p => p.id === planId ? { ...p, features: [...p.features, featureText] } : p));
-        setNewFeatureInputs(prev => ({ ...prev, [planId]: "" }));
+        setPlans((prev: SubscriptionPlan[]) => prev.map((p: SubscriptionPlan) => p.id === planId ? { ...p, features: [...p.features, featureText] } : p));
+        setNewFeatureInputs((prev: Record<string, string>) => ({ ...prev, [planId]: "" }));
         showToast("Feature added", "success");
     };
 
     const removeFeature = (planId: string, featureIndex: number) => {
-        setPlans(prev => prev.map(p => p.id === planId ? { ...p, features: p.features.filter((_, i) => i !== featureIndex) } : p));
+        setPlans((prev: SubscriptionPlan[]) => prev.map((p: SubscriptionPlan) => p.id === planId ? { ...p, features: p.features.filter((_, i: number) => i !== featureIndex) } : p));
     };
 
     const savePlan = async (planId: string) => {
@@ -345,8 +373,8 @@ export default function AdminDashboard() {
 
     const exportUsersCSV = () => {
         const headers = ["ID", "Name", "Role", "Email", "Join Date"];
-        const rows = users.map(u => [u.id, u.full_name, u.role, u.email, u.created_at]);
-        const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map(e => e.join(",")).join("\n");
+        const rows = users.map((u: UserProfile) => [u.id, u.full_name, u.role, u.email, u.created_at]);
+        const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].map((e: any[]) => e.join(",")).join("\n");
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -367,7 +395,7 @@ export default function AdminDashboard() {
             logError("Failed to approve planner", error);
             showToast("Failed to approve planner", "error");
         } else {
-            setPendingPlanners(prev => prev.filter(p => p.id !== plannerId));
+            setPendingPlanners((prev: PendingPlanner[]) => prev.filter((p: PendingPlanner) => p.id !== plannerId));
             showToast("Planner approved successfully", "success");
         }
     };
@@ -401,10 +429,9 @@ export default function AdminDashboard() {
                     subscription_end_date: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString() // 31 days
                 })
                 .eq('id', profileId);
-
             if (pError) throw pError;
 
-            setBankTransfers(prev => prev.map(bt => bt.id === transferId ? { ...bt, status: 'approved' } : bt));
+            setBankTransfers((prev: any[]) => prev.map((bt: any) => bt.id === transferId ? { ...bt, status: 'approved' } : bt));
             showToast("Payment approved and user upgraded!", "success");
         } catch (error: any) {
             logError("Approval failed", error);
@@ -430,7 +457,7 @@ export default function AdminDashboard() {
             logError("Failed to decline transfer", error);
             showToast("Failed to decline transfer", "error");
         } else {
-            setBankTransfers(prev => prev.map(bt => bt.id === transferId ? { ...bt, status: 'declined' } : bt));
+            setBankTransfers((prev: any[]) => prev.map((bt: any) => bt.id === transferId ? { ...bt, status: 'declined' } : bt));
             showToast("Transfer declined", "error");
         }
         setIsSaving(false);
@@ -446,7 +473,7 @@ export default function AdminDashboard() {
             logError("Failed to delete user", error);
             showToast("Failed to delete user", "error");
         } else {
-            setUsers(prev => prev.filter(u => u.id !== userId));
+            setUsers((prev: UserProfile[]) => prev.filter((u: UserProfile) => u.id !== userId));
             showToast("User deleted successfully", "success");
         }
     };
@@ -460,7 +487,7 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-7xl mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-500">
+        <div className="space-y-8 md:space-y-12 animate-in fade-in duration-500">
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
@@ -487,19 +514,19 @@ export default function AdminDashboard() {
             </div>
 
             {/* Sidebar/Tabs Navigation */}
-            <div className="flex gap-2 p-1 bg-white/5 rounded-2xl border border-white/10 w-fit overflow-x-auto no-scrollbar">
-                {tabs.map((tab) => {
+            <div className="flex gap-2 p-1 bg-white/5 rounded-2xl border border-white/10 w-full overflow-x-auto scrollbar-hide">
+                {tabs.map((tab: TabItem) => {
                     const Icon = tab.icon;
                     return (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap ${activeTab === tab.id
+                            className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
                                 ? "bg-white text-black shadow-lg shadow-white/10"
                                 : "text-gray-400 hover:text-white hover:bg-white/5"
                                 }`}
                         >
-                            <Icon size={18} />
+                            <Icon size={16} />
                             {tab.label}
                         </button>
                     );
@@ -516,7 +543,7 @@ export default function AdminDashboard() {
                                 { label: "Active Planners", value: stats.activePlanners.toString(), change: stats.growth },
                                 { label: "Total Bookings", value: stats.totalBookings.toString(), change: "+0%" },
                                 { label: "Platform Revenue", value: stats.platformRevenue, change: "+0%" },
-                            ].map((stat, i) => (
+                            ].map((stat: StatItem, i: number) => (
                                 <Card key={i} className="space-y-4 group relative overflow-hidden" hover={true}>
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 blur-3xl -mr-12 -mt-12 group-hover:bg-blue-500/10 transition-colors" />
                                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>
@@ -578,7 +605,7 @@ export default function AdminDashboard() {
                                                     No pending planner approvals.
                                                 </td>
                                             </tr>
-                                        ) : pendingPlanners.map((planner, i) => (
+                                        ) : pendingPlanners.map((planner: PendingPlanner, i: number) => (
                                             <tr key={planner.id} className="hover:bg-white/[0.02] transition-colors">
                                                 <td className="p-5 font-bold">{planner.name}</td>
                                                 <td className="p-5 text-gray-400">{planner.cat}</td>
@@ -709,7 +736,7 @@ export default function AdminDashboard() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <div className="flex gap-4 w-full md:w-auto">
+                        <div className="flex flex-wrap gap-4 w-full md:w-auto">
                             <select
                                 className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm font-bold text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={roleFilter}
@@ -725,8 +752,8 @@ export default function AdminDashboard() {
                         </div>
                     </Card>
 
-                    <Card className="p-0 overflow-hidden" hover={false}>
-                        <div className="overflow-x-auto">
+                    <Card className="p-0 overflow-hidden w-full" hover={false}>
+                        <div className="overflow-x-auto scrollbar-hide">
                             <table className="w-full text-left text-sm min-w-[800px]">
                                 <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-widest">
                                     <tr>
@@ -834,7 +861,7 @@ export default function AdminDashboard() {
                             {/* Gateway Selector */}
                             <div className="space-y-4">
                                 <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Select Gateway</label>
-                                <div className="grid grid-cols-3 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     {([
                                         { id: "paystack" as const, name: "Paystack", color: "from-blue-500 to-blue-600" },
                                         { id: "flutterwave" as const, name: "Flutterwave", color: "from-orange-500 to-amber-500" },
@@ -931,7 +958,7 @@ export default function AdminDashboard() {
                             {/* Manual Bank Details Fields */}
                             {selectedGateway === "manual" && (
                                 <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Bank Name</label>
                                             <Input
@@ -971,7 +998,7 @@ export default function AdminDashboard() {
                                         <Input
                                             placeholder="e.g. Please include your username in the transfer narration..."
                                             value={gatewayKeys.manual.additionalInfo}
-                                            onChange={(e) => setGatewayKeys(prev => ({
+                                            onChange={(e: any) => setGatewayKeys((prev: any) => ({
                                                 ...prev,
                                                 manual: { ...prev.manual, additionalInfo: e.target.value }
                                             }))}
@@ -998,7 +1025,7 @@ export default function AdminDashboard() {
                                 <div className="space-y-3">
                                     {recentTransactions.length === 0 ? (
                                         <div className="p-10 text-center text-gray-500 text-xs">No recent transactions.</div>
-                                    ) : recentTransactions.map((tx, i) => (
+                                    ) : recentTransactions.map((tx: any, i: number) => (
                                         <div key={i} className="flex items-center justify-between p-4 glass-panel rounded-xl border-white/5 group hover:bg-white/[0.03] transition-all">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center font-bold text-sm text-gray-400 group-hover:text-blue-400 transition-colors">
@@ -1028,7 +1055,7 @@ export default function AdminDashboard() {
                                         Manual Bank Approvals
                                     </h2>
                                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                                        {bankTransfers.filter(bt => bt.status === 'pending').length} Pending
+                                        {bankTransfers.filter((bt: any) => bt.status === 'pending').length} Pending
                                     </span>
                                 </div>
 
@@ -1037,7 +1064,7 @@ export default function AdminDashboard() {
                                         <Card className="p-8 text-center text-gray-500 italic">
                                             No bank transfer requests yet.
                                         </Card>
-                                    ) : bankTransfers.map((bt) => (
+                                    ) : bankTransfers.map((bt: any) => (
                                         <Card key={bt.id} className="p-4 space-y-4 border-white/5 hover:border-white/20 transition-all">
                                             {/* Transfer Item content... */}
                                             <div className="flex justify-between items-start">
@@ -1109,7 +1136,7 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {plans.map((plan) => (
+                                {plans.map((plan: SubscriptionPlan) => (
                                     <Card key={plan.id} className="space-y-5 relative" hover={false}>
                                         {/* Edit/Save Toggle */}
                                         <button
@@ -1123,7 +1150,7 @@ export default function AdminDashboard() {
                                         {plan.isEditing ? (
                                             <Input
                                                 value={plan.name}
-                                                onChange={(e) => updatePlanField(plan.id, "name", e.target.value)}
+                                                onChange={(e: any) => updatePlanField(plan.id, "name", e.target.value)}
                                                 className="text-lg font-bold bg-white/5"
                                             />
                                         ) : (
@@ -1137,12 +1164,12 @@ export default function AdminDashboard() {
                                                 <Input
                                                     type="number"
                                                     value={plan.price}
-                                                    onChange={(e) => updatePlanField(plan.id, "price", e.target.value)}
+                                                    onChange={(e: any) => updatePlanField(plan.id, "price", e.target.value)}
                                                     className="flex-1 text-2xl font-bold"
                                                 />
                                                 <select
                                                     value={plan.period}
-                                                    onChange={(e) => updatePlanField(plan.id, "period", e.target.value)}
+                                                    onChange={(e: any) => updatePlanField(plan.id, "period", e.target.value)}
                                                     className="bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none"
                                                 >
                                                     <option value="month">/ month</option>
@@ -1160,11 +1187,32 @@ export default function AdminDashboard() {
                                             </div>
                                         )}
 
+                                        {/* Image Limit */}
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Portfolio Image Limit</label>
+                                            {plan.isEditing ? (
+                                                <div className="flex items-center gap-2">
+                                                    <Input
+                                                        type="number"
+                                                        value={plan.imageLimit === -1 ? "" : plan.imageLimit}
+                                                        placeholder="Unlimited"
+                                                        onChange={(e: any) => updatePlanField(plan.id, "imageLimit", e.target.value === "" ? -1 : parseInt(e.target.value))}
+                                                        className="w-24 text-sm"
+                                                    />
+                                                    <span className="text-xs text-gray-400">images (-1 or empty for unlimited)</span>
+                                                </div>
+                                            ) : (
+                                                <div className="text-sm text-gray-300 font-bold">
+                                                    {plan.imageLimit === -1 ? "Unlimited Images" : `${plan.imageLimit} Images`}
+                                                </div>
+                                            )}
+                                        </div>
+
                                         {/* Features List */}
                                         <div className="space-y-2">
                                             <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Features</label>
                                             <div className="space-y-2">
-                                                {plan.features.map((feature, fi) => (
+                                                {plan.features.map((feature: string, fi: number) => (
                                                     <div key={fi} className="flex items-center gap-2 group/feature">
                                                         <Check size={14} className="text-green-400 flex-shrink-0" />
                                                         <span className="text-sm text-gray-300 flex-1">{feature}</span>
@@ -1186,8 +1234,8 @@ export default function AdminDashboard() {
                                                     <Input
                                                         placeholder="Add a feature..."
                                                         value={newFeatureInputs[plan.id] || ""}
-                                                        onChange={(e) => setNewFeatureInputs(prev => ({ ...prev, [plan.id]: e.target.value }))}
-                                                        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addFeature(plan.id); } }}
+                                                        onChange={(e: any) => setNewFeatureInputs((prev: Record<string, string>) => ({ ...prev, [plan.id]: e.target.value }))}
+                                                        onKeyDown={(e: any) => { if (e.key === "Enter") { e.preventDefault(); addFeature(plan.id); } }}
                                                         className="flex-1 py-2 text-xs"
                                                     />
                                                     <button
@@ -1229,7 +1277,7 @@ export default function AdminDashboard() {
                                     { title: "Two-Factor Authentication", desc: "Require a secondary code for all admin logins.", enabled: true },
                                     { title: "Admin Login Notifications", desc: "Receive email alerts when someone logs into this panel.", enabled: true },
                                     { title: "IP Whitelisting", desc: "Restrict admin access to specific IP addresses.", enabled: false },
-                                ].map((setting, i) => (
+                                ].map((setting: any, i: number) => (
                                     <div key={i} className="flex items-center justify-between p-6">
                                         <div>
                                             <p className="font-bold">{setting.title}</p>
@@ -1258,6 +1306,6 @@ export default function AdminDashboard() {
                     </div>
                 )
             }
-        </main >
+        </div>
     );
 }

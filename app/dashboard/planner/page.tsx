@@ -8,6 +8,27 @@ import { Crown, Sparkles, ArrowUpRight, Check, Calendar, Image as ImageIcon, Sta
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 
+interface StatItem {
+    label: string;
+    value: string;
+    change: string;
+    icon: any;
+}
+
+interface BookingItem {
+    id: string;
+    title: string;
+    date: string;
+    location: string;
+    status: string;
+    eventType: string;
+}
+
+interface PlanFeature {
+    label: string;
+    enabled: boolean;
+}
+
 export default function PlannerDashboard() {
     const { showToast } = useToast();
     const [isLoading, setIsLoading] = useState(true);
@@ -32,7 +53,7 @@ export default function PlannerDashboard() {
         { label: "Rating", value: "0.0", change: "★", icon: Star },
     ]);
 
-    const [recentBookings, setRecentBookings] = useState<any[]>([]);
+    const [recentBookings, setRecentBookings] = useState<BookingItem[]>([]);
     const [recentMessages, setRecentMessages] = useState<any[]>([]);
 
     const logError = (context: string, error: any) => {
@@ -98,6 +119,27 @@ export default function PlannerDashboard() {
                 logError("Error fetching platform settings", settingsError);
             }
 
+            // Fetch Real Portfolio Image Count (two-step: get event IDs first)
+            let imageCount = 0;
+            const { data: plannerEvents } = await supabase
+                .from('events')
+                .select('id')
+                .eq('planner_id', userId);
+
+            if (plannerEvents && plannerEvents.length > 0) {
+                const eventIds = plannerEvents.map((e: any) => e.id);
+                const { count: mediaCount, error: countError } = await supabase
+                    .from('album_media')
+                    .select('id', { count: 'exact', head: true })
+                    .in('event_id', eventIds);
+
+                if (countError) {
+                    logError("Error counting portfolio images", countError);
+                } else {
+                    imageCount = mediaCount || 0;
+                }
+            }
+
             if (profile && settings) {
                 const plans = settings.subscription_plans || [];
                 const userPlan = plans.find((p: any) => p.id === (profile.plan_id || 'starter')) || plans[0];
@@ -110,7 +152,10 @@ export default function PlannerDashboard() {
                         renewalDate: profile.subscription_end_date ? new Date(profile.subscription_end_date).toLocaleDateString() : 'N/A',
                         daysLeft: profile.subscription_end_date ? Math.max(0, Math.ceil((new Date(profile.subscription_end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0,
                         usage: {
-                            portfolioImages: { used: 0, total: userPlan.id === 'starter' ? 5 : userPlan.id === 'pro' ? 25 : 999 },
+                            portfolioImages: {
+                                used: imageCount || 0,
+                                total: userPlan.imageLimit === -1 ? 999 : (userPlan.imageLimit || (userPlan.id === 'starter' ? 5 : 25))
+                            },
                             featuredListing: userPlan.features.some((f: string) => f.toLowerCase().includes('featured')),
                             analytics: userPlan.features.some((f: string) => f.toLowerCase().includes('analytics')),
                             directMessaging: userPlan.features.some((f: string) => f.toLowerCase().includes('messaging')),
@@ -119,35 +164,43 @@ export default function PlannerDashboard() {
                 }
             }
 
-            // Fetch Real Portfolio Image Count
-            const { count: imageCount } = await supabase
-                .from('album_media')
-                .select('*', { count: 'exact', head: true })
-                .eq('media_type', 'image'); // This would ideally filter by events belonging to this planner
+            // Fetch Real Stats
+            const { count: bookingsCount } = await supabase
+                .from('bookings')
+                .select('id', { count: 'exact', head: true })
+                .eq('planner_id', userId);
 
-            // Fetch Real Stats (Mocked for now until tables are populated)
-            // In a real app, these would come from bookings/analytics tables
+            const { count: viewsCount } = await supabase
+                .from('profile_views')
+                .select('id', { count: 'exact', head: true })
+                .eq('profile_id', userId);
+
             setStats([
-                { label: "Bookings", value: "0", change: "+0", icon: Calendar },
-                { label: "Profile Views", value: "0", change: "+0%", icon: TrendingUp },
+                { label: "Bookings", value: bookingsCount?.toString() || "0", change: "+0", icon: Calendar },
+                { label: "Profile Views", value: viewsCount?.toString() || "0", change: "+0%", icon: TrendingUp },
                 { label: "Revenue", value: "₦0", change: "+₦0", icon: Sparkles },
                 { label: "Rating", value: profile?.rating?.toString() || "0.0", change: "★", icon: Star },
             ]);
 
             // Fetch Recent Bookings
-            const { data: bookings } = await supabase
-                .from('bank_transfers') // Temporary use to show activity or if we have a bookings table
-                .select('*')
-                .eq('profile_id', userId)
+            const { data: bookingsData } = await supabase
+                .from('bookings')
+                .select(`
+                    *,
+                    profiles:client_id (full_name, location)
+                `)
+                .eq('planner_id', userId)
                 .order('created_at', { ascending: false })
-                .limit(3);
+                .limit(5);
 
-            if (bookings) {
-                setRecentBookings(bookings.map(b => ({
-                    title: `Plan Upgrade: ${b.target_tier}`,
+            if (bookingsData) {
+                setRecentBookings(bookingsData.map((b: any) => ({
+                    id: b.id,
+                    title: `Inquiry from ${b.profiles?.full_name || 'Client'}`,
                     date: new Date(b.created_at).toLocaleDateString(),
-                    location: "Online",
-                    status: b.status.charAt(0).toUpperCase() + b.status.slice(1)
+                    location: b.profiles?.location || "N/A",
+                    status: b.status.charAt(0).toUpperCase() + b.status.slice(1),
+                    eventType: b.event_type
                 })));
             }
 
@@ -158,24 +211,28 @@ export default function PlannerDashboard() {
     }, []);
 
     return (
-        <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-500">
+        <div className="space-y-12 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
                     <h1 className="text-4xl font-extrabold tracking-tight mb-2">Planner Dashboard</h1>
                     <p className="text-gray-400 text-sm">Manage your portfolio, bookings, and clients.</p>
                 </div>
                 <div className="flex gap-4 w-full md:w-auto">
-                    <Button variant="outline" onClick={() => showToast("Portfolio editor coming soon!", "info")}>
-                        Edit Portfolio
-                    </Button>
-                    <Button onClick={() => showToast("Booking management coming soon!", "info")}>
-                        Manage Bookings
-                    </Button>
+                    <Link href="/dashboard/planner/profile">
+                        <Button variant="outline">
+                            Edit Profile
+                        </Button>
+                    </Link>
+                    <Link href="/dashboard/planner/portfolio">
+                        <Button className="bg-blue-600 hover:bg-blue-700">
+                            Edit Portfolio
+                        </Button>
+                    </Link>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat, i) => {
+                {stats.map((stat: StatItem, i: number) => {
                     const Icon = stat.icon;
                     return (
                         <Card key={i} className={`space-y-2 group ${isLoading ? 'animate-pulse' : ''}`}>
@@ -256,7 +313,7 @@ export default function PlannerDashboard() {
                                 { label: "Featured Listing", enabled: currentPlan.usage.featuredListing },
                                 { label: "Analytics", enabled: currentPlan.usage.analytics },
                                 { label: "Direct Messaging", enabled: currentPlan.usage.directMessaging },
-                            ].map((feature, i) => (
+                            ].map((feature: PlanFeature, i: number) => (
                                 <div key={i} className="p-4 glass-panel rounded-2xl border-white/5 flex items-center gap-3">
                                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${feature.enabled ? "bg-green-500/10" : "bg-white/5"}`}>
                                         <Check size={14} className={feature.enabled ? "text-green-400" : "text-gray-600"} />
@@ -298,7 +355,7 @@ export default function PlannerDashboard() {
                             <p className="text-gray-500 text-sm animate-pulse">Loading bookings...</p>
                         ) : recentBookings.length === 0 ? (
                             <p className="text-gray-500 text-sm italic">No recent bookings found.</p>
-                        ) : recentBookings.map((booking, i) => (
+                        ) : recentBookings.map((booking: BookingItem, i: number) => (
                             <div key={i} className="flex items-center justify-between p-4 glass-panel rounded-2xl border-white/5">
                                 <div>
                                     <p className="font-bold">{booking.title}</p>
@@ -330,6 +387,6 @@ export default function PlannerDashboard() {
                     </div>
                 </Card>
             </div>
-        </main>
+        </div>
     );
 }

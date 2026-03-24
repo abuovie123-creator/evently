@@ -4,7 +4,11 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useToast } from "@/components/ui/Toast";
+import { Input } from "@/components/ui/Input";
+import { Textarea } from "@/components/ui/Textarea";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Loader2, Calendar, MapPin, Tag, Star, TrendingUp, X, Check, MessageSquare } from "lucide-react";
 
 interface PlannerProfile {
     id: string;
@@ -20,7 +24,6 @@ interface PlannerProfile {
         years: number;
         clients: number;
     };
-    // Add other properties from 'profiles' table if needed
     username: string;
     full_name: string;
     completed_events: number;
@@ -39,12 +42,22 @@ interface Album {
 }
 
 export default function PlannerProfilePage({ params }: { params: Promise<{ username: string }> }) {
-    // - [x] Connect Planner Profile page (`/planner/[username]`) to Supabase <!-- id: 4 -->
     const { username } = use(params);
+    const router = useRouter();
     const { showToast } = useToast();
     const [isLoading, setIsLoading] = useState(true);
     const [planner, setPlanner] = useState<PlannerProfile | null>(null);
     const [albums, setAlbums] = useState<Album[]>([]);
+    const [hasApprovedBooking, setHasApprovedBooking] = useState(false);
+
+    // Booking Form States
+    const [showBookingModal, setShowBookingModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [bookingData, setBookingData] = useState({
+        eventDate: "",
+        eventType: "Wedding",
+        message: ""
+    });
 
     const logError = (context: string, error: any) => {
         console.error(`${context} (Raw):`, error);
@@ -60,6 +73,10 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 Object.getOwnPropertyNames(error).forEach(key => {
                     errorDetails[key] = (error as any)[key];
                 });
+                if ((error as any).message) errorDetails.message = (error as any).message;
+                if ((error as any).code) errorDetails.code = (error as any).code;
+                if ((error as any).details) errorDetails.details = (error as any).details;
+                if ((error as any).hint) errorDetails.hint = (error as any).hint;
             }
             console.error(`${context} (Detailed):`, errorDetails);
         } catch (err) {
@@ -124,11 +141,86 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 })));
             }
 
+            // 3. Check for approved booking to enable chat
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user && profile.id !== user.id) {
+                const { data: booking } = await supabase
+                    .from('bookings')
+                    .select('id')
+                    .eq('client_id', user.id)
+                    .eq('planner_id', profile.id)
+                    .eq('status', 'approved')
+                    .maybeSingle();
+
+                if (booking) {
+                    setHasApprovedBooking(true);
+                }
+            }
+
             setIsLoading(false);
         };
 
         fetchPlannerData();
     }, [username]);
+
+    // Track Profile View
+    useEffect(() => {
+        if (!planner || isLoading) return;
+
+        const trackView = async () => {
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+
+            await supabase
+                .from('profile_views')
+                .insert({
+                    profile_id: planner.id,
+                    viewer_id: session?.user.id || null
+                });
+        };
+
+        trackView();
+    }, [planner?.id, isLoading]);
+
+    const handleBookingSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) {
+            showToast("Please login to send a booking request", "error");
+            return;
+        }
+
+        if (session.user.id === planner?.id) {
+            showToast("You cannot book yourself!", "error");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const { error } = await supabase
+                .from('bookings')
+                .insert({
+                    client_id: session.user.id,
+                    planner_id: planner?.id,
+                    event_date: bookingData.eventDate,
+                    event_type: bookingData.eventType,
+                    message: bookingData.message,
+                    status: 'pending'
+                });
+
+            if (error) throw error;
+
+            showToast("Booking request sent successfully!", "success");
+            setShowBookingModal(false);
+            setBookingData({ eventDate: "", eventType: "Wedding", message: "" });
+        } catch (error: any) {
+            showToast(error.message || "Failed to send request", "error");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     if (isLoading) return (
         <div className="min-h-screen flex items-center justify-center bg-black">
@@ -147,9 +239,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
 
     return (
         <main className="min-h-screen bg-black text-white">
-            {/* Hero Header */}
             <div className="relative">
-                {/* Background Container - Clipped */}
                 <div className="relative h-[250px] md:h-[350px] w-full overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-black/60 to-black z-10" />
                     <img
@@ -159,7 +249,6 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                     />
                 </div>
 
-                {/* Profile Info Container - Not Clipped */}
                 <div className="absolute inset-x-0 bottom-0 z-20 max-w-7xl mx-auto px-6 md:px-8 translate-y-1/2">
                     <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8">
                         <div className="w-32 h-32 md:w-44 md:h-44 rounded-2xl overflow-hidden border-4 border-black shadow-2xl glass-panel shrink-0">
@@ -175,16 +264,104 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                             <p className="text-lg md:text-xl text-gray-300 font-medium">{planner.category}</p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-4 md:mt-0 pb-0 md:pb-4">
-                            <Button size="lg" className="w-full sm:w-auto shadow-2xl">Book Now</Button>
-                            <Button variant="glass" size="lg" className="w-full sm:w-auto">Chat</Button>
+                            <Button size="lg" className="w-full sm:w-auto shadow-2xl" onClick={() => setShowBookingModal(true)}>Book Now</Button>
+                            <Button
+                                variant="glass"
+                                size="lg"
+                                className="w-full sm:w-auto"
+                                onClick={() => {
+                                    if (hasApprovedBooking) {
+                                        router.push("/dashboard/messages");
+                                    } else {
+                                        showToast("Chat becomes available once your booking is approved!", "info");
+                                    }
+                                }}
+                            >
+                                <MessageSquare size={18} className="mr-2" />
+                                Chat
+                            </Button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Main Content */}
+            {showBookingModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => !isSubmitting && setShowBookingModal(false)} />
+                    <Card className="relative w-full max-w-lg p-8 space-y-8 animate-in zoom-in-95 duration-300 border-white/10" hover={false}>
+                        <div className="flex justify-between items-start">
+                            <div className="space-y-1">
+                                <h3 className="text-2xl font-black">Inquire with {planner.name}</h3>
+                                <p className="text-gray-400 text-sm">Tell them about your next big event.</p>
+                            </div>
+                            <button onClick={() => setShowBookingModal(false)} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-gray-400">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleBookingSubmit} className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Event Type</label>
+                                    <select
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none appearance-none"
+                                        value={bookingData.eventType}
+                                        onChange={(e) => setBookingData({ ...bookingData, eventType: e.target.value })}
+                                        required
+                                    >
+                                        <option value="Wedding" className="bg-gray-900">Wedding</option>
+                                        <option value="Corporate" className="bg-gray-900">Corporate</option>
+                                        <option value="Birthday" className="bg-gray-900">Birthday</option>
+                                        <option value="Concert" className="bg-gray-900">Concert</option>
+                                        <option value="Other" className="bg-gray-900">Other</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Event Date</label>
+                                    <Input
+                                        type="date"
+                                        value={bookingData.eventDate}
+                                        onChange={(e) => setBookingData({ ...bookingData, eventDate: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Your Message</label>
+                                <Textarea
+                                    placeholder="Briefly describe your event needs..."
+                                    value={bookingData.message}
+                                    onChange={(e) => setBookingData({ ...bookingData, message: e.target.value })}
+                                    className="min-h-[120px]"
+                                    required
+                                />
+                            </div>
+
+                            <div className="flex gap-4 pt-4 border-t border-white/5">
+                                <Button
+                                    variant="outline"
+                                    className="flex-1"
+                                    type="button"
+                                    onClick={() => setShowBookingModal(false)}
+                                    disabled={isSubmitting}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : "Send Inquiry"}
+                                </Button>
+                            </div>
+                        </form>
+                    </Card>
+                </div>
+            )}
+
             <div className="max-w-7xl mx-auto px-6 md:px-8 pt-32 md:pt-40 pb-20 grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-12">
-                {/* Left Column: Details */}
                 <div className="lg:col-span-1 space-y-12">
                     <div className="space-y-4">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500">About Me</h3>
@@ -213,7 +390,6 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                     </div>
                 </div>
 
-                {/* Right Column: Portfolio Albums */}
                 <div className="lg:col-span-2 space-y-8">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                         <h2 className="text-2xl md:text-3xl font-bold">Featured Albums</h2>

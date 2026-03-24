@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="16" cy="16" r="16" fill="#2563EB"/>
+  <!-- Festive Sparkle instead of "E" -->
+  <path d="M16 8L17 14L23 15L17 16L16 22L15 16L9 15L15 14L16 8Z" fill="white">
+    <animate attributeName="opacity" values="1;0.7;1" dur="3s" repeatCount="indefinite" />
+  </path>
+  <path d="M24 6L24.5 8L26.5 8.5L24.5 9L24 11L23.5 9L21.5 8.5L23.5 8L24 6Z" fill="#FACC15">
+    <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" />
+  </path>
+</svg>
