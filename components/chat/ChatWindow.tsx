@@ -68,9 +68,9 @@ export function ChatWindow({
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white"><Phone size={16} /></Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-white"><Video size={16} /></Button>
-                    <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 text-gray-400 hover:text-white"><X size={16} /></Button>
+                    <Button variant="glass" size="sm" className="h-8 w-8 bg-transparent border-transparent shadow-none text-gray-400 hover:text-white hover:bg-white/10"><Phone size={16} /></Button>
+                    <Button variant="glass" size="sm" className="h-8 w-8 bg-transparent border-transparent shadow-none text-gray-400 hover:text-white hover:bg-white/10"><Video size={16} /></Button>
+                    <Button variant="glass" size="sm" onClick={onClose} className="h-8 w-8 bg-transparent border-transparent shadow-none text-gray-400 hover:text-white hover:bg-white/10"><X size={16} /></Button>
                 </div>
             </div>
 
@@ -87,8 +87,8 @@ export function ChatWindow({
                     return (
                         <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2`}>
                             <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${isMe
-                                    ? "bg-blue-600 text-white rounded-tr-none"
-                                    : "bg-white/10 text-gray-200 rounded-tl-none border border-white/5"
+                                ? "bg-blue-600 text-white rounded-tr-none"
+                                : "bg-white/10 text-gray-200 rounded-tl-none border border-white/5"
                                 }`}>
                                 <p>{msg.content}</p>
                                 <div className={`flex items-center gap-1 mt-1 justify-end opacity-50 text-[9px]`}>
@@ -135,7 +135,7 @@ export function ChatWindow({
                         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                     />
                     <Button
-                        size="icon"
+                        size="sm"
                         onClick={handleSend}
                         className="h-11 w-11 rounded-xl bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20"
                         disabled={!input.trim()}

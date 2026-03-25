@@ -1,9 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
-import { CheckCircle, AlertCircle, X } from "lucide-react";
+import { CheckCircle, AlertCircle, AlertTriangle, X } from "lucide-react";
 
-type ToastType = "success" | "error" | "info";
+export type ToastType = "success" | "error" | "info" | "warning";
 
 interface Toast {
     id: number;
@@ -42,11 +42,14 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                         className="pointer-events-auto animate-in slide-in-from-right-8 fade-in duration-300"
                     >
                         <div className={`flex items-center gap-3 p-4 rounded-2xl glass-panel border ${toast.type === "success" ? "border-green-500/20 bg-green-500/10" :
-                                toast.type === "error" ? "border-red-500/20 bg-red-500/10" :
+                            toast.type === "error" ? "border-red-500/20 bg-red-500/10" :
+                                toast.type === "warning" ? "border-yellow-500/20 bg-yellow-500/10" :
                                     "border-blue-500/20 bg-blue-500/10"
                             } shadow-2xl min-w-[300px]`}>
                             {toast.type === "success" && <CheckCircle className="text-green-500" size={20} />}
                             {toast.type === "error" && <AlertCircle className="text-red-500" size={20} />}
+                            {toast.type === "warning" && <AlertTriangle className="text-yellow-500" size={20} />}
+                            {toast.type === "info" && <AlertCircle className="text-blue-500" size={20} />}
                             <p className="flex-1 text-sm font-medium text-white">{toast.message}</p>
                             <button onClick={() => removeToast(toast.id)} className="text-gray-500 hover:text-white transition-colors">
                                 <X size={16} />

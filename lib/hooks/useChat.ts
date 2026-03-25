@@ -19,6 +19,8 @@ export interface Conversation {
     last_message_at: string;
     other_party_name?: string;
     other_party_avatar?: string;
+    other_party_role?: string;
+    other_party_last_seen?: string;
 }
 
 export function useChat(conversationId: string | null) {

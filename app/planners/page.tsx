@@ -160,7 +160,7 @@ export default function PlannersPage() {
                     {categories.slice(0, 3).map(cat => (
                         <Button
                             key={cat}
-                            variant={selectedCategory === cat ? "default" : "glass"}
+                            variant={selectedCategory === cat ? "primary" : "glass"}
                             size="sm"
                             className="flex-shrink-0"
                             onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
