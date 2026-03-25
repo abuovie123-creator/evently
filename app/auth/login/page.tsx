@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -65,6 +66,10 @@ export default function LoginPage() {
         setError(null);
 
         const supabase = createClient();
+
+        // Ensure a clean session for every login
+        await supabase.auth.signOut();
+
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
             email,
             password,
@@ -141,14 +146,7 @@ export default function LoginPage() {
     };
 
     if (isRedirecting) {
-        return (
-            <div className="min-h-screen flex items-center justify-center p-6 text-center">
-                <div className="space-y-4">
-                    <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin mx-auto" />
-                    <p className="text-gray-400 font-medium">Redirecting you to your dashboard...</p>
-                </div>
-            </div>
-        );
+        return <LoadingScreen message="Welcome back" subMessage="Preparing your dashboard..." />;
     }
 
     return (

@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
 
 import { useOnlineStatus } from "@/lib/hooks/useOnlineStatus";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export default function DashboardLayout({
     children,
@@ -44,15 +45,11 @@ export default function DashboardLayout({
     }, [router, supabase.auth, showToast]);
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-black">
-                <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-        );
+        return <LoadingScreen message="Welcome back" subMessage="Preparing your desk..." />;
     }
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 overflow-x-hidden">
+        <div className="min-h-screen bg-background text-foreground selection:bg-blue-500/30 overflow-x-hidden transition-colors duration-500">
             <DashboardSidebar />
             <main className="md:pl-72 transition-all duration-300 overflow-x-hidden">
                 <div className="p-4 md:p-8 max-w-7xl mx-auto pb-24 md:pb-8">

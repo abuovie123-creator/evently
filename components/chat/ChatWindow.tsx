@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Send, MoreVertical, Phone, Video, X, Check, CheckCheck, Loader2 } from "lucide-react";
+import { Send, MoreVertical, Phone, Video, X, Check, CheckCheck, Loader2, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useChat, Message } from "@/lib/hooks/useChat";
@@ -52,25 +52,23 @@ export function ChatWindow({
     const isOnline = recipientLastSeen && (new Date().getTime() - new Date(recipientLastSeen).getTime() < 60000); // Online if seen in last 1 min
 
     return (
-        <Card className="flex flex-col h-[600px] w-full max-w-md bg-black/90 backdrop-blur-2xl border-white/10 shadow-2xl rounded-[2rem] overflow-hidden animate-in fade-in zoom-in duration-300">
+        <Card className="flex flex-col h-[calc(100vh-14rem)] md:h-[600px] w-full max-w-2xl bg-background/80 dark:bg-black/90 backdrop-blur-2xl border-foreground/10 shadow-2xl rounded-t-[2rem] md:rounded-[2rem] overflow-hidden animate-in fade-in zoom-in duration-300">
             {/* Header */}
-            <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+            <div className="p-4 border-b border-foreground/5 flex items-center justify-between bg-foreground/[0.02]">
                 <div className="flex items-center gap-3">
                     <div className="relative">
                         <img src={recipientAvatar} className="w-10 h-10 rounded-full object-cover" alt={recipientName} />
-                        {isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-black rounded-full" />}
+                        {isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />}
                     </div>
                     <div>
-                        <h3 className="text-sm font-bold text-white leading-none">{recipientName}</h3>
-                        <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-black">
+                        <h3 className="text-sm font-bold text-foreground leading-none">{recipientName}</h3>
+                        <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-widest font-black">
                             {isOnline ? "Online" : "Away"} • {recipientRole}
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="glass" size="sm" className="h-8 w-8 bg-transparent border-transparent shadow-none text-gray-400 hover:text-white hover:bg-white/10"><Phone size={16} /></Button>
-                    <Button variant="glass" size="sm" className="h-8 w-8 bg-transparent border-transparent shadow-none text-gray-400 hover:text-white hover:bg-white/10"><Video size={16} /></Button>
-                    <Button variant="glass" size="sm" onClick={onClose} className="h-8 w-8 bg-transparent border-transparent shadow-none text-gray-400 hover:text-white hover:bg-white/10"><X size={16} /></Button>
+                    <Button variant="glass" size="sm" onClick={onClose} className="h-8 w-8 bg-transparent border-transparent shadow-none text-muted-foreground hover:text-foreground hover:bg-foreground/10"><X size={16} /></Button>
                 </div>
             </div>
 
@@ -86,9 +84,9 @@ export function ChatWindow({
                     const isMe = msg.sender_id === currentUserId;
                     return (
                         <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2`}>
-                            <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${isMe
+                            <div className={`max-w-[85%] md:max-w-[80%] p-3 rounded-2xl text-sm ${isMe
                                 ? "bg-blue-600 text-white rounded-tr-none"
-                                : "bg-white/10 text-gray-200 rounded-tl-none border border-white/5"
+                                : "bg-foreground/10 text-foreground rounded-tl-none border border-foreground/5"
                                 }`}>
                                 <p>{msg.content}</p>
                                 <div className={`flex items-center gap-1 mt-1 justify-end opacity-50 text-[9px]`}>
@@ -104,32 +102,32 @@ export function ChatWindow({
                 {otherPartyTyping && (
                     <div className="flex items-end gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
                         <div className="relative group">
-                            {/* Avatar "holding phone" peek */}
+                            {/* Avatar peek */}
                             <img
                                 src={recipientAvatar}
-                                className="w-6 h-6 rounded-full object-cover border border-white/20 translate-y-1"
+                                className="w-6 h-6 rounded-full object-cover border border-foreground/20 translate-y-1"
                                 alt="typing avatar"
                             />
                             <div className="absolute -top-1 -right-1">
-                                <Phone size={8} className="text-blue-400 animate-bounce" />
+                                <MessageSquare size={8} className="text-blue-400 animate-bounce" />
                             </div>
                         </div>
-                        <div className="bg-white/5 border border-white/10 p-2 px-3 rounded-2xl rounded-bl-none flex gap-1 items-center">
-                            <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                            <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                            <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></span>
+                        <div className="bg-foreground/5 border border-foreground/10 p-2 px-3 rounded-2xl rounded-bl-none flex gap-1 items-center">
+                            <span className="w-1 h-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                            <span className="w-1 h-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                            <span className="w-1 h-1 bg-muted-foreground rounded-full animate-bounce"></span>
                         </div>
                     </div>
                 )}
             </div>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-white/5 bg-white/[0.01]">
+            <div className="p-4 border-t border-foreground/5 bg-foreground/[0.01] pb-8 md:pb-4">
                 <div className="relative flex items-center gap-2">
                     <input
                         type="text"
                         placeholder="Type a message..."
-                        className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-blue-500/50 transition-all"
+                        className="flex-1 bg-foreground/5 border border-foreground/10 rounded-2xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-blue-500/50 transition-all"
                         value={input}
                         onChange={handleInputChange}
                         onKeyPress={(e) => e.key === 'Enter' && handleSend()}

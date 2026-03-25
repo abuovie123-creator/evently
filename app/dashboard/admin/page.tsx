@@ -11,6 +11,7 @@ import {
     Settings,
     Search,
     MoreVertical,
+    Shield,
     ShieldAlert,
     Trash2,
     Upload,
@@ -226,6 +227,7 @@ export default function AdminDashboard() {
                 if (psData.branding) setBranding(psData.branding);
                 if (psData.features) setFeatures(psData.features);
                 if (psData.gateway_keys) setGatewayKeys(psData.gateway_keys);
+                if (psData.admin_username) setAdminUserUpdate(psData.admin_username);
                 if (psData.subscription_plans) setPlans(psData.subscription_plans.map((p: any) => ({
                     ...p,
                     isEditing: false,
@@ -299,7 +301,21 @@ export default function AdminDashboard() {
         };
 
         fetchDashboardData();
-    }, []);
+
+        // Handle URL hash for tab switching
+        const handleHashChange = () => {
+            const hash = window.location.hash.replace('#', '');
+            if (['overview', 'branding', 'users', 'payments', 'settings'].includes(hash)) {
+                setActiveTab(hash as any);
+                // Also scroll to top if it's a tab switch
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        };
+
+        handleHashChange();
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, [router, showToast]);
 
     const saveSettings = async (type: 'branding' | 'features' | 'gateways' | 'plans') => {
         setIsSaving(true);
@@ -1270,6 +1286,91 @@ export default function AdminDashboard() {
             {
                 activeTab === "settings" && (
                     <div className="max-w-3xl space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <section className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-xl font-bold">Admin Credentials</h3>
+                                <div className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-1 rounded-full uppercase tracking-widest border border-blue-500/20">
+                                    Secure Access
+                                </div>
+                            </div>
+                            <Card className="p-8 space-y-8" hover={false}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-1">Admin Username</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-400 transition-colors">
+                                                <Users size={16} />
+                                            </div>
+                                            <Input
+                                                placeholder="admin"
+                                                className="pl-12 bg-white/5 border-white/10 focus:border-blue-500/50 transition-all h-12 rounded-xl"
+                                                value={adminUserUpdate}
+                                                onChange={(e) => setAdminUserUpdate(e.target.value)}
+                                            />
+                                        </div>
+                                        <p className="text-[10px] text-gray-500 ml-1 italic">This is the username used at the admin login portal.</p>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-1">New Password</label>
+                                        <div className="relative group">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-red-400 transition-colors">
+                                                <Shield size={16} />
+                                            </div>
+                                            <Input
+                                                type="password"
+                                                placeholder="••••••••"
+                                                className="pl-12 bg-white/5 border-white/10 focus:border-red-500/50 transition-all h-12 rounded-xl"
+                                                value={adminPassUpdate}
+                                                onChange={(e) => setAdminPassUpdate(e.target.value)}
+                                            />
+                                        </div>
+                                        <p className="text-[10px] text-gray-500 ml-1 italic">Leave blank to keep current password.</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-end pt-4 border-t border-white/5">
+                                    <Button
+                                        onClick={async () => {
+                                            setIsSaving(true);
+                                            const supabase = createClient();
+
+                                            // 1. Update Username in platform_settings
+                                            const { error: nameError } = await supabase
+                                                .from('platform_settings')
+                                                .upsert({ id: 'default', admin_username: adminUserUpdate });
+
+                                            if (nameError) {
+                                                showToast("Failed to update admin username", "error");
+                                                setIsSaving(false);
+                                                return;
+                                            }
+
+                                            // 2. Update Password via Supabase Auth if provided
+                                            if (adminPassUpdate) {
+                                                const { error: passError } = await supabase.auth.updateUser({
+                                                    password: adminPassUpdate
+                                                });
+                                                if (passError) {
+                                                    showToast(`Password update failed: ${passError.message}`, "error");
+                                                    setIsSaving(false);
+                                                    return;
+                                                }
+                                                setAdminPassUpdate(""); // Clear password field
+                                            }
+
+                                            showToast("Admin credentials updated successfully", "success");
+                                            setIsSaving(false);
+                                        }}
+                                        disabled={isSaving}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white min-w-[140px]"
+                                    >
+                                        {isSaving ? "Updating..." : "Update Credentials"}
+                                    </Button>
+                                </div>
+                            </Card>
+                        </section>
+
                         <section className="space-y-6">
                             <h3 className="text-xl font-bold">Security & Access</h3>
                             <Card className="divide-y divide-white/5 p-0" hover={false}>

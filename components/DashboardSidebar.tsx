@@ -28,6 +28,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "./ui/Toast";
 import { ThemeToggle } from "./ThemeToggle";
+import { LoadingScreen } from "./ui/LoadingScreen";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
     hover?: boolean;
@@ -56,6 +57,7 @@ export function DashboardSidebar() {
     const [role, setRole] = useState<string | null>(null);
     const [user, setUser] = useState<any>(null);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     const supabase = createClient();
 
@@ -112,9 +114,18 @@ export function DashboardSidebar() {
     };
 
     const handleSignOut = async () => {
-        await supabase.auth.signOut();
-        showToast("Logged out successfully");
-        router.push("/");
+        setIsLoggingOut(true);
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error("Logout error:", error);
+            showToast("Logout failed", "error");
+            setIsLoggingOut(false);
+            return;
+        }
+
+        showToast("Logged out successfully", "success");
+        // Force a full page reload to clear all states reliably
+        window.location.href = "/";
     };
 
     const navGroups: Record<string, NavItem[]> = {
@@ -180,13 +191,13 @@ export function DashboardSidebar() {
     const currentNav = role ? navGroups[role as keyof typeof navGroups] : [];
 
     const SidebarContent = () => (
-        <div className="flex flex-col h-full bg-black/40 backdrop-blur-xl dark:border-white/5 border-black/5 border-r py-8 px-4">
+        <div className="flex flex-col h-full bg-background/90 dark:bg-black/40 backdrop-blur-xl border-r border-foreground/5 py-8 px-4 transition-colors duration-500">
             <div className="px-4 mb-10 flex items-center justify-between">
                 <div>
-                    <Link href="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-white dark:from-blue-400 dark:to-white from-blue-600 to-blue-400">
+                    <Link href="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-white">
                         Evently
                     </Link>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1 font-bold">
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1 font-bold">
                         {role} portal
                     </p>
                 </div>
@@ -208,21 +219,21 @@ export function DashboardSidebar() {
                             {hasSubItems ? (
                                 <button
                                     onClick={() => toggleSubMenu(item.label)}
-                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 group ${isOpen ? 'bg-white/5 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 group ${isOpen ? 'bg-foreground/5 text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'}`}
                                 >
                                     <div className="flex items-center gap-3">
                                         <item.icon size={18} className={isOpen ? 'text-blue-400' : 'group-hover:text-blue-400 transition-colors'} />
                                         <span>{item.label}</span>
                                     </div>
-                                    {isOpen ? <ChevronDown size={14} className="text-gray-600" /> : <ChevronRight size={14} className="text-gray-600" />}
+                                    {isOpen ? <ChevronDown size={14} className="text-muted-foreground/60" /> : <ChevronRight size={14} className="text-muted-foreground/60" />}
                                 </button>
                             ) : (
                                 <Link
                                     href={item.href || "#"}
                                     onClick={() => setIsMobileOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 group ${isActive ? 'bg-blue-600 text-white shadow-[0_8px_20px_-4px_rgba(37,99,235,0.4)]' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 group ${isActive ? 'bg-blue-600 text-white shadow-[0_8px_20px_-4px_rgba(37,99,235,0.4)]' : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'}`}
                                 >
-                                    <div className={`p-2 rounded-xl transition-colors ${isActive ? 'bg-white/20' : 'bg-white/5 group-hover:bg-white/10'}`}>
+                                    <div className={`p-2 rounded-xl transition-colors ${isActive ? 'bg-white/20' : 'bg-foreground/5 group-hover:bg-foreground/10'}`}>
                                         <item.icon size={18} className={isActive ? 'text-white' : 'group-hover:text-blue-400 transition-colors'} />
                                     </div>
                                     <div className="flex-1 flex items-center justify-between">
@@ -243,7 +254,7 @@ export function DashboardSidebar() {
                                             key={sub.label}
                                             href={sub.href}
                                             onClick={() => setIsMobileOpen(false)}
-                                            className={`block py-2 text-xs transition-colors relative before:absolute before:left-[-16px] before:top-1/2 before:w-1.5 before:h-1.5 before:rounded-full before:-translate-y-1/2 before:transition-all ${pathname === sub.href ? 'text-blue-400 font-bold before:bg-blue-400' : 'text-gray-500 hover:text-white before:bg-white/10 hover:before:bg-blue-400/40'}`}
+                                            className={`block py-2 text-xs transition-colors relative before:absolute before:left-[-16px] before:top-1/2 before:w-1.5 before:h-1.5 before:rounded-full before:-translate-y-1/2 before:transition-all ${pathname === sub.href ? 'text-blue-500 dark:text-blue-400 font-bold before:bg-blue-500 dark:before:bg-blue-400' : 'text-muted-foreground hover:text-foreground before:bg-foreground/10 hover:before:bg-blue-500/40'}`}
                                         >
                                             {sub.label}
                                         </Link>
@@ -255,17 +266,17 @@ export function DashboardSidebar() {
                 })}
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-white/5 px-4 space-y-3">
+            <div className="mt-auto pt-6 border-t border-foreground/5 px-4 space-y-3">
                 <div className="mb-2 pl-1">
                     <ThemeToggle />
                 </div>
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm border border-foreground/10">
                         {user?.email?.[0].toUpperCase() || "U"}
                     </div>
                     <div className="overflow-hidden">
-                        <p className="text-xs font-bold truncate text-white">{user?.email}</p>
-                        <p className="text-[10px] text-gray-500 capitalize">{role}</p>
+                        <p className="text-xs font-bold truncate text-foreground">{user?.email}</p>
+                        <p className="text-[10px] text-muted-foreground capitalize">{role}</p>
                     </div>
                 </div>
                 <button
@@ -296,7 +307,7 @@ export function DashboardSidebar() {
 
             {/* Mobile Sidebar Overlay */}
             <div className={`md:hidden fixed inset-0 z-[60] transition-opacity duration-300 ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-                <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsMobileOpen(false)} />
+                <div className="absolute inset-0 bg-foreground/10 dark:bg-black/80 backdrop-blur-md" onClick={() => setIsMobileOpen(false)} />
                 <div className={`absolute top-0 left-0 bottom-0 w-80 transform transition-transform duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <SidebarContent />
                     {/* Burst decoration */}
@@ -309,6 +320,10 @@ export function DashboardSidebar() {
                     <X size={24} />
                 </button>
             </div>
+
+            {isLoggingOut && (
+                <LoadingScreen message="Logging you out..." subMessage="See you soon!!" />
+            )}
         </>
     );
 }

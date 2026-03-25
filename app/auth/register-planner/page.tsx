@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export default function PlannerRegisterPage() {
     const [step, setStep] = useState(1);
@@ -19,6 +20,7 @@ export default function PlannerRegisterPage() {
         eventTypes: [] as string[],
     });
     const [loading, setLoading] = useState(false);
+    const [isRedirecting, setIsRedirecting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
@@ -78,8 +80,14 @@ export default function PlannerRegisterPage() {
             return;
         }
 
+        setIsRedirecting(true);
+        router.refresh();
         router.push("/dashboard/planner");
     };
+
+    if (isRedirecting) {
+        return <LoadingScreen message="Creating your dashboard..." subMessage="Get ready!!" />;
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center p-6 pt-32">

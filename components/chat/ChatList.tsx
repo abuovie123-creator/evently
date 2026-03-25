@@ -72,20 +72,20 @@ export function ChatList({ currentUserId, onSelectConversation, activeId }: Chat
     );
 
     return (
-        <div className="flex flex-col h-full bg-black/40 backdrop-blur-xl border-r border-white/5 w-full md:w-80">
+        <div className="flex flex-col h-full bg-background/50 dark:bg-black/40 backdrop-blur-xl border-r border-foreground/5 w-full md:w-80">
             <div className="p-6 space-y-4">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-black tracking-tight text-white">Messages</h2>
+                    <h2 className="text-xl font-black tracking-tight text-foreground">Messages</h2>
                     <div className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
                         {conversations.length}
                     </div>
                 </div>
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={14} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
                     <input
                         type="text"
                         placeholder="Search chats..."
-                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-blue-500/50 transition-all"
+                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl pl-9 pr-4 py-2 text-xs text-foreground focus:outline-none focus:border-blue-500/50 transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -97,18 +97,18 @@ export function ChatList({ currentUserId, onSelectConversation, activeId }: Chat
                     <div className="p-6 space-y-4">
                         {[1, 2, 3].map(i => (
                             <div key={i} className="flex gap-3 animate-pulse">
-                                <div className="w-12 h-12 bg-white/5 rounded-full" />
+                                <div className="w-12 h-12 bg-foreground/5 rounded-full" />
                                 <div className="flex-1 space-y-2 py-1">
-                                    <div className="h-3 bg-white/5 rounded w-3/4" />
-                                    <div className="h-2 bg-white/5 rounded w-1/2" />
+                                    <div className="h-3 bg-foreground/5 rounded w-3/4" />
+                                    <div className="h-2 bg-foreground/5 rounded w-1/2" />
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : filtered.length === 0 ? (
                     <div className="p-12 text-center space-y-3">
-                        <MessageSquare className="mx-auto text-gray-700" size={32} />
-                        <p className="text-xs text-gray-500 font-medium">No messages yet</p>
+                        <MessageSquare className="mx-auto text-muted-foreground/30" size={32} />
+                        <p className="text-xs text-muted-foreground font-medium">No messages yet</p>
                     </div>
                 ) : (
                     <div className="px-2 space-y-1">
@@ -117,26 +117,26 @@ export function ChatList({ currentUserId, onSelectConversation, activeId }: Chat
                                 key={conv.id}
                                 onClick={() => onSelectConversation(conv)}
                                 className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all group ${activeId === conv.id
-                                        ? "bg-blue-600/10 border border-blue-600/20"
-                                        : "hover:bg-white/5 border border-transparent"
+                                    ? "bg-blue-600/10 border border-blue-600/20"
+                                    : "hover:bg-foreground/5 border border-transparent"
                                     }`}
                             >
                                 <div className="relative shrink-0">
                                     <img src={conv.other_party_avatar} className="w-12 h-12 rounded-full object-cover" alt="" />
                                     {conv.other_party_last_seen && (new Date().getTime() - new Date(conv.other_party_last_seen).getTime() < 60000) && (
-                                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#1a1a1a] rounded-full" />
+                                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
                                     )}
                                 </div>
                                 <div className="flex-1 text-left min-w-0">
                                     <div className="flex justify-between items-start mb-0.5">
-                                        <h4 className="text-sm font-bold text-white truncate">{conv.other_party_name}</h4>
+                                        <h4 className="text-sm font-bold text-foreground truncate">{conv.other_party_name}</h4>
                                         {conv.last_message_at && (
                                             <span className="text-[9px] text-gray-500 shrink-0 mt-0.5 font-medium">
                                                 {new Date(conv.last_message_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-xs text-gray-500 truncate font-light">
+                                    <p className="text-xs text-muted-foreground truncate font-light">
                                         {conv.last_message || `Start a conversation...`}
                                     </p>
                                 </div>

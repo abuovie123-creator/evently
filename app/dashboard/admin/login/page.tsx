@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
 
 export default function AdminLoginPage() {
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -44,8 +44,24 @@ export default function AdminLoginPage() {
         setError(null);
 
         const supabase = createClient();
+
+        // 1. Clear any existing "client" session to prevent interference
+        await supabase.auth.signOut();
+
+        // 2. Fetch the current authorized admin username from platform_settings
+        const { data: psData } = await supabase
+            .from('platform_settings')
+            .select('admin_username')
+            .eq('id', 'default')
+            .single();
+
+        const authorizedUsername = psData?.admin_username || 'admin';
+
+        // 3. Map username to internal admin email
+        const loginEmail = username === authorizedUsername ? 'admin@evently.com' : username;
+
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
-            email,
+            email: loginEmail,
             password,
         });
 
@@ -63,7 +79,8 @@ export default function AdminLoginPage() {
                 .single();
 
             if (profileError || profile?.role !== 'admin') {
-                setError("Access Denied: You do not have administrator privileges.");
+                setError("Access Denied: This account is not authorized for Admin Access. Please use the dedicated 'admin' account.");
+                showToast("Logging out incompatible session...", "info");
                 await supabase.auth.signOut();
                 setLoading(false);
                 return;
@@ -87,25 +104,25 @@ export default function AdminLoginPage() {
                         <ShieldCheck size={40} className="text-white animate-pulse" />
                     </div>
                     <h1 className="text-3xl font-extrabold tracking-tight text-white capitalize">Admin Access</h1>
-                    <p className="text-gray-500 text-sm max-w-[280px] mx-auto leading-relaxed">
-                        Authorized personnel only. Please verify your identity to enter the Command Center.
+                    <p className="text-gray-500 text-sm max-w-[320px] mx-auto leading-relaxed">
+                        Authorized personnel only. Admin accounts must be separate from regular user accounts.
                     </p>
                 </div>
 
                 <Card className="p-10 bg-black/40 backdrop-blur-3xl border-white/5 shadow-2xl space-y-8" hover={false}>
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-1">Admin Identity</label>
+                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-1">Admin Username</label>
                             <div className="relative group">
                                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-400 transition-colors">
-                                    <Mail size={18} />
+                                    <Users size={18} />
                                 </div>
-                                <Input
-                                    type="email"
-                                    placeholder="admin@evently.com"
-                                    className="pl-12 bg-white/5 border-white/10 focus:border-indigo-500/50 transition-all h-14 rounded-2xl"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                <input
+                                    type="text"
+                                    placeholder="admin"
+                                    className="w-full flex h-14 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-50 pl-12 focus:border-indigo-500/50 transition-all font-medium text-white"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
                                     required
                                 />
                             </div>

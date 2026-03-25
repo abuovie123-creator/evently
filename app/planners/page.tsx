@@ -83,14 +83,14 @@ export default function PlannersPage() {
             {/* Header section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
                 <div className="space-y-4">
-                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white">Find Your <span className="text-blue-500">Expert</span></h1>
-                    <p className="text-gray-400 text-lg max-w-lg font-light leading-relaxed">Connect with the most creative event professionals to bring your vision to life.</p>
+                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground">Find Your <span className="text-blue-500">Expert</span></h1>
+                    <p className="text-muted-foreground text-lg max-w-lg font-light leading-relaxed">Connect with the most creative event professionals to bring your vision to life.</p>
                 </div>
                 <div className="w-full md:w-[450px] relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors" size={20} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-blue-500 transition-colors" size={20} />
                     <Input
                         placeholder="Search by name, category or city..."
-                        className="pl-14 h-16 bg-white/5 border-white/10 rounded-2xl focus:border-blue-500/50 shadow-2xl"
+                        className="pl-14 h-16 bg-foreground/5 border-foreground/10 rounded-2xl focus:border-blue-500/50 shadow-2xl"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -102,7 +102,7 @@ export default function PlannersPage() {
                 <div className="hidden lg:block lg:col-span-3 space-y-10">
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Categories</h3>
+                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Categories</h3>
                             {(selectedCategory || selectedLocation) && (
                                 <button
                                     onClick={() => { setSelectedCategory(null); setSelectedLocation(null); }}
@@ -118,8 +118,8 @@ export default function PlannersPage() {
                                     key={cat}
                                     onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
                                     className={`text-left px-4 py-3 rounded-xl transition-all text-sm font-medium border ${selectedCategory === cat
-                                        ? "bg-blue-600/10 border-blue-500/50 text-blue-400"
-                                        : "bg-white/5 border-transparent text-gray-400 hover:bg-white/10"
+                                        ? "bg-blue-600/10 border-blue-500/50 text-blue-500 underline decoration-2 underline-offset-4"
+                                        : "bg-foreground/5 border-transparent text-muted-foreground hover:bg-foreground/10"
                                         }`}
                                 >
                                     {cat}
@@ -129,15 +129,15 @@ export default function PlannersPage() {
                     </div>
 
                     <div className="space-y-6">
-                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-500">Top Locations</h3>
+                        <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">Top Locations</h3>
                         <div className="flex flex-col gap-2">
                             {locations.map(loc => (
                                 <button
                                     key={loc}
                                     onClick={() => setSelectedLocation(selectedLocation === loc ? null : loc)}
                                     className={`text-left px-4 py-3 rounded-xl transition-all text-sm font-medium border ${selectedLocation === loc
-                                        ? "bg-blue-600/10 border-blue-500/50 text-blue-400"
-                                        : "bg-white/5 border-transparent text-gray-400 hover:bg-white/10"
+                                        ? "bg-blue-600/10 border-blue-500/50 text-blue-500 underline decoration-2 underline-offset-4"
+                                        : "bg-foreground/5 border-transparent text-muted-foreground hover:bg-foreground/10"
                                         }`}
                                 >
                                     {loc}
@@ -179,13 +179,13 @@ export default function PlannersPage() {
                             ))}
                         </div>
                     ) : filteredPlanners.length === 0 ? (
-                        <div className="text-center py-32 glass-panel rounded-[3rem] border-white/5 space-y-6 border-dashed">
-                            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto text-gray-600">
+                        <div className="text-center py-32 glass-panel rounded-[3rem] border-foreground/5 space-y-6 border-dashed">
+                            <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mx-auto text-muted-foreground/50">
                                 <X size={32} />
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-xl font-bold">No planners found</h3>
-                                <p className="text-gray-500 max-w-sm mx-auto">Try adjusting your filters or search keywords.</p>
+                                <h3 className="text-xl font-bold text-foreground">No planners found</h3>
+                                <p className="text-muted-foreground max-w-sm mx-auto">Try adjusting your filters or search keywords.</p>
                             </div>
                             <Button variant="outline" className="px-8" onClick={() => { setSearch(""); setSelectedCategory(null); setSelectedLocation(null); }}>
                                 Show all specialists
@@ -195,7 +195,7 @@ export default function PlannersPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
                             {filteredPlanners.map((planner, i) => (
                                 <Link key={planner.id} href={`/planner/${planner.username}`}>
-                                    <Card className="group overflow-hidden p-0 h-full flex flex-col border-white/5 hover:border-blue-500/30 transition-all bg-black/40 rounded-[2.5rem] animate-in fade-in slide-in-from-bottom-8 duration-500" style={{ transitionDelay: `${i * 50}ms` }}>
+                                    <Card className="group overflow-hidden p-0 h-full flex flex-col border-foreground/5 hover:border-blue-500/30 transition-all bg-background dark:bg-black/40 rounded-[2.5rem] animate-in fade-in slide-in-from-bottom-8 duration-500" style={{ transitionDelay: `${i * 50}ms` }}>
                                         <div className="relative aspect-[4/5] overflow-hidden">
                                             <img
                                                 src={planner.avatar_url}
@@ -203,9 +203,9 @@ export default function PlannersPage() {
                                                 className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-[1.5s] ease-out brightness-90 group-hover:brightness-100"
                                             />
                                             <div className="absolute top-6 left-6 flex flex-col gap-2">
-                                                <div className="bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 flex items-center gap-1.5 shadow-xl">
-                                                    <Star size={12} className="text-yellow-400 fill-yellow-400" />
-                                                    <span className="text-xs font-black text-white">{planner.rating.toFixed(1)}</span>
+                                                <div className="bg-background/40 backdrop-blur-md px-3 py-1.5 rounded-xl border border-foreground/10 flex items-center gap-1.5 shadow-xl text-foreground">
+                                                    <Star size={12} className="text-yellow-500 fill-yellow-500" />
+                                                    <span className="text-xs font-black">{planner.rating.toFixed(1)}</span>
                                                 </div>
                                                 <div className="bg-blue-600/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 shadow-xl self-start">
                                                     <span className="text-[8px] font-black text-white uppercase tracking-widest">Verified</span>
@@ -213,14 +213,14 @@ export default function PlannersPage() {
                                             </div>
 
                                             <div className="absolute inset-x-6 bottom-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                                                <div className="bg-black/60 backdrop-blur-xl p-6 rounded-[1.5rem] border border-white/10 shadow-2xl shadow-black/50">
-                                                    <p className="text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-1">{planner.category}</p>
-                                                    <h3 className="text-xl font-black text-white mb-2 leading-tight">{planner.full_name}</h3>
-                                                    <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-2">
-                                                        <span className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400">
+                                                <div className="bg-background/80 dark:bg-black/60 backdrop-blur-xl p-6 rounded-[1.5rem] border border-foreground/10 shadow-2xl shadow-black/50">
+                                                    <p className="text-[8px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-[0.2em] mb-1">{planner.category}</p>
+                                                    <h3 className="text-xl font-black text-foreground dark:text-white mb-2 leading-tight">{planner.full_name}</h3>
+                                                    <div className="flex items-center justify-between pt-4 border-t border-foreground/5 mt-2">
+                                                        <span className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
                                                             <MapPin size={12} className="text-blue-500" /> {planner.location}
                                                         </span>
-                                                        <span className="text-[10px] font-black text-gray-500">{planner.review_count} Reviews</span>
+                                                        <span className="text-[10px] font-black text-muted-foreground/60">{planner.review_count} Reviews</span>
                                                     </div>
                                                 </div>
                                             </div>

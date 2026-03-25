@@ -36,7 +36,7 @@ export default function MessagesPage() {
             {/* Chat Area */}
             <div className={`flex-1 flex flex-col bg-black/20 ${selectedConv ? 'block' : 'hidden md:flex'}`}>
                 {selectedConv ? (
-                    <div className="h-full flex items-center justify-center p-4">
+                    <div className="h-full flex items-center justify-center md:p-4">
                         <ChatWindow
                             conversationId={selectedConv.id}
                             currentUserId={currentUserId}

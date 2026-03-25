@@ -80,26 +80,26 @@ export default function EventsPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-black">
+            <div className="min-h-screen flex items-center justify-center bg-background">
                 <Loader2 className="animate-spin text-blue-500 w-8 h-8" />
             </div>
         );
     }
 
     return (
-        <main className="min-h-screen bg-black text-white pb-20 pt-32">
+        <main className="min-h-screen bg-background text-foreground pb-20 pt-32 transition-colors duration-500">
             <div className="max-w-7xl mx-auto px-6 space-y-12">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out">
                     <div className="space-y-4">
-                        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight underline decoration-blue-500/30 underline-offset-8">Events Gallery</h1>
-                        <p className="text-gray-400 text-lg max-w-xl font-light">Browse curated albums from the most remarkable celebrations across the country.</p>
+                        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight underline decoration-blue-500/30 underline-offset-8 text-foreground">Events Gallery</h1>
+                        <p className="text-muted-foreground text-lg max-w-xl font-light">Browse curated albums from the most remarkable celebrations across the country.</p>
                     </div>
                     <div className="w-full md:w-96 relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
                         <Input
                             placeholder="Search by name or city..."
-                            className="pl-12 bg-white/5 border-white/10 h-14"
+                            className="pl-12 bg-foreground/5 border-foreground/10 h-14 text-foreground"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -114,7 +114,7 @@ export default function EventsPage() {
                             onClick={() => setActiveCategory(cat)}
                             className={`px-8 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all border ${activeCategory === cat
                                 ? "bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-600/20"
-                                : "bg-white/5 text-gray-500 border-white/5 hover:border-white/20"
+                                : "bg-foreground/5 text-muted-foreground border-foreground/5 hover:border-foreground/20"
                                 }`}
                         >
                             {cat}
@@ -126,7 +126,7 @@ export default function EventsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                     {filteredEvents.map((event, i) => (
                         <Link key={event.slug} href={`/events/${event.slug}`} className="group">
-                            <Card className="p-0 overflow-hidden border-white/5 hover:border-blue-500/30 transition-all h-full flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out bg-black/40" style={{ transitionDelay: `${i * 50}ms` }}>
+                            <Card className="p-0 overflow-hidden border-foreground/5 hover:border-blue-500/30 transition-all h-full flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out bg-background dark:bg-black/40" style={{ transitionDelay: `${i * 50}ms` }}>
                                 <div className="aspect-[16/10] overflow-hidden relative">
                                     <img
                                         src={event.image}
@@ -152,7 +152,7 @@ export default function EventsPage() {
                                         </h3>
                                     </div>
                                 </div>
-                                <div className="p-6 bg-white/[0.02] flex justify-between items-center text-[10px] text-gray-500 uppercase tracking-widest font-black border-t border-white/5">
+                                <div className="p-6 bg-foreground/[0.01] flex justify-between items-center text-[10px] text-muted-foreground uppercase tracking-widest font-black border-t border-foreground/5">
                                     <span className="flex items-center gap-2"><MapPin size={12} className="text-blue-500" /> {event.location}</span>
                                     <span className="flex items-center gap-2"><Calendar size={12} className="text-blue-500" /> {event.date}</span>
                                 </div>
@@ -163,12 +163,12 @@ export default function EventsPage() {
 
                 {filteredEvents.length === 0 && (
                     <div className="text-center py-32 glass-panel rounded-[3rem] border-white/5 space-y-6">
-                        <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto text-gray-600">
+                        <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mx-auto text-muted-foreground/30">
                             <Images size={32} />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-xl font-bold">No events found</h3>
-                            <p className="text-gray-500 max-w-sm mx-auto">Try adjusting your filters or search keywords to find what you are looking for.</p>
+                            <h3 className="text-xl font-bold text-foreground">No events found</h3>
+                            <p className="text-muted-foreground max-w-sm mx-auto">Try adjusting your filters or search keywords to find what you are looking for.</p>
                         </div>
                         <Button variant="outline" className="px-8" onClick={() => { setSearch(""); setActiveCategory("All"); }}>
                             Show all events

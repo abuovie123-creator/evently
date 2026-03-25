@@ -4,21 +4,37 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #0a0a0a;
-  --glass-bg: rgba(0, 0, 0, 0.03);
-  --glass-border: rgba(0, 0, 0, 0.1);
+  --foreground: #09090b;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #18181b;
+  --muted: #f4f4f5;
+  --muted-foreground: #4b5563;
+  --accent: #f4f4f5;
+  --accent-foreground: #18181b;
+  --glass-bg: rgba(0, 0, 0, 0.04);
+  --glass-border: rgba(0, 0, 0, 0.12);
 }
 
 .dark {
   --background: #0a0a0a;
   --foreground: #ffffff;
+  --secondary: #27272a;
+  --secondary-foreground: #fafafa;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #27272a;
+  --accent-foreground: #fafafa;
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
 }
 
+html {
+  background: var(--background);
+}
+
 body {
   color: var(--foreground);
-  background: var(--background);
+  background: transparent;
   font-family: 'Inter', sans-serif;
   transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }

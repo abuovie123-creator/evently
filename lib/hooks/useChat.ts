@@ -49,6 +49,18 @@ export function useChat(conversationId: string | null) {
     const sendMessage = async (content: string, senderId: string) => {
         if (!conversationId || !content.trim()) return;
 
+        const newMessage: Message = {
+            id: crypto.randomUUID(),
+            conversation_id: conversationId,
+            sender_id: senderId,
+            content: content.trim(),
+            created_at: new Date().toISOString(),
+            is_read: false
+        };
+
+        // Optimistic Update
+        setMessages((prev) => [...prev, newMessage]);
+
         const { error } = await supabase
             .from('messages')
             .insert({
@@ -59,6 +71,8 @@ export function useChat(conversationId: string | null) {
 
         if (error) {
             console.error("Error sending message:", error);
+            // Optionally: Rollback on error
+            setMessages((prev) => prev.filter(m => m.id !== newMessage.id));
         }
     };
 
