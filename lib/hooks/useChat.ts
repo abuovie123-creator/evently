@@ -49,8 +49,9 @@ export function useChat(conversationId: string | null) {
     const sendMessage = async (content: string, senderId: string) => {
         if (!conversationId || !content.trim()) return;
 
+        const messageId = crypto.randomUUID();
         const newMessage: Message = {
-            id: crypto.randomUUID(),
+            id: messageId,
             conversation_id: conversationId,
             sender_id: senderId,
             content: content.trim(),
@@ -61,28 +62,62 @@ export function useChat(conversationId: string | null) {
         // Optimistic Update
         setMessages((prev) => [...prev, newMessage]);
 
-        const { error } = await supabase
+        // 1. Insert the message (sending the same ID to avoid duplicates in realtime)
+        const { error: messageError } = await supabase
             .from('messages')
             .insert({
+                id: messageId,
                 conversation_id: conversationId,
                 sender_id: senderId,
                 content: content.trim()
             });
 
-        if (error) {
-            console.error("Error sending message:", error);
-            // Optionally: Rollback on error
+        if (messageError) {
+            console.error("Error sending message:", messageError);
             setMessages((prev) => prev.filter(m => m.id !== newMessage.id));
+            return;
         }
+
+        // 2. Update the conversation preview
+        await supabase
+            .from('conversations')
+            .update({
+                last_message: content.trim(),
+                last_message_at: new Date().toISOString()
+            })
+            .eq('id', conversationId);
     };
 
+    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const lastTypingStateRef = useRef<boolean>(false);
+
     const broadcastTyping = (typing: boolean) => {
-        if (channelRef.current) {
+        if (!channelRef.current) return;
+
+        // Only broadcast if the state actually changed OR it's a "still typing" signal
+        if (typing === lastTypingStateRef.current && typing === false) return;
+
+        if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+        if (typing !== lastTypingStateRef.current) {
+            lastTypingStateRef.current = typing;
             channelRef.current.send({
                 type: 'broadcast',
                 event: 'typing',
                 payload: { typing }
             });
+        }
+
+        // If typing, set a timeout to reset it
+        if (typing) {
+            typingTimeoutRef.current = setTimeout(() => {
+                lastTypingStateRef.current = false;
+                channelRef.current?.send({
+                    type: 'broadcast',
+                    event: 'typing',
+                    payload: { typing: false }
+                });
+            }, 3000);
         }
     };
 
@@ -103,7 +138,12 @@ export function useChat(conversationId: string | null) {
                     filter: `conversation_id=eq.${conversationId}`
                 },
                 (payload) => {
-                    setMessages((prev) => [...prev, payload.new as Message]);
+                    const newMessage = payload.new as Message;
+                    setMessages((prev) => {
+                        // Avoid duplicates if we already added it optimistically
+                        if (prev.some(m => m.id === newMessage.id)) return prev;
+                        return [...prev, newMessage];
+                    });
                 }
             )
             .subscribe();
@@ -125,6 +165,7 @@ export function useChat(conversationId: string | null) {
             supabase.removeChannel(messageSubscription);
             supabase.removeChannel(typingChannel);
             channelRef.current = null;
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
         };
     }, [conversationId, fetchMessages, supabase]);
 
@@ -137,3 +178,4 @@ export function useChat(conversationId: string | null) {
         setMessages
     };
 }
+

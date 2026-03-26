@@ -49,7 +49,7 @@ export function ChatWindow({
         broadcastTyping(e.target.value.length > 0);
     };
 
-    const isOnline = recipientLastSeen && (new Date().getTime() - new Date(recipientLastSeen).getTime() < 60000); // Online if seen in last 1 min
+    const isOnline = recipientLastSeen && (new Date().getTime() - new Date(recipientLastSeen).getTime() < 60000);
 
     return (
         <Card className="flex flex-col h-[calc(100vh-14rem)] md:h-[600px] w-full max-w-2xl bg-background/80 dark:bg-black/90 backdrop-blur-2xl border-foreground/10 shadow-2xl rounded-t-[2rem] md:rounded-[2rem] overflow-hidden animate-in fade-in zoom-in duration-300">
@@ -80,34 +80,17 @@ export function ChatWindow({
                     </div>
                 )}
 
-                {messages.map((msg, i) => {
-                    const isMe = msg.sender_id === currentUserId;
-                    return (
-                        <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2`}>
-                            <div className={`max-w-[85%] md:max-w-[80%] p-3 rounded-2xl text-sm ${isMe
-                                ? "bg-blue-600 text-white rounded-tr-none"
-                                : "bg-foreground/10 text-foreground rounded-tl-none border border-foreground/5"
-                                }`}>
-                                <p>{msg.content}</p>
-                                <div className={`flex items-center gap-1 mt-1 justify-end opacity-50 text-[9px]`}>
-                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    {isMe && <CheckCheck size={10} className="text-blue-300" />}
-                                </div>
-                            </div>
-                        </div>
-                    );
-                })}
+                <div className="space-y-4">
+                    {messages.map((msg) => (
+                        <MessageItem key={msg.id} msg={msg} isMe={msg.sender_id === currentUserId} />
+                    ))}
+                </div>
 
                 {/* Typing Indicator UX */}
                 {otherPartyTyping && (
                     <div className="flex items-end gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
                         <div className="relative group">
-                            {/* Avatar peek */}
-                            <img
-                                src={recipientAvatar}
-                                className="w-6 h-6 rounded-full object-cover border border-foreground/20 translate-y-1"
-                                alt="typing avatar"
-                            />
+                            <img src={recipientAvatar} className="w-6 h-6 rounded-full object-cover border border-foreground/20 translate-y-1" alt="" />
                             <div className="absolute -top-1 -right-1">
                                 <MessageSquare size={8} className="text-blue-400 animate-bounce" />
                             </div>
@@ -122,26 +105,63 @@ export function ChatWindow({
             </div>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-foreground/5 bg-foreground/[0.01] pb-8 md:pb-4">
-                <div className="relative flex items-center gap-2">
-                    <input
-                        type="text"
-                        placeholder="Type a message..."
-                        className="flex-1 bg-foreground/5 border border-foreground/10 rounded-2xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-blue-500/50 transition-all"
-                        value={input}
-                        onChange={handleInputChange}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                    />
-                    <Button
-                        size="sm"
-                        onClick={handleSend}
-                        className="h-11 w-11 rounded-xl bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20"
-                        disabled={!input.trim()}
-                    >
-                        <Send size={18} />
-                    </Button>
-                </div>
-            </div>
+            <ChatInput onSendMessage={(content) => sendMessage(content, currentUserId)} onTyping={broadcastTyping} />
         </Card>
     );
 }
+
+// Sub-components for better performance
+const MessageItem = React.memo(({ msg, isMe }: { msg: Message, isMe: boolean }) => (
+    <div className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2`}>
+        <div className={`max-w-[85%] md:max-w-[80%] p-3 rounded-2xl text-sm ${isMe
+            ? "bg-blue-600 text-white rounded-tr-none shadow-lg shadow-blue-600/10"
+            : "bg-foreground/10 text-foreground rounded-tl-none border border-foreground/5"
+            }`}>
+            <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+            <div className={`flex items-center gap-1 mt-1 justify-end opacity-50 text-[9px]`}>
+                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {isMe && <CheckCheck size={10} className="text-blue-300" />}
+            </div>
+        </div>
+    </div>
+));
+
+MessageItem.displayName = "MessageItem";
+
+const ChatInput = ({ onSendMessage, onTyping }: { onSendMessage: (content: string) => void, onTyping: (typing: boolean) => void }) => {
+    const [input, setInput] = useState("");
+
+    const handleSend = () => {
+        if (!input.trim()) return;
+        onSendMessage(input.trim());
+        setInput("");
+        onTyping(false);
+    };
+
+    return (
+        <div className="p-4 border-t border-foreground/5 bg-foreground/[0.01] pb-8 md:pb-4">
+            <div className="relative flex items-center gap-2">
+                <input
+                    type="text"
+                    placeholder="Type a message..."
+                    className="flex-1 bg-foreground/5 border border-foreground/10 rounded-2xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-blue-500/50 transition-all"
+                    value={input}
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                        onTyping(e.target.value.length > 0);
+                    }}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                />
+                <Button
+                    size="sm"
+                    onClick={handleSend}
+                    className="h-11 w-11 rounded-xl bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20"
+                    disabled={!input.trim()}
+                >
+                    <Send size={18} />
+                </Button>
+            </div>
+        </div>
+    );
+};
+

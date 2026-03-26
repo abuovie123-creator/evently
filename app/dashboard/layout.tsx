@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardSidebar } from "@/components/DashboardSidebar";
+import { AnnouncementPopup } from "@/components/AnnouncementPopup";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, usePathname } from "next/navigation";

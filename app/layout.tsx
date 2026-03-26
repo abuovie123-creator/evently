@@ -4,6 +4,8 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { ToastProvider } from "@/components/ui/Toast";
 import { AnimatedBackground } from "@/components/AnimatedBackground";
+import { AnnouncementPopup } from "@/components/AnnouncementPopup";
+
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -41,6 +43,7 @@ export default function RootLayout({
                         <AnimatedBackground />
                         <Navbar />
                         {children}
+                        <AnnouncementPopup />
                     </ToastProvider>
                 </ThemeProvider>
             </body>

@@ -24,7 +24,10 @@ import {
     Building2,
     Wallet,
     TrendingUp,
-    DollarSign
+    DollarSign,
+    Bell,
+    Info,
+    ExternalLink
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
@@ -73,7 +76,7 @@ interface PendingPlanner {
 export default function AdminDashboard() {
     const { showToast } = useToast();
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<"overview" | "branding" | "users" | "settings" | "payments">("overview");
+    const [activeTab, setActiveTab] = useState<"overview" | "branding" | "users" | "settings" | "payments" | "platform">("overview");
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter] = useState<string>("all");
 
@@ -147,6 +150,16 @@ export default function AdminDashboard() {
     const [recentTransactions, setRecentTransactions] = useState<any[]>([]);
     const [pendingPlanners, setPendingPlanners] = useState<any[]>([]);
     const [bankTransfers, setBankTransfers] = useState<any[]>([]);
+
+    // Platform Management State
+    const [announcements, setAnnouncements] = useState<any[]>([]);
+    const [newAnnouncement, setNewAnnouncement] = useState({ title: "", content: "", image_url: "", link_url: "" });
+    const [externalLinks, setExternalLinks] = useState<any[]>([]);
+    const [newLink, setNewLink] = useState({ label: "", url: "" });
+
+    // Admin Account Update State
+    const [adminUserUpdate, setAdminUserUpdate] = useState("");
+    const [adminPassUpdate, setAdminPassUpdate] = useState("");
 
     const logError = useCallback((context: string, error: any) => {
         console.error(`${context}:`, error);
@@ -297,6 +310,13 @@ export default function AdminDashboard() {
                 setBankTransfers(btData);
             }
 
+            // Fetch Platform Assets
+            const { data: announceData } = await supabase.from('platform_announcements').select('*').order('created_at', { ascending: false });
+            if (announceData) setAnnouncements(announceData);
+
+            const { data: linkData } = await supabase.from('external_links').select('*').order('order_index', { ascending: true });
+            if (linkData) setExternalLinks(linkData);
+
             setIsLoadingUsers(false);
         };
 
@@ -305,7 +325,7 @@ export default function AdminDashboard() {
         // Handle URL hash for tab switching
         const handleHashChange = () => {
             const hash = window.location.hash.replace('#', '');
-            if (['overview', 'branding', 'users', 'payments', 'settings'].includes(hash)) {
+            if (['overview', 'branding', 'users', 'payments', 'settings', 'platform'].includes(hash)) {
                 setActiveTab(hash as any);
                 // Also scroll to top if it's a tab switch
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -494,12 +514,75 @@ export default function AdminDashboard() {
         }
     };
 
+    const addAnnouncement = async () => {
+        if (!newAnnouncement.title || !newAnnouncement.content) {
+            showToast("Title and Content are required", "error");
+            return;
+        }
+        setIsSaving(true);
+        const supabase = createClient();
+        const { data, error } = await supabase
+            .from('platform_announcements')
+            .insert([newAnnouncement])
+            .select()
+            .single();
+
+        if (error) {
+            showToast("Failed to create announcement", "error");
+        } else {
+            setAnnouncements([data, ...announcements]);
+            setNewAnnouncement({ title: "", content: "", image_url: "", link_url: "" });
+            showToast("Announcement published!", "success");
+        }
+        setIsSaving(false);
+    };
+
+    const deleteAnnouncement = async (id: string) => {
+        const supabase = createClient();
+        const { error } = await supabase.from('platform_announcements').delete().eq('id', id);
+        if (error) showToast("Failed to delete", "error");
+        else setAnnouncements(announcements.filter(a => a.id !== id));
+    };
+
+    const toggleAnnouncement = async (id: string, currentStatus: boolean) => {
+        const supabase = createClient();
+        const { error } = await supabase.from('platform_announcements').update({ is_active: !currentStatus }).eq('id', id);
+        if (error) showToast("Failed to update status", "error");
+        else setAnnouncements(announcements.map(a => a.id === id ? { ...a, is_active: !currentStatus } : a));
+    };
+
+    const addExternalLink = async () => {
+        if (!newLink.label || !newLink.url) return;
+        setIsSaving(true);
+        const supabase = createClient();
+        const { data, error } = await supabase
+            .from('external_links')
+            .insert([{ ...newLink, order_index: externalLinks.length }])
+            .select()
+            .single();
+
+        if (error) showToast("Failed to add link", "error");
+        else {
+            setExternalLinks([...externalLinks, data]);
+            setNewLink({ label: "", url: "" });
+            showToast("External link added", "success");
+        }
+        setIsSaving(false);
+    };
+
+    const deleteExternalLink = async (id: string) => {
+        const supabase = createClient();
+        await supabase.from('external_links').delete().eq('id', id);
+        setExternalLinks(externalLinks.filter(l => l.id !== id));
+    };
+
     const tabs = [
         { id: "overview", label: "Overview", icon: LayoutDashboard },
         { id: "branding", label: "Branding", icon: Palette },
         { id: "users", label: "User Management", icon: Users },
         { id: "payments", label: "Payments", icon: CreditCard },
         { id: "settings", label: "Platform Settings", icon: Settings },
+        { id: "platform", label: "Platform", icon: LayoutDashboard },
     ];
 
     return (
@@ -1393,20 +1476,133 @@ export default function AdminDashboard() {
                                 ))}
                             </Card>
                         </section>
-
-                        <section className="space-y-6">
-                            <h3 className="text-xl font-bold text-red-500">Danger Zone</h3>
-                            <Card className="border-red-500/20 bg-red-500/[0.02] p-8 flex flex-col md:flex-row justify-between items-center gap-6" hover={false}>
-                                <div>
-                                    <p className="font-bold">Reset Platform Data</p>
-                                    <p className="text-xs text-gray-500">Wipe all users, planners, and event albums. This action is irreversible.</p>
-                                </div>
-                                <Button className="bg-red-500 hover:bg-red-600 text-white border-none w-full md:w-auto">Confirm Reset</Button>
-                            </Card>
-                        </section>
                     </div>
                 )
             }
-        </div>
+
+            {activeTab === "platform" && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="space-y-8">
+                        <section className="space-y-6">
+                            <h3 className="text-xl font-bold flex items-center gap-2">
+                                <Bell className="text-blue-500" size={20} />
+                                Announcement Popups
+                            </h3>
+                            <Card className="p-6 space-y-4" hover={false}>
+                                <div className="space-y-4">
+                                    <Input
+                                        placeholder="Heading/Title"
+                                        value={newAnnouncement.title}
+                                        onChange={e => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
+                                    />
+                                    <textarea
+                                        placeholder="Description/Content"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500/50 min-h-[100px]"
+                                        value={newAnnouncement.content}
+                                        onChange={e => setNewAnnouncement({ ...newAnnouncement, content: e.target.value })}
+                                    />
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Input
+                                            placeholder="Photo URL (Optional)"
+                                            value={newAnnouncement.image_url}
+                                            onChange={e => setNewAnnouncement({ ...newAnnouncement, image_url: e.target.value })}
+                                        />
+                                        <Input
+                                            placeholder="Action Link (Optional)"
+                                            value={newAnnouncement.link_url}
+                                            onChange={e => setNewAnnouncement({ ...newAnnouncement, link_url: e.target.value })}
+                                        />
+                                    </div>
+                                    <Button className="w-full" onClick={addAnnouncement} disabled={isSaving}>
+                                        {isSaving ? "Publishing..." : "Publish Announcement"}
+                                    </Button>
+                                </div>
+                            </Card>
+
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">Live Announcements</h4>
+                                {announcements.map(a => (
+                                    <Card key={a.id} className="p-4 flex items-center justify-between border-white/5" hover={false}>
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-2 h-2 rounded-full ${a.is_active ? 'bg-green-500 animate-pulse' : 'bg-gray-600'}`} />
+                                            <div>
+                                                <p className="text-sm font-bold">{a.title}</p>
+                                                <p className="text-[10px] text-gray-500 truncate max-w-[200px]">{a.content}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => toggleAnnouncement(a.id, a.is_active)}
+                                                className={`p-2 rounded-lg transition-all ${a.is_active ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-gray-400'}`}
+                                            >
+                                                <Info size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => deleteAnnouncement(a.id)}
+                                                className="p-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        </section>
+                    </div>
+
+                    <div className="space-y-8">
+                        <section className="space-y-6">
+                            <h3 className="text-xl font-bold flex items-center gap-2">
+                                <ExternalLink className="text-blue-500" size={20} />
+                                External Navigation Links
+                            </h3>
+                            <Card className="p-6 space-y-4" hover={false}>
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Input
+                                            placeholder="Link Label (e.g. Documentation)"
+                                            value={newLink.label}
+                                            onChange={e => setNewLink({ ...newLink, label: e.target.value })}
+                                        />
+                                        <Input
+                                            placeholder="URL (https://...)"
+                                            value={newLink.url}
+                                            onChange={e => setNewLink({ ...newLink, url: e.target.value })}
+                                        />
+                                    </div>
+                                    <Button className="w-full" variant="outline" onClick={addExternalLink} disabled={isSaving}>
+                                        <Plus size={16} className="mr-2" /> Add External Link
+                                    </Button>
+                                </div>
+                            </Card>
+
+                            <div className="space-y-4">
+                                <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">Active Links</h4>
+                                {externalLinks.map(l => (
+                                    <Card key={l.id} className="p-4 flex items-center justify-between border-white/10 group" hover={false}>
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400">
+                                                <ExternalLink size={14} />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-bold">{l.label}</p>
+                                                <p className="text-[10px] text-gray-500 font-mono">{l.url}</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => deleteExternalLink(l.id)}
+                                            className="p-2 rounded-lg opacity-0 group-hover:opacity-100 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all"
+                                        >
+                                            <Trash2 size={14} />
+                                        </button>
+                                    </Card>
+                                ))}
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            )
+            }
+        </div >
     );
 }

@@ -23,7 +23,8 @@ import {
     Briefcase,
     History,
     Search,
-    MessageSquare
+    MessageSquare,
+    ExternalLink
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "./ui/Toast";
@@ -58,6 +59,7 @@ export function DashboardSidebar() {
     const [user, setUser] = useState<any>(null);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [externalLinks, setExternalLinks] = useState<any[]>([]);
 
     const supabase = createClient();
 
@@ -96,6 +98,12 @@ export function DashboardSidebar() {
                 return () => {
                     supabase.removeChannel(subscription);
                 };
+                // Fetch external links
+                const { data: links } = await supabase
+                    .from('external_links')
+                    .select('*')
+                    .order('order_index', { ascending: true });
+                setExternalLinks(links || []);
             }
         };
 
@@ -264,6 +272,30 @@ export function DashboardSidebar() {
                         </div>
                     );
                 })}
+
+                {externalLinks.length > 0 && (
+                    <div className="pt-4 mt-4 border-t border-foreground/5 space-y-1">
+                        <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Platform Links</p>
+                        {externalLinks.map((link, idx) => (
+                            <a
+                                key={link.id}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all duration-300 group"
+                                style={{ animationDelay: `${(currentNav.length + idx) * 50}ms` }}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 rounded-xl bg-foreground/5 group-hover:bg-foreground/10 transition-colors">
+                                        <ExternalLink size={18} className="group-hover:text-blue-400 transition-colors" />
+                                    </div>
+                                    <span>{link.label}</span>
+                                </div>
+                                <ExternalLink size={12} className="opacity-0 group-hover:opacity-50 transition-opacity" />
+                            </a>
+                        ))}
+                    </div>
+                )}
             </nav>
 
             <div className="mt-auto pt-6 border-t border-foreground/5 px-4 space-y-3">

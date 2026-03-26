@@ -109,7 +109,7 @@ export default function AdminLoginPage() {
                     </p>
                 </div>
 
-                <Card className="p-10 bg-black/40 backdrop-blur-3xl border-white/5 shadow-2xl space-y-8" hover={false}>
+                <Card className="p-6 sm:p-10 bg-black/40 backdrop-blur-3xl border-white/5 shadow-2xl space-y-8" hover={false}>
                     <form onSubmit={handleLogin} className="space-y-6">
                         <div className="space-y-2">
                             <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-1">Admin Username</label>

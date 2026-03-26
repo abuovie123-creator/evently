@@ -150,8 +150,8 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 pt-32">
-            <Card className="max-w-md w-full space-y-8 p-10" hover={false}>
+        <div className="min-h-screen flex items-center justify-center p-6 pt-20 sm:pt-32">
+            <Card className="max-w-md w-full space-y-8 p-6 sm:p-10" hover={false}>
                 <div className="text-center space-y-2">
                     <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
                     <p className="text-gray-400 text-sm">Enter your credentials to access your account</p>

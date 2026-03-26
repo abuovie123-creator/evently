@@ -162,7 +162,7 @@ export default function Home() {
                             <Link key={planner.id} href={`/planner/${planner.username}`}>
                                 <Card className="group overflow-hidden p-0 rounded-[2.5rem] border-foreground/5 hover:border-blue-500/30 transition-all bg-background dark:bg-black animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ transitionDelay: `${i * 100}ms` }}>
                                     <div className="aspect-[4/5] relative overflow-hidden">
-                                        <img src={planner.avatar_url} alt={`${planner.full_name}'s profile picture`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2000ms] ease-out brightness-75 group-hover:brightness-100" />
+                                        <img src={planner.avatar_url} alt={`${planner.full_name}'s profile picture`} className="w-full h-full object-cover group-hover:scale-110 transition-transform [transition-duration:2000ms] ease-out brightness-75 group-hover:brightness-100" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
                                         <div className="absolute bottom-6 left-6 right-6">
                                             <div className="flex items-center gap-1.5 text-yellow-500 mb-1">
@@ -201,7 +201,7 @@ export default function Home() {
                                 <Link key={event.id} href={`/events/${event.slug}`}>
                                     <Card className="group overflow-hidden p-0 rounded-[2rem] border-foreground/5 hover:border-blue-500/30 transition-all bg-background dark:bg-black animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ transitionDelay: `${i * 100}ms` }}>
                                         <div className="aspect-video relative overflow-hidden">
-                                            <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2000ms] ease-out brightness-75 group-hover:brightness-100" />
+                                            <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform [transition-duration:2000ms] ease-out brightness-75 group-hover:brightness-100" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
                                             <div className="absolute bottom-6 left-6">
                                                 <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1 block">{event.category}</span>

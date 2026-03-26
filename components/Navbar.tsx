@@ -135,8 +135,8 @@ export function Navbar() {
 
             {/* Public Mobile Sidebar */}
             <div className={`md:hidden fixed inset-0 z-[100] transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-                <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsOpen(false)} />
-                <div className={`absolute top-0 right-0 bottom-0 w-[85%] bg-background/95 border-l border-foreground/10 transform transition-transform duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+                <div className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-xl" onClick={() => setIsOpen(false)} />
+                <div className={`absolute top-0 right-0 bottom-0 w-[85%] bg-white dark:bg-black border-l border-foreground/10 transform transition-transform duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
                     <div className="flex flex-col h-full p-8">
                         <div className="flex items-center justify-between mb-12">
                             <div className="flex items-center gap-4">

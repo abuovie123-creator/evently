@@ -200,7 +200,7 @@ export default function PlannersPage() {
                                             <img
                                                 src={planner.avatar_url}
                                                 alt={planner.full_name}
-                                                className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-[1500ms] ease-out brightness-90 group-hover:brightness-100"
+                                                className="object-cover w-full h-full group-hover:scale-110 transition-transform [transition-duration:1500ms] ease-out brightness-90 group-hover:brightness-100"
                                             />
                                             <div className="absolute top-6 left-6 flex flex-col gap-2">
                                                 <div className="bg-background/40 backdrop-blur-md px-3 py-1.5 rounded-xl border border-foreground/10 flex items-center gap-1.5 shadow-xl text-foreground">
