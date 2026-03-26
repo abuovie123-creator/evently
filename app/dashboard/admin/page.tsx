@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -148,12 +148,12 @@ export default function AdminDashboard() {
     const [pendingPlanners, setPendingPlanners] = useState<any[]>([]);
     const [bankTransfers, setBankTransfers] = useState<any[]>([]);
 
-    const logError = (context: string, error: any) => {
+    const logError = useCallback((context: string, error: any) => {
         console.error(`${context}:`, error);
         if (error?.message) {
             showToast(`${context}: ${error.message}`, "error");
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         const fetchDashboardData = async () => {
@@ -315,7 +315,7 @@ export default function AdminDashboard() {
         handleHashChange();
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
-    }, [router, showToast]);
+    }, [router, showToast, logError]);
 
     const saveSettings = async (type: 'branding' | 'features' | 'gateways' | 'plans') => {
         setIsSaving(true);

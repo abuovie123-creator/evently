@@ -55,7 +55,7 @@ export function Navbar() {
         });
 
         return () => subscription.unsubscribe();
-    }, [supabase]);
+    }, [supabase, router]);
 
     const handleSignOut = async () => {
         setIsLoggingOut(true);
@@ -91,10 +91,7 @@ export function Navbar() {
                         <Link href="/events" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors">Events Gallery</Link>
                         <Link href="/pricing" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors">Pricing</Link>
 
-                        <div className="flex items-center gap-3">
-                            <ThemeToggle />
-                            <div className="h-6 w-px bg-white/10 mx-1" />
-                        </div>
+
 
                         {user ? (
                             <div className="flex items-center gap-4">
@@ -106,6 +103,8 @@ export function Navbar() {
                                 <Button size="sm" onClick={handleSignOut} className="bg-foreground text-background hover:bg-foreground/90">
                                     Logout
                                 </Button>
+                                <div className="h-6 w-px bg-foreground/10 mx-1 hidden lg:block" />
+                                <ThemeToggle />
                             </div>
                         ) : (
                             <div className="flex items-center gap-4">
@@ -115,22 +114,22 @@ export function Navbar() {
                                 <Link href="/auth/register">
                                     <Button size="sm" className="bg-foreground text-background hover:bg-foreground/90">Get Started</Button>
                                 </Link>
+                                <div className="h-6 w-px bg-foreground/10 mx-1 hidden lg:block" />
+                                <ThemeToggle />
                             </div>
                         )}
                     </div>
 
-                    {/* Mobile Left Actions */}
-                    <div className="flex md:hidden items-center gap-2">
+                    {/* Mobile Menu Actions */}
+                    <div className="flex md:hidden items-center gap-3">
                         <ThemeToggle />
+                        <button
+                            className="text-foreground p-2 hover:bg-foreground/5 rounded-full transition-colors"
+                            onClick={() => setIsOpen(true)}
+                        >
+                            <Menu size={24} />
+                        </button>
                     </div>
-
-                    {/* Mobile Menu Toggle */}
-                    <button
-                        className="md:hidden text-foreground p-2 hover:bg-foreground/5 rounded-full transition-colors"
-                        onClick={() => setIsOpen(true)}
-                    >
-                        <Menu size={24} />
-                    </button>
                 </div>
             </nav>
 

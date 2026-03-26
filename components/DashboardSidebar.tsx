@@ -107,7 +107,7 @@ export function DashboardSidebar() {
         return () => {
             if (cleanup) cleanup();
         };
-    }, []);
+    }, [supabase]);
 
     const toggleSubMenu = (label: string) => {
         setOpenSubMenus(prev => ({ ...prev, [label]: !prev[label] }));

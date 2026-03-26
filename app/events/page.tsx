@@ -130,7 +130,7 @@ export default function EventsPage() {
                                 <div className="aspect-[16/10] overflow-hidden relative">
                                     <img
                                         src={event.image}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] ease-out brightness-75 group-hover:brightness-100"
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1500ms] ease-out brightness-75 group-hover:brightness-100"
                                         alt={event.title}
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />

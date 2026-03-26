@@ -180,7 +180,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
         };
 
         trackView();
-    }, [planner?.id, isLoading]);
+    }, [planner, isLoading]);
 
     const handleBookingSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

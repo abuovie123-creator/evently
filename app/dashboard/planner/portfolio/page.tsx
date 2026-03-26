@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -72,7 +72,7 @@ export default function PlannerPortfolio() {
         return title.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '') + '-' + Math.random().toString(36).substring(2, 6);
     };
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setIsLoading(true);
         const supabase = createClient();
         const { data: { session } } = await supabase.auth.getSession();
@@ -130,19 +130,19 @@ export default function PlannerPortfolio() {
 
         setCurrentImageCount(count || 0);
         setIsLoading(false);
-    };
+    }, [router, showToast]);
 
     useEffect(() => {
         fetchData();
-    }, [router, showToast]);
+    }, [fetchData]);
 
     useEffect(() => {
         if (selectedEvent) {
             fetchMedia(selectedEvent.id);
         }
-    }, [selectedEvent]);
+    }, [selectedEvent, fetchMedia]);
 
-    const fetchMedia = async (eventId: string) => {
+    const fetchMedia = useCallback(async (eventId: string) => {
         const supabase = createClient();
         const { data, error } = await supabase
             .from('album_media')
@@ -155,7 +155,7 @@ export default function PlannerPortfolio() {
         } else {
             setEventMedia(data || []);
         }
-    };
+    }, [showToast]);
 
     const handleCreateEvent = async () => {
         if (!newEvent.title || !newEvent.date) {

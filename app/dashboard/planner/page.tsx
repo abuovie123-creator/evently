@@ -211,7 +211,7 @@ export default function PlannerDashboard() {
         }
 
         setIsLoading(false);
-    }, [showToast]);
+    }, []);
 
     const handleStatusUpdate = async (bookingId: string, status: string, reason?: string) => {
         setIsUpdating(true);

@@ -42,7 +42,7 @@ export default function DashboardLayout({
             setIsLoading(false);
         };
         checkAuth();
-    }, [router, supabase.auth, showToast]);
+    }, [router, supabase.auth, showToast, pathname]);
 
     if (isLoading) {
         return <LoadingScreen message="Welcome back" subMessage="Preparing your desk..." />;
