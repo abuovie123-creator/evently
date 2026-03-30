@@ -45,15 +45,17 @@ export default function DashboardLayout({
         checkAuth();
     }, [router, supabase.auth, showToast, pathname]);
 
+    const isAdminLogin = pathname === '/dashboard/admin/login';
+
     if (isLoading) {
         return <LoadingScreen message="Welcome back" subMessage="Preparing your desk..." />;
     }
 
     return (
         <div className="min-h-screen bg-background text-foreground selection:bg-blue-500/30 overflow-x-hidden transition-colors duration-500">
-            <DashboardSidebar />
-            <main className="md:pl-72 transition-all duration-300 overflow-x-hidden">
-                <div className="p-4 md:p-8 max-w-7xl mx-auto pb-24 md:pb-8">
+            {!isAdminLogin && <DashboardSidebar />}
+            <main className={`${!isAdminLogin ? "md:pl-72" : ""} transition-all duration-300 overflow-x-hidden`}>
+                <div className={`${!isAdminLogin ? "p-4 md:p-8" : ""} max-w-7xl mx-auto pb-24 md:pb-8`}>
                     {children}
                 </div>
             </main>

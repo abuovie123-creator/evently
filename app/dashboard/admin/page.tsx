@@ -27,7 +27,8 @@ import {
     DollarSign,
     Bell,
     Info,
-    ExternalLink
+    ExternalLink,
+    Loader2
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
@@ -588,26 +589,33 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-8 md:space-y-12 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02]">
                 <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight mb-2">Admin Control Center</h1>
-                    <p className="text-gray-400">Manage your platform's heart and soul from one central hub.</p>
+                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Admin Control Center</h1>
+                    <p className="text-gray-400 text-xs md:text-sm">Manage your platform's heart and soul from one central hub.</p>
                 </div>
-                <div className="flex gap-4 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
                     <Button
                         variant="outline"
-                        className="flex-1 md:flex-initial"
+                        className="w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg border-white/10 hover:bg-white/5 font-bold"
                         onClick={() => setActiveTab("payments")}
                     >
+                        <TrendingUp size={18} className="mr-2" />
                         Analytics
                     </Button>
                     <Button
-                        className={`flex-1 md:flex-initial ${systemStatus === 'online' ? 'bg-green-500 hover:bg-green-600' : systemStatus === 'offline' ? 'bg-red-500 hover:bg-red-600' : ''}`}
+                        className={`w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg font-bold ${systemStatus === 'online' ? 'bg-green-500 hover:bg-green-600 shadow-green-500/20' : systemStatus === 'offline' ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20' : 'bg-white/5'}`}
                         onClick={() => {
                             showToast(systemStatus === 'online' ? "Database connection is healthy" : "Database connection lost", systemStatus === 'online' ? "success" : "error");
                         }}
                     >
-                        {systemStatus === 'online' ? "System Online" : systemStatus === 'offline' ? "System Offline" : "Checking Status..."}
+                        {systemStatus === 'online' ? (
+                            <><Check size={18} className="mr-2" /> System Online</>
+                        ) : systemStatus === 'offline' ? (
+                            <><ShieldAlert size={18} className="mr-2" /> System Offline</>
+                        ) : (
+                            <Loader2 size={18} className="mr-2 animate-spin" />
+                        )}
                     </Button>
                 </div>
             </div>
@@ -643,12 +651,12 @@ export default function AdminDashboard() {
                                 { label: "Total Bookings", value: stats.totalBookings.toString(), change: "+0%" },
                                 { label: "Platform Revenue", value: stats.platformRevenue, change: "+0%" },
                             ].map((stat: StatItem, i: number) => (
-                                <Card key={i} className="space-y-4 group relative overflow-hidden" hover={true}>
+                                <Card key={i} className="space-y-4 group relative overflow-hidden p-6 md:p-8" hover={true}>
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 blur-3xl -mr-12 -mt-12 group-hover:bg-blue-500/10 transition-colors" />
                                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>
                                     <div className="flex items-end justify-between">
-                                        <span className="text-4xl font-extrabold group-hover:text-blue-400 transition-colors">{stat.value}</span>
-                                        <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold ${stat.change.startsWith('+') ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
+                                        <span className="text-3xl md:text-4xl font-extrabold group-hover:text-blue-400 transition-colors">{stat.value}</span>
+                                        <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold ${stat.change.startsWith('+') ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
                                             <TrendingUp size={10} />
                                             {stat.change}
                                         </div>
@@ -714,22 +722,24 @@ export default function AdminDashboard() {
                                                         {planner.status}
                                                     </span>
                                                 </td>
-                                                <td className="p-5 text-right space-x-2">
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        className="text-[10px] h-8 px-3"
-                                                        onClick={() => showToast(`Reviewing ${planner.name}`, "info")}
-                                                    >
-                                                        View
-                                                    </Button>
-                                                    <Button
-                                                        size="sm"
-                                                        className="text-[10px] h-8 px-3 bg-green-500 hover:bg-green-600"
-                                                        onClick={() => approvePlanner(planner.id)}
-                                                    >
-                                                        Approve
-                                                    </Button>
+                                                <td className="p-5 text-right">
+                                                    <div className="flex flex-col sm:flex-row justify-end gap-2">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="text-[10px] h-8 px-3 w-full sm:w-auto"
+                                                            onClick={() => showToast(`Reviewing ${planner.name}`, "info")}
+                                                        >
+                                                            View
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            className="text-[10px] h-8 px-3 bg-green-500 hover:bg-green-600 w-full sm:w-auto"
+                                                            onClick={() => approvePlanner(planner.id)}
+                                                        >
+                                                            Approve
+                                                        </Button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -762,29 +772,29 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
                                 <div className="space-y-4">
                                     <label className="text-sm font-bold uppercase tracking-widest text-gray-500 font-mono">Primary Color</label>
-                                    <div className="flex items-center gap-4 p-3 glass-panel rounded-xl border-white/5">
+                                    <div className="flex items-center gap-4 p-4 glass-panel rounded-2xl border-white/5 bg-white/[0.02]">
                                         <input
                                             type="color"
                                             value={branding.primaryColor}
                                             onChange={(e) => setBranding({ ...branding, primaryColor: e.target.value })}
-                                            className="w-10 h-10 rounded-lg bg-transparent cursor-pointer border-none"
+                                            className="w-12 h-12 rounded-xl bg-transparent cursor-pointer border-none"
                                         />
-                                        <span className="text-sm font-mono text-gray-300 uppercase">{branding.primaryColor}</span>
+                                        <span className="text-sm font-mono text-gray-300 uppercase font-bold tracking-wider">{branding.primaryColor}</span>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <label className="text-sm font-bold uppercase tracking-widest text-gray-500 font-mono">Secondary Color</label>
-                                    <div className="flex items-center gap-4 p-3 glass-panel rounded-xl border-white/5">
+                                    <div className="flex items-center gap-4 p-4 glass-panel rounded-2xl border-white/5 bg-white/[0.02]">
                                         <input
                                             type="color"
                                             value={branding.secondaryColor}
                                             onChange={(e) => setBranding({ ...branding, secondaryColor: e.target.value })}
-                                            className="w-10 h-10 rounded-lg bg-transparent cursor-pointer border-none"
+                                            className="w-12 h-12 rounded-xl bg-transparent cursor-pointer border-none"
                                         />
-                                        <span className="text-sm font-mono text-gray-300 uppercase">{branding.secondaryColor}</span>
+                                        <span className="text-sm font-mono text-gray-300 uppercase font-bold tracking-wider">{branding.secondaryColor}</span>
                                     </div>
                                 </div>
                             </div>
@@ -908,10 +918,12 @@ export default function AdminDashboard() {
                                                         <span className="text-xs">{user.status}</span>
                                                     </div>
                                                 </td>
-                                                <td className="p-5 text-right space-x-2">
-                                                    <button className="p-2 hover:bg-white/5 rounded-lg text-gray-500 hover:text-white transition-all"><MoreVertical size={16} /></button>
-                                                    <button className="p-2 hover:bg-yellow-500/10 rounded-lg text-gray-500 hover:text-yellow-500 transition-all"><ShieldAlert size={16} /></button>
-                                                    <button className="p-2 hover:bg-red-500/10 rounded-lg text-gray-500 hover:text-red-500 transition-all"><Trash2 size={16} /></button>
+                                                <td className="p-5 text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <button className="p-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-all"><MoreVertical size={18} /></button>
+                                                        <button className="p-3 hover:bg-yellow-500/10 rounded-xl text-gray-500 hover:text-yellow-500 transition-all"><ShieldAlert size={18} /></button>
+                                                        <button className="p-3 hover:bg-red-500/10 rounded-xl text-gray-500 hover:text-red-500 transition-all"><Trash2 size={18} /></button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}
@@ -1591,9 +1603,9 @@ export default function AdminDashboard() {
                                         </div>
                                         <button
                                             onClick={() => deleteExternalLink(l.id)}
-                                            className="p-2 rounded-lg opacity-0 group-hover:opacity-100 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all"
+                                            className="p-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all ml-2"
                                         >
-                                            <Trash2 size={14} />
+                                            <Trash2 size={18} />
                                         </button>
                                     </Card>
                                 ))}

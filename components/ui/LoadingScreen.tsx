@@ -24,26 +24,6 @@ export function LoadingScreen({
                         <Sparkles className="text-blue-500 animate-pulse" size={32} />
                     </div>
                 </div>
-
-                <div className="space-y-3">
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/40">
-                        {message}
-                    </h2>
-                    <p className="text-blue-500 dark:text-blue-400 font-bold uppercase tracking-[0.3em] text-[10px] animate-bounce">
-                        {subMessage}
-                    </p>
-                </div>
-
-                {/* Subtle progress indicator dots */}
-                <div className="flex gap-2 justify-center">
-                    {[0, 1, 2].map((i) => (
-                        <div
-                            key={i}
-                            className="w-1.5 h-1.5 rounded-full bg-blue-500/40 animate-bounce"
-                            style={{ animationDelay: `${i * 0.1}s` }}
-                        />
-                    ))}
-                </div>
             </div>
 
             {/* Premium decoration */}

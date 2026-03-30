@@ -24,15 +24,18 @@ export default function MessagesPage() {
 
     return (
         <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)]">
-            <div className="flex items-center gap-4 mb-6 animate-in fade-in slide-in-from-left-4 duration-500">
+            {/* Header */}
+            <div className="flex items-center gap-4 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02] mb-8">
                 <button
                     onClick={() => window.history.back()}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-sm font-bold text-foreground transition-all border border-foreground/5"
+                    className="p-3 glass-panel rounded-2xl hover:bg-white/10 transition-colors shrink-0"
                 >
-                    <X size={16} /> Back to Dashboard
+                    <X size={20} className="text-gray-400" />
                 </button>
-                <div className="h-4 w-px bg-foreground/10 mx-2" />
-                <h1 className="text-2xl font-black italic tracking-tighter uppercase text-foreground">Messages</h1>
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight truncate uppercase italic">Messages</h1>
+                    <p className="text-gray-400 text-xs md:text-sm truncate">Chat with your clients and planners.</p>
+                </div>
             </div>
 
             <div className="flex-1 flex flex-col md:flex-row glass-panel border-white/5 overflow-hidden rounded-[2.5rem] mt-2 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">

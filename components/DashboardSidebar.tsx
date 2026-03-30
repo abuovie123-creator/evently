@@ -57,6 +57,7 @@ export function DashboardSidebar() {
     const [openSubMenus, setOpenSubMenus] = useState<Record<string, boolean>>({});
     const [role, setRole] = useState<string | null>(null);
     const [user, setUser] = useState<any>(null);
+    const [dbUsername, setDbUsername] = useState<string | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [externalLinks, setExternalLinks] = useState<any[]>([]);
@@ -73,10 +74,11 @@ export function DashboardSidebar() {
                 // Fetch profile
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('role')
+                    .select('role, username')
                     .eq('id', user.id)
                     .single();
                 setRole(profile?.role || 'client');
+                setDbUsername(profile?.username);
 
                 // Fetch unread count
                 const fetchUnread = async () => {
@@ -89,6 +91,13 @@ export function DashboardSidebar() {
                 };
                 fetchUnread();
 
+                // Fetch external links
+                const { data: links } = await supabase
+                    .from('external_links')
+                    .select('*')
+                    .order('order_index', { ascending: true });
+                setExternalLinks(links || []);
+
                 // Subscribe to changes
                 const subscription = supabase
                     .channel('unread_messages')
@@ -98,12 +107,6 @@ export function DashboardSidebar() {
                 return () => {
                     supabase.removeChannel(subscription);
                 };
-                // Fetch external links
-                const { data: links } = await supabase
-                    .from('external_links')
-                    .select('*')
-                    .order('order_index', { ascending: true });
-                setExternalLinks(links || []);
             }
         };
 
@@ -143,7 +146,7 @@ export function DashboardSidebar() {
                 label: "Portfolio",
                 icon: ImageIcon,
                 subItems: [
-                    { label: "View Portfolio", href: `/planner/${user?.user_metadata?.username || ''}` },
+                    { label: "View Portfolio", href: `/planner/${dbUsername || ''}` },
                     { label: "Manage Media", href: "/dashboard/planner/portfolio" }
                 ]
             },
@@ -273,7 +276,7 @@ export function DashboardSidebar() {
                     );
                 })}
 
-                {externalLinks.length > 0 && (
+                {externalLinks.length > 0 && role !== 'admin' && (
                     <div className="pt-4 mt-4 border-t border-foreground/5 space-y-1">
                         <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Platform Links</p>
                         {externalLinks.map((link, idx) => (

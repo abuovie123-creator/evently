@@ -278,20 +278,20 @@ export default function PlannerDashboard() {
 
     return (
         <div className="space-y-12 animate-in fade-in duration-700">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight mb-2">Planner Dashboard</h1>
-                    <p className="text-gray-400 text-sm">Manage your portfolio, bookings, and clients.</p>
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02]">
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 truncate">Planner Dashboard</h1>
+                    <p className="text-gray-400 text-xs md:text-sm truncate">Manage your portfolio, bookings, and clients.</p>
                 </div>
-                <div className="flex gap-4 w-full md:w-auto">
-                    <Link href="/dashboard/planner/profile">
-                        <Button variant="outline">
-                            Edit Profile
+                <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                    <Link href="/dashboard/planner/profile" className="w-full sm:w-auto">
+                        <Button variant="outline" className="w-full h-12 rounded-2xl font-bold border-white/10 hover:bg-white/5">
+                            Edit Profile Handle
                         </Button>
                     </Link>
-                    <Link href="/dashboard/planner/portfolio">
-                        <Button className="bg-blue-600 hover:bg-blue-700">
-                            Edit Portfolio
+                    <Link href="/dashboard/planner/portfolio" className="w-full sm:w-auto">
+                        <Button className="bg-blue-600 hover:bg-blue-700 w-full h-12 rounded-2xl font-bold shadow-lg shadow-blue-600/20">
+                            Manage Portfolio
                         </Button>
                     </Link>
                 </div>

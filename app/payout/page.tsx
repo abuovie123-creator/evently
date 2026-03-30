@@ -32,6 +32,8 @@ function PayoutContent() {
     const [screenshot, setScreenshot] = useState<File | null>(null);
     const [user, setUser] = useState<any>(null);
 
+    const [gatewayKeys, setGatewayKeys] = useState<any>(null);
+
     useEffect(() => {
         const initCheckout = async () => {
             const supabase = createClient();
@@ -44,14 +46,15 @@ function PayoutContent() {
             }
             setUser(session.user);
 
-            // Fetch plan details from platform settings
+            // Fetch platform settings (plans and gateway keys)
             const { data: settings } = await supabase
                 .from('platform_settings')
-                .select('subscription_plans')
+                .select('subscription_plans, gateway_keys')
                 .eq('id', 'default')
                 .single();
 
             if (settings) {
+                // 1. Handle Plans
                 const plans = settings.subscription_plans || [];
                 const plan = plans.find((p: any) => p.id === tierId);
                 if (plan) {
@@ -60,11 +63,22 @@ function PayoutContent() {
                 } else {
                     router.push("/pricing");
                 }
+
+                // 2. Handle Gateway Keys (for manual bank details)
+                if (settings.gateway_keys) {
+                    setGatewayKeys(settings.gateway_keys);
+                }
             }
             setIsLoading(false);
         };
         initCheckout();
     }, [tierId, router, showToast]);
+
+    const manualDetails = gatewayKeys?.manual || {
+        bankName: "Standard Chartered Bank",
+        accountNumber: "1234567890",
+        accountName: "Evently Platform Ltd"
+    };
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -180,9 +194,15 @@ function PayoutContent() {
                                         <div className="space-y-2">
                                             <p className="font-bold text-amber-400">Our Bank Details</p>
                                             <div className="space-y-1 text-sm text-gray-300">
-                                                <p>Bank: <span className="text-white font-bold">Standard Chartered Bank</span></p>
-                                                <p>Account: <span className="text-white font-bold">1234567890</span></p>
-                                                <p>Name: <span className="text-white font-bold">Evently Platform Ltd</span></p>
+                                                <p>Bank: <span className="text-white font-bold">{manualDetails.bankName}</span></p>
+                                                <p>Account: <span className="text-white font-bold">{manualDetails.accountNumber}</span></p>
+                                                <p>Name: <span className="text-white font-bold">{manualDetails.accountName}</span></p>
+                                                {manualDetails.additionalInfo && (
+                                                    <div className="mt-4 pt-4 border-t border-white/5">
+                                                        <p className="text-[10px] uppercase tracking-widest text-amber-400/60 font-bold mb-1">Note</p>
+                                                        <p className="text-xs text-gray-400 italic leading-relaxed">{manualDetails.additionalInfo}</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

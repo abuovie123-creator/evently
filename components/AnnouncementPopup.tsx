@@ -51,64 +51,74 @@ export function AnnouncementPopup() {
     if (!announcement) return null;
 
     return (
-        <div className={`fixed bottom-6 right-6 z-[100] max-w-sm w-full transition-all duration-700 transform ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'}`}>
-            <div className="glass-panel p-6 shadow-2xl border-white/10 relative overflow-hidden group">
-                {/* Background Decor */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl group-hover:bg-blue-600/20 transition-colors duration-500" />
+        <>
+            {/* Backdrop */}
+            <div
+                className={`fixed inset-0 z-[100] bg-black/60 backdrop-blur-md transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                onClick={handleClose}
+            />
 
-                <button
-                    onClick={handleClose}
-                    className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors p-1"
-                >
-                    <X size={18} />
-                </button>
+            <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[110] max-w-lg w-[92%] sm:w-full transition-all duration-700 transform ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
+                <div className="glass-panel p-6 md:p-10 shadow-[0_0_50px_-12px_rgba(37,99,235,0.3)] border-white/10 relative overflow-hidden group rounded-[2rem] md:rounded-[3rem]">
+                    {/* Background Decor */}
+                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl group-hover:bg-blue-600/20 transition-colors duration-500" />
+                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl group-hover:bg-purple-600/20 transition-colors duration-500" />
 
-                <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 shrink-0 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-500">
-                        <Bell size={24} className="animate-bounce" />
-                    </div>
-                    <div className="flex-1 space-y-2">
-                        <h3 className="text-lg font-black tracking-tight text-foreground leading-tight">
-                            {announcement.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed font-light">
-                            {announcement.content}
-                        </p>
-                    </div>
-                </div>
-
-                {announcement.image_url && (
-                    <div className="mt-4 rounded-2xl overflow-hidden border border-white/5">
-                        <img
-                            src={announcement.image_url}
-                            alt={announcement.title}
-                            className="w-full h-40 object-cover hover:scale-105 transition-transform duration-700"
-                        />
-                    </div>
-                )}
-
-                <div className="mt-6 flex items-center gap-3">
-                    {announcement.link_url && (
-                        <a
-                            href={announcement.link_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1"
-                        >
-                            <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white gap-2 h-11 rounded-xl shadow-lg shadow-blue-600/20">
-                                View Details <ExternalLink size={16} />
-                            </Button>
-                        </a>
-                    )}
-                    <Button
-                        variant="outline"
+                    <button
                         onClick={handleClose}
-                        className={announcement.link_url ? "px-6 border-white/5 h-11 rounded-xl" : "w-full border-white/5 h-11 rounded-xl"}
+                        className="absolute top-6 right-6 text-muted-foreground hover:text-foreground transition-colors p-2 hover:bg-white/5 rounded-full"
                     >
-                        Dismiss
-                    </Button>
+                        <X size={20} />
+                    </button>
+
+                    <div className="flex flex-col items-center text-center space-y-6 relative z-10">
+                        <div className="w-16 h-16 rounded-3xl bg-blue-600/10 flex items-center justify-center text-blue-500 shadow-xl shadow-blue-500/5">
+                            <Bell size={32} className="animate-bounce" />
+                        </div>
+
+                        <div className="space-y-3">
+                            <h3 className="text-2xl md:text-3xl font-black tracking-tight text-foreground leading-tight">
+                                {announcement.title}
+                            </h3>
+                            <p className="text-base text-muted-foreground leading-relaxed font-light max-w-sm mx-auto">
+                                {announcement.content}
+                            </p>
+                        </div>
+
+                        {announcement.image_url && (
+                            <div className="w-full rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
+                                <img
+                                    src={announcement.image_url}
+                                    alt={announcement.title}
+                                    className="w-full h-48 md:h-64 object-cover hover:scale-105 transition-transform duration-700"
+                                />
+                            </div>
+                        )}
+
+                        <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
+                            {announcement.link_url && (
+                                <a
+                                    href={announcement.link_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full sm:flex-1"
+                                >
+                                    <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white gap-2 h-12 rounded-2xl shadow-lg shadow-blue-600/20 text-sm font-bold">
+                                        View Details <ExternalLink size={18} />
+                                    </Button>
+                                </a>
+                            )}
+                            <Button
+                                variant="outline"
+                                onClick={handleClose}
+                                className={`h-12 rounded-2xl border-white/10 text-sm font-bold ${announcement.link_url ? "w-full sm:w-32" : "w-full"}`}
+                            >
+                                Dismiss
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

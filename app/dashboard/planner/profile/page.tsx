@@ -20,6 +20,7 @@ export default function PlannerProfileEdit() {
 
     const [profile, setProfile] = useState({
         full_name: "",
+        username: "",
         bio: "",
         location: "",
         category: "",
@@ -38,7 +39,7 @@ export default function PlannerProfileEdit() {
 
             const { data, error } = await supabase
                 .from('profiles')
-                .select('full_name, bio, location, category, avatar_url')
+                .select('full_name, username, bio, location, category, avatar_url')
                 .eq('id', session.user.id)
                 .single();
 
@@ -48,6 +49,7 @@ export default function PlannerProfileEdit() {
             } else if (data) {
                 setProfile({
                     full_name: data.full_name || "",
+                    username: data.username || "",
                     bio: data.bio || "",
                     location: data.location || "",
                     category: data.category || "",
@@ -123,6 +125,7 @@ export default function PlannerProfileEdit() {
                 .from('profiles')
                 .update({
                     full_name: profile.full_name,
+                    username: profile.username.toLowerCase().replace(/\s+/g, '_').replace(/[^\w-]/g, ''),
                     bio: profile.bio,
                     location: profile.location,
                     category: profile.category,
@@ -154,13 +157,13 @@ export default function PlannerProfileEdit() {
     return (
         <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex items-center gap-4">
-                <Link href="/dashboard/planner" className="p-2 glass-panel rounded-xl hover:bg-white/10 transition-colors">
+            <div className="flex items-center gap-4 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02]">
+                <Link href="/dashboard/planner" className="p-3 glass-panel rounded-2xl hover:bg-white/10 transition-colors shrink-0">
                     <ArrowLeft size={20} className="text-gray-400" />
                 </Link>
-                <div>
-                    <h1 className="text-3xl font-extrabold tracking-tight">Edit Profile</h1>
-                    <p className="text-gray-400 text-sm">Update your public profile details and avatar.</p>
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight truncate">Edit Profile</h1>
+                    <p className="text-gray-400 text-xs md:text-sm truncate">Update your public profile details and avatar.</p>
                 </div>
             </div>
 
@@ -227,6 +230,18 @@ export default function PlannerProfileEdit() {
 
                         <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
+                                <User size={14} /> Public Username
+                            </label>
+                            <Input
+                                placeholder="e.g. unique_handle"
+                                value={profile.username}
+                                onChange={(e) => handleInputChange('username', e.target.value.toLowerCase().replace(/\s+/g, '_'))}
+                            />
+                            <p className="text-[10px] text-gray-500">This will be your public URL: <span className="text-blue-400">evently.com/planner/{profile.username || 'handle'}</span></p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
                                 <Briefcase size={14} /> Category
                             </label>
                             <select
@@ -272,23 +287,24 @@ export default function PlannerProfileEdit() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex justify-end gap-4 pt-4 border-t border-white/5">
+                <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-white/5">
                     <Button
-                        variant="outline"
+                        variant="glass"
                         onClick={() => router.push("/dashboard/planner")}
                         disabled={isSaving}
+                        className="w-full sm:w-auto h-12 order-2 sm:order-1 font-bold text-gray-400 hover:text-white"
                     >
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSave}
                         disabled={isSaving || isUploading}
-                        className="bg-blue-600 hover:bg-blue-700 min-w-[120px]"
+                        className="bg-blue-600 hover:bg-blue-700 w-full sm:min-w-[160px] h-12 order-1 sm:order-2 font-bold shadow-lg shadow-blue-600/20"
                     >
                         {isSaving ? (
-                            <><Loader2 size={16} className="animate-spin mr-2" /> Saving...</>
+                            <><Loader2 size={18} className="animate-spin mr-2" /> Saving...</>
                         ) : (
-                            <><Save size={16} className="mr-2" /> Save Profile</>
+                            <><Save size={18} className="mr-2" /> Save Profile</>
                         )}
                     </Button>
                 </div>

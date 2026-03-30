@@ -75,15 +75,55 @@ const tiers = [
 export default function PricingPage() {
     const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [dynamicTiers, setDynamicTiers] = useState(tiers);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const checkAuth = async () => {
+        const init = async () => {
             const supabase = createClient();
+
+            // 1. Check Auth
             const { data: { session } } = await supabase.auth.getSession();
             setIsLoggedIn(!!session);
+
+            // 2. Fetch Pricing from Platform Settings
+            const { data: settings } = await supabase
+                .from('platform_settings')
+                .select('subscription_plans')
+                .eq('id', 'default')
+                .single();
+
+            if (settings?.subscription_plans) {
+                const dbPlans = settings.subscription_plans;
+
+                // Merge DB data with local UI metadata
+                const merged = tiers.map(tier => {
+                    const dbPlan = dbPlans.find((p: any) => p.id === tier.id);
+                    if (dbPlan) {
+                        return {
+                            ...tier,
+                            name: dbPlan.name || tier.name,
+                            price: dbPlan.price === "0" ? "Free" : `₦${parseInt(dbPlan.price).toLocaleString()}`,
+                            features: dbPlan.features || tier.features,
+                            period: dbPlan.period ? `/${dbPlan.period}` : tier.period
+                        };
+                    }
+                    return tier;
+                });
+                setDynamicTiers(merged);
+            }
+            setIsLoading(false);
         };
-        checkAuth();
+        init();
     }, []);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-black">
+                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-7xl mx-auto animate-in fade-in duration-500">
@@ -130,12 +170,13 @@ export default function PricingPage() {
 
             {/* Pricing Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto mb-24">
-                {tiers.map((tier, index) => {
+                {dynamicTiers.map((tier, index) => {
                     const Icon = tier.icon;
+                    const rawPrice = parseInt(tier.price.replace(/[₦,]/g, "")) || 0;
                     const displayPrice = tier.price === "Free"
                         ? "Free"
                         : billingCycle === "yearly"
-                            ? `₦${(parseInt(tier.price.replace(/[₦,]/g, "")) * 10).toLocaleString()}`
+                            ? `₦${(rawPrice * 10).toLocaleString()}`
                             : tier.price;
                     const displayPeriod = tier.price === "Free"
                         ? ""

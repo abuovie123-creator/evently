@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Play, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Play, Image as ImageIcon, Loader2, X } from "lucide-react";
+import { useToast } from "@/components/ui/Toast";
 
 export default function EventAlbumPage({ params }: { params: Promise<{ "slug": string }> }) {
     const paramData = use(params);
@@ -13,6 +14,8 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
     const [isLoading, setIsLoading] = useState(true);
     const [event, setEvent] = useState<any>(null);
     const [media, setMedia] = useState<any[]>([]);
+    const [selectedMedia, setSelectedMedia] = useState<any>(null);
+    const { showToast } = useToast();
 
     useEffect(() => {
         const fetchEventData = async () => {
@@ -39,6 +42,7 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
             }
 
             setEvent({
+                id: eventData.id,
                 title: eventData.title,
                 description: eventData.description,
                 category: eventData.category,
@@ -67,6 +71,51 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
 
         fetchEventData();
     }, [eventSlug]);
+
+    const handleShare = async () => {
+        const url = window.location.href;
+        const shareData = {
+            title: event.title,
+            text: `Check out this amazing event by ${event.planner.name} on Evently!`,
+            url: url,
+        };
+
+        try {
+            // 1. Try native sharing first
+            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+                return; // Success
+            }
+        } catch (err: any) {
+            // Ignore AbortError (user cancelled)
+            if (err.name === 'AbortError') return;
+            console.error("Native share failed:", err);
+        }
+
+        // 2. Fallback to clipboard if native share fails or isn't supported
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(url);
+                showToast("Link copied to clipboard!", "success");
+            } else {
+                throw new Error("Clipboard API not available");
+            }
+        } catch (err) {
+            // 3. Last resort legacy fallback
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast("Link copied!", "success");
+            } catch (copyErr) {
+                console.error("All share/copy methods failed:", copyErr);
+                showToast("Could not copy link. Please copy the URL manually.", "error");
+            }
+        }
+    };
 
     if (isLoading) return (
         <div className="min-h-screen flex items-center justify-center bg-black">
@@ -101,7 +150,7 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                         <p className="text-xl text-gray-400 leading-relaxed font-light">{event.description}</p>
                     </div>
 
-                    <Link href={`/planner/${event.planner.username}`} className="group">
+                    <Link href={event.planner.username ? `/planner/${event.planner.username}` : `/planner/profile/${event.id}`} className="group w-full md:w-auto">
                         <Card className="flex items-center gap-4 py-4 pr-8 border-white/10 hover:border-white/30 transition-all">
                             <img src={event.planner.avatar} className="w-12 h-12 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all" alt={event.planner.name} />
                             <div>
@@ -117,7 +166,11 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                     {media.length === 0 ? (
                         <p className="text-gray-500 italic">No media found for this event.</p>
                     ) : media.map((item: any, i: number) => (
-                        <div key={item.id || i} className="relative group overflow-hidden rounded-3xl glass-panel border-white/10">
+                        <div
+                            key={item.id || i}
+                            className="relative group overflow-hidden rounded-3xl glass-panel border-white/10 cursor-pointer"
+                            onClick={() => setSelectedMedia(item)}
+                        >
                             {item.media_type === 'video' ? (
                                 <div className="relative aspect-video bg-black">
                                     <video
@@ -140,8 +193,8 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                                     alt={`${event.title} image ${i + 1}`}
                                 />
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                                <Button size="sm" variant="glass" className="backdrop-blur-xl">
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent md:opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                                <Button size="sm" variant="glass" className="backdrop-blur-xl w-full md:w-auto">
                                     {item.media_type === 'video' ? 'Play Video' : 'View Full Image'}
                                 </Button>
                             </div>
@@ -150,15 +203,53 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                 </div>
 
                 {/* Call to Action */}
-                <div className="mt-24 text-center space-y-8 glass-panel p-16 rounded-[3rem] border-white/5 bg-gradient-to-b from-white/[0.02] to-transparent">
+                <div className="mt-24 text-center space-y-8 glass-panel p-10 md:p-16 rounded-[2rem] md:rounded-[3rem] border-white/5 bg-gradient-to-b from-white/[0.02] to-transparent">
                     <h2 className="text-3xl md:text-4xl font-bold">Inspired by this event?</h2>
                     <p className="text-gray-400 max-w-xl mx-auto">Book {event.planner.name} for your own celebration and make it unforgettable.</p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button size="lg">Send Booking Request</Button>
-                        <Button variant="outline" size="lg">Share Album</Button>
+                        <Link href={event.planner.username ? `/planner/${event.planner.username}?book=true` : `/planner/profile/${event.id}?book=true`} className="w-full sm:w-auto">
+                            <Button size="lg" className="w-full">Send Booking Request</Button>
+                        </Link>
+                        <Button variant="outline" size="lg" onClick={handleShare} className="w-full sm:w-auto">Share Album</Button>
                     </div>
                 </div>
             </div>
+
+            {/* Lightbox / Media Viewer */}
+            {selectedMedia && (
+                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/95 backdrop-blur-sm" onClick={() => setSelectedMedia(null)} />
+                    <button
+                        onClick={() => setSelectedMedia(null)}
+                        className="absolute top-8 right-8 z-[160] p-3 bg-white/5 hover:bg-white/10 rounded-full transition-all text-white"
+                    >
+                        <X size={24} />
+                    </button>
+
+                    <div className="relative z-10 max-w-5xl w-full aspect-auto animate-in zoom-in-95 duration-300">
+                        {selectedMedia.media_type === 'video' ? (
+                            <video
+                                src={selectedMedia.media_url}
+                                className="w-full max-h-[80vh] rounded-2xl shadow-2xl"
+                                controls
+                                autoPlay
+                            />
+                        ) : (
+                            <img
+                                src={selectedMedia.media_url}
+                                className="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl"
+                                alt="Full size"
+                            />
+                        )}
+                        <div className="mt-6 flex justify-between items-center px-4">
+                            <h4 className="text-xl font-bold">{event.title}</h4>
+                            <div className="flex gap-4">
+                                <Button variant="outline" size="sm" onClick={handleShare}>Share</Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

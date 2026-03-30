@@ -366,33 +366,33 @@ export default function PlannerPortfolio() {
     return (
         <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="flex items-center gap-4">
-                    <Link href="/dashboard/planner" className="p-2 glass-panel rounded-xl hover:bg-white/10 transition-colors">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02]">
+                <div className="flex items-center gap-4 w-full lg:w-auto">
+                    <Link href="/dashboard/planner" className="p-3 glass-panel rounded-2xl hover:bg-white/10 transition-colors shrink-0">
                         <ArrowLeft size={20} className="text-gray-400" />
                     </Link>
-                    <div>
-                        <h1 className="text-3xl font-extrabold tracking-tight">Portfolio & Albums</h1>
-                        <p className="text-gray-400 text-sm">Create and manage event albums shown on your public profile.</p>
+                    <div className="flex-1 min-w-0">
+                        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight truncate">Portfolio & Albums</h1>
+                        <p className="text-gray-400 text-xs md:text-sm truncate">Manage your event albums shown publicly.</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto">
                     {/* Usage Indicator */}
-                    <div className="hidden md:flex flex-col items-end mr-4">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Image Usage</span>
-                        <div className="flex items-center gap-2">
-                            <div className="w-32 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="flex flex-col items-center sm:items-end w-full sm:w-auto">
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Image Usage</span>
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <div className="flex-1 sm:w-32 h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
                                 <div
-                                    className={`h-full rounded-full transition-all duration-1000 ${currentImageCount >= imageLimit ? 'bg-red-500' : 'bg-blue-500'}`}
+                                    className={`h-full rounded-full transition-all duration-1000 ${currentImageCount >= imageLimit ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]'}`}
                                     style={{ width: `${Math.min(100, (currentImageCount / imageLimit) * 100)}%` }}
                                 />
                             </div>
-                            <span className="text-xs font-bold">{currentImageCount}/{imageLimit}</span>
+                            <span className="text-xs font-bold font-mono whitespace-nowrap">{currentImageCount} / {imageLimit}</span>
                         </div>
                     </div>
 
-                    <Button onClick={() => setShowAddModal(true)} className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto">
+                    <Button onClick={() => setShowAddModal(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg shadow-blue-600/20 text-sm font-bold shrink-0">
                         <Plus size={18} className="mr-2" /> New Album
                     </Button>
                 </div>
@@ -407,8 +407,17 @@ export default function PlannerPortfolio() {
 
                     <div className="grid grid-cols-1 gap-3">
                         {events.length === 0 ? (
-                            <Card className="p-10 text-center border-dashed border-white/10" hover={false}>
-                                <p className="text-gray-500 text-sm italic">No albums yet. Create your first one!</p>
+                            <Card className="p-16 text-center border-dashed border-white/10 flex flex-col items-center space-y-6" hover={false}>
+                                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-500">
+                                    <Images size={32} />
+                                </div>
+                                <div className="space-y-2">
+                                    <p className="text-gray-400 font-bold">No albums yet</p>
+                                    <p className="text-gray-600 text-xs max-w-[200px] mx-auto italic">Showcase your best work to attract more clients.</p>
+                                </div>
+                                <Button onClick={() => setShowAddModal(true)} size="sm" className="bg-blue-600 hover:bg-blue-700 rounded-xl">
+                                    <Plus size={16} className="mr-2" /> Create First Album
+                                </Button>
                             </Card>
                         ) : events.map((event) => (
                             <button

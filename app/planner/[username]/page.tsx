@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, Calendar, MapPin, Tag, Star, TrendingUp, X, Check, MessageSquare } from "lucide-react";
+import { Loader2, Calendar, MapPin, Tag, Star, TrendingUp, X, Check, MessageSquare, Share2 } from "lucide-react";
 
 interface PlannerProfile {
     id: string;
@@ -84,6 +84,8 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
         }
     };
 
+    const [showAllEvents, setShowAllEvents] = useState(false);
+
     useEffect(() => {
         const fetchPlannerData = async () => {
             const supabase = createClient();
@@ -157,6 +159,14 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 }
             }
 
+            // 4. Check for booking trigger from URL
+            if (typeof window !== 'undefined') {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('book') === 'true') {
+                    setShowBookingModal(true);
+                }
+            }
+
             setIsLoading(false);
         };
 
@@ -222,6 +232,51 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
         }
     };
 
+    const handleShare = async () => {
+        const url = window.location.href;
+        const shareData = {
+            title: planner?.name || "Evently Planner",
+            text: `Check out ${planner?.name}'s portfolio on Evently!`,
+            url: url,
+        };
+
+        try {
+            // 1. Try native sharing first
+            if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+                return; // Success
+            }
+        } catch (err: any) {
+            // Ignore AbortError (user cancelled)
+            if (err.name === 'AbortError') return;
+            console.error("Native share failed:", err);
+        }
+
+        // 2. Fallback to clipboard if native share fails or isn't supported
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(url);
+                showToast("Link copied to clipboard!", "success");
+            } else {
+                throw new Error("Clipboard API not available");
+            }
+        } catch (err) {
+            // 3. Last resort legacy fallback
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast("Link copied!", "success");
+            } catch (copyErr) {
+                console.error("All share/copy methods failed:", copyErr);
+                showToast("Could not copy link. Please copy the URL manually.", "error");
+            }
+        }
+    };
+
     if (isLoading) return (
         <div className="min-h-screen flex items-center justify-center bg-black">
             <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -263,23 +318,35 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                             </div>
                             <p className="text-lg md:text-xl text-gray-300 font-medium">{planner.category}</p>
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-4 md:mt-0 pb-0 md:pb-4">
-                            <Button size="lg" className="w-full sm:w-auto shadow-2xl" onClick={() => setShowBookingModal(true)}>Book Now</Button>
-                            <Button
-                                variant="glass"
-                                size="lg"
-                                className="w-full sm:w-auto"
-                                onClick={() => {
-                                    if (hasApprovedBooking) {
-                                        router.push("/dashboard/messages");
-                                    } else {
-                                        showToast("Chat becomes available once your booking is approved!", "info");
-                                    }
-                                }}
-                            >
-                                <MessageSquare size={18} className="mr-2" />
-                                Chat
+                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-8 md:mt-0 pb-0 md:pb-4 justify-center md:justify-end">
+                            <Button size="lg" className="w-full sm:w-auto shadow-2xl h-14 md:h-12 bg-blue-600 hover:bg-blue-700" onClick={() => setShowBookingModal(true)}>
+                                Book Now
                             </Button>
+                            <div className="flex gap-3 w-full sm:w-auto">
+                                <Button
+                                    variant="glass"
+                                    size="lg"
+                                    className="flex-1 sm:w-auto shadow-2xl h-14 md:h-12"
+                                    onClick={() => {
+                                        if (hasApprovedBooking) {
+                                            router.push("/dashboard/messages");
+                                        } else {
+                                            showToast("Chat becomes available once your booking is approved!", "info");
+                                        }
+                                    }}
+                                >
+                                    <MessageSquare size={18} className="mr-2" />
+                                    Chat
+                                </Button>
+                                <Button
+                                    variant="glass"
+                                    size="lg"
+                                    className="px-4 shadow-2xl h-14 md:h-12"
+                                    onClick={handleShare}
+                                >
+                                    <Share2 size={18} />
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -300,7 +367,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                         </div>
 
                         <form onSubmit={handleBookingSubmit} className="space-y-6">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Event Type</label>
                                     <select
@@ -393,13 +460,22 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 <div className="lg:col-span-2 space-y-8">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                         <h2 className="text-2xl md:text-3xl font-bold">Featured Albums</h2>
-                        <Button variant="outline" size="sm" className="w-full sm:w-auto">View All Events</Button>
+                        {albums.length > 2 && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full sm:w-auto"
+                                onClick={() => setShowAllEvents(!showAllEvents)}
+                            >
+                                {showAllEvents ? "Show Less" : "View All Events"}
+                            </Button>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {albums.length === 0 ? (
                             <p className="text-gray-500 italic">No featured albums yet.</p>
-                        ) : albums.map((album: any) => (
+                        ) : (showAllEvents ? albums : albums.slice(0, 2)).map((album: any) => (
                             <Link href={`/events/${album.slug}`} key={album.id}>
                                 <Card className="group p-0 overflow-hidden cursor-pointer h-full">
                                     <div className="aspect-video relative overflow-hidden">

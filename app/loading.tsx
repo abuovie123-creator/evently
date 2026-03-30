@@ -4,8 +4,6 @@ import { Sparkles } from "lucide-react";
 export default function Loading() {
     return (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/60 backdrop-blur-xl animate-in fade-in duration-500">
-            <FaviconSwitcher />
-
             {/* Advanced Loading UI */}
             <div className="relative group">
                 {/* Outer Glow */}
@@ -18,18 +16,6 @@ export default function Loading() {
 
                     {/* Festive Icon instead of "E" */}
                     <Sparkles className="text-blue-400 animate-pulse" size={32} />
-                </div>
-            </div>
-
-            {/* Loading Text */}
-            <div className="mt-8 flex flex-col items-center gap-2">
-                <p className="text-sm font-bold tracking-[0.2em] text-white uppercase opacity-50">
-                    Preparing your event
-                </p>
-                <div className="flex gap-1.5">
-                    <div className="w-1 h-1 bg-blue-500 rounded-full animate-bounce delay-0" />
-                    <div className="w-1 h-1 bg-blue-400 rounded-full animate-bounce delay-150" />
-                    <div className="w-1 h-1 bg-blue-300 rounded-full animate-bounce delay-300" />
                 </div>
             </div>
 
