@@ -118,13 +118,13 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
     };
 
     if (isLoading) return (
-        <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="min-h-screen flex items-center justify-center bg-background">
             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
         </div>
     );
 
     if (!event) return (
-        <div className="min-h-screen flex items-center justify-center bg-black text-white flex-col gap-4">
+        <div className="min-h-screen flex items-center justify-center bg-background text-foreground flex-col gap-4">
             <h2 className="text-2xl font-bold">Event Not Found</h2>
             <Link href="/planners">
                 <Button variant="outline">Back to Explore</Button>
@@ -133,7 +133,7 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
     );
 
     return (
-        <main className="min-h-screen bg-[#0a0a0a] text-white pb-20 pt-32">
+        <main className="min-h-screen bg-background text-foreground pb-20 pt-32">
             <div className="max-w-7xl mx-auto px-6">
                 {/* Event Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-12">
@@ -142,7 +142,7 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                             <span className="px-3 py-1 glass-panel text-[10px] font-bold uppercase tracking-widest text-blue-400 border-blue-400/20 rounded-full">
                                 {event.category}
                             </span>
-                            <span className="px-3 py-1 glass-panel text-[10px] font-bold uppercase tracking-widest text-gray-500 border-white/10 rounded-full">
+                            <span className="px-3 py-1 glass-panel text-[10px] font-bold uppercase tracking-widest text-muted-foreground border-foreground/10 rounded-full">
                                 {event.date}
                             </span>
                         </div>
@@ -151,7 +151,7 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                     </div>
 
                     <Link href={event.planner.username ? `/planner/${event.planner.username}` : `/planner/profile/${event.id}`} className="group w-full md:w-auto">
-                        <Card className="flex items-center gap-4 py-4 pr-8 border-white/10 hover:border-white/30 transition-all">
+                        <Card className="flex items-center gap-4 py-4 pr-8 border-foreground/10 hover:border-foreground/30 transition-all">
                             <img src={event.planner.avatar} className="w-12 h-12 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all" alt={event.planner.name} />
                             <div>
                                 <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Planned by</p>
@@ -168,7 +168,7 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                     ) : media.map((item: any, i: number) => (
                         <div
                             key={item.id || i}
-                            className="relative group overflow-hidden rounded-3xl glass-panel border-white/10 cursor-pointer"
+                            className="relative group overflow-hidden rounded-3xl glass-panel border-foreground/10 cursor-pointer"
                             onClick={() => setSelectedMedia(item)}
                         >
                             {item.media_type === 'video' ? (
@@ -203,7 +203,7 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                 </div>
 
                 {/* Call to Action */}
-                <div className="mt-24 text-center space-y-8 glass-panel p-10 md:p-16 rounded-[2rem] md:rounded-[3rem] border-white/5 bg-gradient-to-b from-white/[0.02] to-transparent">
+                <div className="mt-24 text-center space-y-8 glass-panel p-10 md:p-16 rounded-[2rem] md:rounded-[3rem] border-foreground/5 bg-gradient-to-b from-foreground/[0.02] to-transparent">
                     <h2 className="text-3xl md:text-4xl font-bold">Inspired by this event?</h2>
                     <p className="text-gray-400 max-w-xl mx-auto">Book {event.planner.name} for your own celebration and make it unforgettable.</p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -221,7 +221,7 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                     <div className="absolute inset-0 bg-black/95 backdrop-blur-sm" onClick={() => setSelectedMedia(null)} />
                     <button
                         onClick={() => setSelectedMedia(null)}
-                        className="absolute top-8 right-8 z-[160] p-3 bg-white/5 hover:bg-white/10 rounded-full transition-all text-white"
+                        className="absolute top-8 right-8 z-[160] p-3 bg-foreground/5 hover:bg-foreground/10 rounded-full transition-all text-foreground"
                     >
                         <X size={24} />
                     </button>

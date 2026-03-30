@@ -24,11 +24,13 @@ import {
     History,
     Search,
     MessageSquare,
-    ExternalLink
+    ExternalLink,
+    LifeBuoy
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "./ui/Toast";
 import { ThemeToggle } from "./ThemeToggle";
+import { NotificationBell } from "./NotificationBell";
 import { LoadingScreen } from "./ui/LoadingScreen";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -58,6 +60,7 @@ export function DashboardSidebar() {
     const [role, setRole] = useState<string | null>(null);
     const [user, setUser] = useState<any>(null);
     const [dbUsername, setDbUsername] = useState<string | null>(null);
+    const [fullName, setFullName] = useState<string | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [externalLinks, setExternalLinks] = useState<any[]>([]);
@@ -74,11 +77,12 @@ export function DashboardSidebar() {
                 // Fetch profile
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('role, username')
+                    .select('role, username, full_name')
                     .eq('id', user.id)
                     .single();
                 setRole(profile?.role || 'client');
                 setDbUsername(profile?.username);
+                setFullName(profile?.full_name);
 
                 // Fetch unread count
                 const fetchUnread = async () => {
@@ -174,6 +178,8 @@ export function DashboardSidebar() {
                 ]
             },
             { label: "Analytics", href: "/dashboard/admin#stats", icon: TrendingUp },
+            { label: "Support Center", href: "/dashboard/admin/support", icon: LifeBuoy },
+            { label: "Site Content", href: "/dashboard/admin/content", icon: LayoutDashboard },
             { label: "Settings", href: "/dashboard/settings", icon: Settings },
         ],
         client: [
@@ -208,10 +214,8 @@ export function DashboardSidebar() {
                     <Link href="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-white">
                         Evently
                     </Link>
-                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1 font-bold">
-                        {role} portal
-                    </p>
                 </div>
+                <NotificationBell />
             </div>
 
             <nav className="flex-1 space-y-1">
@@ -310,8 +314,7 @@ export function DashboardSidebar() {
                         {user?.email?.[0].toUpperCase() || "U"}
                     </div>
                     <div className="overflow-hidden">
-                        <p className="text-xs font-bold truncate text-foreground">{user?.email}</p>
-                        <p className="text-[10px] text-muted-foreground capitalize">{role}</p>
+                        <p className="text-xs font-bold truncate text-foreground">{fullName || user?.email}</p>
                     </div>
                 </div>
                 <button
@@ -350,7 +353,7 @@ export function DashboardSidebar() {
                 </div>
                 <button
                     onClick={() => setIsMobileOpen(false)}
-                    className="absolute top-8 right-8 z-[70] p-3 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-all"
+                    className="absolute top-8 right-8 z-[70] p-3 text-foreground/50 hover:text-foreground hover:bg-foreground/10 rounded-full transition-all"
                 >
                     <X size={24} />
                 </button>

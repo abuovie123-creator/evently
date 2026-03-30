@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, X, LogOut, User as UserIcon, Settings } from "lucide-react";
 import { Button } from "./ui/Button";
 import { ThemeToggle } from "./ThemeToggle";
+import { NotificationBell } from "./NotificationBell";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { useRouter, usePathname } from "next/navigation";
@@ -20,6 +21,7 @@ export function Navbar() {
     const router = useRouter();
     const pathname = usePathname();
     const { showToast } = useToast();
+    const [externalLinks, setExternalLinks] = useState<any[]>([]);
 
 
     useEffect(() => {
@@ -38,6 +40,17 @@ export function Navbar() {
         };
 
         initUser();
+
+        // Fetch external links
+        const fetchLinks = async () => {
+            const { data: links } = await supabase
+                .from('external_links')
+                .select('*')
+                .order('order_index', { ascending: true });
+            setExternalLinks(links || []);
+        };
+        fetchLinks();
+
         router.prefetch("/planners");
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -91,6 +104,19 @@ export function Navbar() {
                         <Link href="/events" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors">Events Gallery</Link>
                         <Link href="/pricing" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors">Pricing</Link>
 
+                        {/* Dynamic External Links (Desktop) */}
+                        {externalLinks.length > 0 && role !== 'admin' && externalLinks.map((link) => (
+                            <a
+                                key={link.id}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors flex items-center gap-1"
+                            >
+                                {link.label}
+                            </a>
+                        ))}
+
 
 
                         {user ? (
@@ -120,8 +146,8 @@ export function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Menu Actions */}
                     <div className="flex md:hidden items-center gap-3">
+                        {user && <NotificationBell />}
                         <ThemeToggle />
                         <button
                             className="text-foreground p-2 hover:bg-foreground/5 rounded-full transition-colors"
@@ -141,6 +167,7 @@ export function Navbar() {
                         <div className="flex items-center justify-between mb-12">
                             <div className="flex items-center gap-4">
                                 <span className="text-2xl font-bold text-foreground">Evently</span>
+                                {user && <NotificationBell />}
                                 <ThemeToggle />
                             </div>
                             <button onClick={() => setIsOpen(false)} className="p-2 text-gray-500 hover:text-foreground">
@@ -166,6 +193,23 @@ export function Navbar() {
                                         {link.label}
                                     </span>
                                 </Link>
+                            ))}
+
+                            {/* Dynamic External Links (Mobile) */}
+                            {externalLinks.length > 0 && role !== 'admin' && externalLinks.map((link, i) => (
+                                <a
+                                    key={link.id}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={() => setIsOpen(false)}
+                                    className={`block text-2xl font-bold transition-all duration-300 transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+                                    style={{ transitionDelay: `${(4 + i) * 50 + 100}ms` }}
+                                >
+                                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-400 hover:to-blue-600 transition-all">
+                                        {link.label}
+                                    </span>
+                                </a>
                             ))}
                         </nav>
 

@@ -11,8 +11,8 @@
   --muted-foreground: #4b5563;
   --accent: #f4f4f5;
   --accent-foreground: #18181b;
-  --glass-bg: rgba(0, 0, 0, 0.04);
-  --glass-border: rgba(0, 0, 0, 0.12);
+  --glass-bg: rgba(0, 0, 0, 0.05);
+  --glass-border: rgba(0, 0, 0, 0.08);
 }
 
 .dark {

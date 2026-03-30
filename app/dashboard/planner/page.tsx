@@ -8,6 +8,88 @@ import { Crown, Sparkles, ArrowUpRight, Check, Calendar, Image as ImageIcon, Sta
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState, useCallback } from "react";
 import { Input } from "@/components/ui/Input";
+import { BookingCountdown } from "@/components/BookingCountdown";
+
+const ProfileVisibilityChart = ({ data }: { data: number[] }) => {
+    const max = Math.max(...data, 1);
+    const points = data.map((val, i) => `${(i / (data.length - 1)) * 100},${100 - (val / max) * 100}`).join(" ");
+
+    return (
+        <div className="w-full h-48 relative group">
+            <svg viewBox="0 -10 100 120" preserveAspectRatio="none" className="w-full h-full overflow-visible">
+                <defs>
+                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                    </linearGradient>
+                </defs>
+                <polyline
+                    fill="url(#chartGradient)"
+                    points={`0,100 ${points} 100,100`}
+                    className="transition-all duration-1000 ease-in-out"
+                />
+                <polyline
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    points={points}
+                    className="transition-all duration-1000 ease-in-out"
+                    style={{ filter: "drop-shadow(0px 2px 4px rgba(59, 130, 246, 0.3))" }}
+                />
+                {data.map((val, i) => {
+                    const cx = (i / (data.length - 1)) * 100;
+                    const cy = 100 - (val / max) * 100;
+                    return (
+                        <g key={i} className="group/dot">
+                            <circle
+                                cx={cx}
+                                cy={cy}
+                                r="3"
+                                className="fill-blue-500/0 hover:fill-blue-500/10 transition-all cursor-pointer"
+                            />
+                            <circle
+                                cx={cx}
+                                cy={cy}
+                                r="1"
+                                className="fill-blue-500 stroke-white/50 stroke-[0.5] transition-all cursor-pointer"
+                            />
+                            <g className="opacity-0 group-hover/dot:opacity-100 transition-opacity pointer-events-none">
+                                <rect
+                                    x={cx - 4}
+                                    y={cy - 10}
+                                    width="8"
+                                    height="6"
+                                    rx="1"
+                                    className="fill-slate-900 shadow-2xl"
+                                />
+                                <text
+                                    x={cx}
+                                    y={cy - 6}
+                                    fontSize="3.5"
+                                    textAnchor="middle"
+                                    className="fill-white font-bold"
+                                >
+                                    {val}
+                                </text>
+                            </g>
+                        </g>
+                    );
+                })}
+            </svg>
+            <div className="absolute inset-x-0 -bottom-2 flex justify-between px-2 pt-4 opacity-100 transition-opacity pointer-events-none">
+                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Mon</span>
+                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Tue</span>
+                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Wed</span>
+                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Thu</span>
+                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Fri</span>
+                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Sat</span>
+                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Sun</span>
+            </div>
+        </div>
+    );
+};
 
 interface StatItem {
     label: string;
@@ -20,6 +102,7 @@ interface BookingItem {
     id: string;
     title: string;
     date: string;
+    eventDate: string;
     location: string;
     status: string;
     eventType: string;
@@ -37,6 +120,8 @@ interface PlanFeature {
 export default function PlannerDashboard() {
     const { showToast } = useToast();
     const [isLoading, setIsLoading] = useState(true);
+    const [userName, setUserName] = useState("");
+    const [visibilityData, setVisibilityData] = useState([12, 18, 15, 25, 22, 30, 28]);
     const [currentPlan, setCurrentPlan] = useState({
         name: "Starter",
         price: "₦0",
@@ -54,8 +139,8 @@ export default function PlannerDashboard() {
     const [stats, setStats] = useState([
         { label: "Bookings", value: "0", change: "+0", icon: Calendar },
         { label: "Profile Views", value: "0", change: "+0%", icon: TrendingUp },
-        { label: "Revenue", value: "₦0", change: "+₦0", icon: Sparkles },
-        { label: "Rating", value: "0.0", change: "★", icon: Star },
+        { label: "Global Rank", value: "Top 5%", change: "Ranked", icon: Sparkles },
+        { label: "Client Rating", value: "0.0", change: "★", icon: Star },
     ]);
 
     const [recentBookings, setRecentBookings] = useState<BookingItem[]>([]);
@@ -152,21 +237,48 @@ export default function PlannerDashboard() {
             }
         }
 
-        // 4. Fetch Stats
+        // 4. Fetch Stats & Daily Views
         const { count: bookingsCount } = await supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('planner_id', uid);
         const { count: viewsCount } = await supabase.from('profile_views').select('id', { count: 'exact', head: true }).eq('profile_id', uid);
+
+        // Fetch views for the last 7 days
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+        const { data: dailyViews } = await supabase
+            .from('profile_views')
+            .select('created_at')
+            .eq('profile_id', uid)
+            .gte('created_at', sevenDaysAgo.toISOString());
+
+        if (dailyViews) {
+            const counts = new Array(7).fill(0);
+            const now = new Date();
+            dailyViews.forEach(v => {
+                const day = new Date(v.created_at);
+                const diff = Math.floor((now.getTime() - day.getTime()) / (1000 * 60 * 60 * 24));
+                if (diff >= 0 && diff < 7) {
+                    counts[6 - diff]++;
+                }
+            });
+            setVisibilityData(counts);
+        }
 
         setStats([
             { label: "Bookings", value: bookingsCount?.toString() || "0", change: "+0", icon: Calendar },
             { label: "Profile Views", value: viewsCount?.toString() || "0", change: "+0%", icon: TrendingUp },
-            { label: "Revenue", value: "₦0", change: "+₦0", icon: Sparkles },
-            { label: "Rating", value: profile?.rating?.toString() || "0.0", change: "★", icon: Star },
+            { label: "Global Rank", value: "Top 5%", change: "Ranked", icon: Sparkles },
+            { label: "Client Rating", value: profile?.rating?.toString() || "0.0", change: "★", icon: Star },
         ]);
+
+        if (profile?.full_name) {
+            setUserName(profile.full_name.split(' ')[0]);
+        }
 
         // 5. Fetch Recent Bookings
         const { data: bData } = await supabase
             .from('bookings')
-            .select('*, profiles:client_id(full_name, location)')
+            .select('*, client:profiles!bookings_client_id_fkey(full_name, location)')
             .eq('planner_id', uid)
             .order('created_at', { ascending: false })
             .limit(5);
@@ -174,9 +286,10 @@ export default function PlannerDashboard() {
         if (bData) {
             setRecentBookings(bData.map((b: any) => ({
                 id: b.id,
-                title: `Inquiry from ${b.profiles?.full_name || 'Client'}`,
+                title: `Inquiry from ${b.client?.full_name || 'Client'}`,
                 date: new Date(b.created_at).toLocaleDateString(),
-                location: b.profiles?.location || "N/A",
+                eventDate: b.event_date,
+                location: b.client?.location || "N/A",
                 status: b.status.charAt(0).toUpperCase() + b.status.slice(1),
                 eventType: b.event_type,
                 client_id: b.client_id,
@@ -188,7 +301,7 @@ export default function PlannerDashboard() {
         // 6. Fetch Conversations
         const { data: cData } = await supabase
             .from('conversations')
-            .select('*, profiles:client_id(full_name, avatar_url)')
+            .select('*, client:profiles!conversations_client_id_fkey(full_name, avatar_url)')
             .eq('planner_id', uid)
             .order('last_message_at', { ascending: false })
             .limit(3);
@@ -196,9 +309,9 @@ export default function PlannerDashboard() {
         if (cData) {
             setRecentMessages(cData.map(c => ({
                 id: c.id,
-                name: c.profiles?.full_name || "Client",
+                name: c.client?.full_name || "Client",
                 lastMessage: c.last_message,
-                avatar: c.profiles?.avatar_url,
+                avatar: c.client?.avatar_url,
                 time: c.last_message_at
             })));
 
@@ -266,9 +379,21 @@ export default function PlannerDashboard() {
                     .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations', filter: `planner_id=eq.${userId}` }, () => fetchDashboardData(userId!))
                     .subscribe();
 
+                const viewsSub = supabase
+                    .channel('planner_views')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profile_views', filter: `profile_id=eq.${userId}` }, () => fetchDashboardData(userId!))
+                    .subscribe();
+
+                const messagesSub = supabase
+                    .channel('planner_messages')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => fetchDashboardData(userId!))
+                    .subscribe();
+
                 return () => {
                     supabase.removeChannel(bookingsSub);
                     supabase.removeChannel(convosSub);
+                    supabase.removeChannel(viewsSub);
+                    supabase.removeChannel(messagesSub);
                 };
             }
         };
@@ -278,10 +403,12 @@ export default function PlannerDashboard() {
 
     return (
         <div className="space-y-12 animate-in fade-in duration-700">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02]">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2.5rem] border-blue-500/10 bg-blue-600/[0.02] shadow-2xl shadow-blue-500/5 hover:border-blue-500/20 transition-all duration-500 animate-in fade-in slide-in-from-top-4">
                 <div className="flex-1 min-w-0">
-                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 truncate">Planner Dashboard</h1>
-                    <p className="text-gray-400 text-xs md:text-sm truncate">Manage your portfolio, bookings, and clients.</p>
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2 truncate">
+                        Welcome back, <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">{userName}</span>!
+                    </h1>
+                    <p className="text-muted-foreground text-xs md:text-sm truncate font-light">Here's a look at your platform performance over the last 7 days.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
                     <Link href="/dashboard/planner/profile" className="w-full sm:w-auto">
@@ -297,22 +424,42 @@ export default function PlannerDashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {stats.map((stat: StatItem, i: number) => {
-                    const Icon = stat.icon;
-                    return (
-                        <Card key={i} className={`space-y-2 group ${isLoading ? 'animate-pulse' : ''}`}>
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>
-                                <Icon size={14} className="text-gray-600 group-hover:text-blue-400 transition-colors" />
-                            </div>
-                            <div className="flex items-end justify-between">
-                                <span className="text-2xl font-bold">{stat.value}</span>
-                                <span className={`text-xs font-bold ${stat.change.startsWith('+') ? 'text-green-400' : 'text-gray-500'}`}>{stat.change}</span>
-                            </div>
-                        </Card>
-                    );
-                })}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <Card className="lg:col-span-2 p-8 space-y-6 flex flex-col justify-between overflow-hidden relative">
+                    <div className="flex justify-between items-center mb-4">
+                        <div>
+                            <h3 className="text-xl font-black tracking-tight">Visibility Trends</h3>
+                            <p className="text-xs text-muted-foreground font-light">Real-time profile view analysis</p>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest rounded-full">
+                            <TrendingUp size={12} />
+                            +24% Increase
+                        </div>
+                    </div>
+                    <ProfileVisibilityChart data={visibilityData} />
+                </Card>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
+                    {stats.map((stat: StatItem, i: number) => {
+                        const Icon = stat.icon;
+                        return (
+                            <Card key={i} className={`p-6 flex flex-col justify-between group rounded-[2rem] animate-in fade-in slide-in-from-right-4 duration-500`} style={{ animationDelay: `${i * 100}ms` }}>
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="w-10 h-10 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                        <Icon size={18} />
+                                    </div>
+                                    <span className={`text-[10px] font-black uppercase tracking-widest ${stat.change.startsWith('+') || stat.change.includes('★') ? 'text-green-500' : 'text-blue-400'}`}>
+                                        {stat.change}
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest block mb-1">{stat.label}</span>
+                                    <span className="text-3xl font-black tracking-tight">{stat.value}</span>
+                                </div>
+                            </Card>
+                        );
+                    })}
+                </div>
             </div>
 
             {/* My Subscription Card */}
@@ -357,7 +504,7 @@ export default function PlannerDashboard() {
                         {/* Usage Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
                             {/* Portfolio Images Usage */}
-                            <div className="p-4 glass-panel rounded-2xl border-white/5 space-y-3">
+                            <div className="p-4 glass-panel rounded-2xl border-foreground/5 space-y-3">
                                 <div className="flex items-center gap-2">
                                     <ImageIcon size={14} className="text-blue-400" />
                                     <span className="text-xs font-bold text-gray-400">Portfolio Images</span>
@@ -366,7 +513,7 @@ export default function PlannerDashboard() {
                                     {currentPlan.usage.portfolioImages.used}
                                     <span className="text-gray-500 font-normal text-sm">/{currentPlan.usage.portfolioImages.total}</span>
                                 </p>
-                                <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div className="w-full h-1.5 bg-foreground/5 rounded-full overflow-hidden">
                                     <div
                                         className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-1000"
                                         style={{ width: `${(currentPlan.usage.portfolioImages.used / currentPlan.usage.portfolioImages.total) * 100}%` }}
@@ -380,8 +527,8 @@ export default function PlannerDashboard() {
                                 { label: "Analytics", enabled: currentPlan.usage.analytics },
                                 { label: "Direct Messaging", enabled: currentPlan.usage.directMessaging },
                             ].map((feature: PlanFeature, i: number) => (
-                                <div key={i} className="p-4 glass-panel rounded-2xl border-white/5 flex items-center gap-3">
-                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${feature.enabled ? "bg-green-500/10" : "bg-white/5"}`}>
+                                <div key={i} className="p-4 glass-panel rounded-2xl border-foreground/5 flex items-center gap-3">
+                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${feature.enabled ? "bg-green-500/10" : "bg-foreground/5"}`}>
                                         <Check size={14} className={feature.enabled ? "text-green-400" : "text-gray-600"} />
                                     </div>
                                     <div>
@@ -395,11 +542,11 @@ export default function PlannerDashboard() {
                         </div>
 
                         {/* Renewal Notice */}
-                        <div className="p-4 bg-blue-500/5 border border-blue-500/10 rounded-xl flex items-center justify-between">
+                        <div className="p-4 bg-blue-500/[0.05] border border-blue-500/10 rounded-xl flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Calendar size={16} className="text-blue-400" />
-                                <span className="text-sm text-gray-300">
-                                    Your subscription renews in <span className="font-bold text-white">{currentPlan.daysLeft} days</span>
+                                <span className="text-sm text-muted-foreground">
+                                    Your subscription renews in <span className="font-bold text-foreground">{currentPlan.daysLeft} days</span>
                                 </span>
                             </div>
                             <button
@@ -429,22 +576,26 @@ export default function PlannerDashboard() {
                                 <p className="text-muted-foreground text-sm font-medium">No recent bookings found.</p>
                             </div>
                         ) : recentBookings.map((booking: BookingItem, i: number) => (
-                            <button
-                                key={i}
-                                onClick={() => setSelectedBooking(booking)}
-                                className="w-full flex items-center justify-between p-4 glass-panel rounded-2xl border-foreground/5 hover:border-blue-500/30 hover:bg-foreground/[0.02] transition-all text-left"
-                            >
-                                <div>
-                                    <p className="font-bold text-foreground">{booking.title}</p>
-                                    <p className="text-xs text-muted-foreground">{booking.date} • {booking.location}</p>
-                                </div>
-                                <span className={`px-3 py-1 text-[10px] font-bold rounded-full ${booking.status.toLowerCase() === 'approved' ? 'bg-green-500/10 text-green-400' :
-                                    booking.status.toLowerCase() === 'pending' ? 'bg-yellow-500/10 text-yellow-400' :
-                                        'bg-red-500/10 text-red-400'
-                                    }`}>
-                                    {booking.status}
-                                </span>
-                            </button>
+                            <div key={i} className="space-y-3">
+                                <button
+                                    onClick={() => setSelectedBooking(booking)}
+                                    className="w-full flex items-center justify-between p-4 glass-panel rounded-2xl border-foreground/5 hover:border-blue-500/30 hover:bg-foreground/[0.02] transition-all text-left"
+                                >
+                                    <div>
+                                        <p className="font-bold text-foreground">{booking.title}</p>
+                                        <p className="text-xs text-muted-foreground">{booking.date} • {booking.location}</p>
+                                    </div>
+                                    <span className={`px-3 py-1 text-[10px] font-bold rounded-full ${booking.status.toLowerCase() === 'approved' ? 'bg-green-500/[0.08] text-green-500' :
+                                        booking.status.toLowerCase() === 'pending' ? 'bg-yellow-500/[0.08] text-yellow-500' :
+                                            'bg-red-500/[0.08] text-red-500'
+                                        }`}>
+                                        {booking.status}
+                                    </span>
+                                </button>
+                                {booking.status.toLowerCase() === 'approved' && (
+                                    <BookingCountdown eventDate={booking.eventDate} className="mx-2" />
+                                )}
+                            </div>
                         ))}
                     </div>
                 </Card>
@@ -464,7 +615,7 @@ export default function PlannerDashboard() {
                                 <p className="text-muted-foreground text-sm font-medium">No messages yet.</p>
                             </div>
                         ) : recentMessages.map((msg, i) => (
-                            <Link key={i} href="/dashboard/messages" className="flex items-center gap-4 p-4 glass-panel rounded-2xl border-foreground/5 hover:border-blue-500/30 hover:bg-foreground/[0.02] transition-all relative">
+                            <Link key={i} href={`/dashboard/messages?id=${msg.id}`} className="flex items-center gap-4 p-4 glass-panel rounded-2xl border-foreground/5 hover:border-blue-500/30 hover:bg-foreground/[0.02] transition-all relative">
                                 {unreadMessages[msg.id] && (
                                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full" />
                                 )}

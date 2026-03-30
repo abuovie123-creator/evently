@@ -18,8 +18,10 @@ import {
     Trash2,
     ExternalLink,
     History,
-    FileText
+    FileText,
+    LifeBuoy
 } from "lucide-react";
+import { SupportTicketForm } from "@/components/SupportTicketForm";
 
 interface Invoice {
     id: string;
@@ -34,15 +36,64 @@ interface NotificationItem {
 }
 
 export default function SettingsPage() {
-    const { showToast } = useToast();
     const [activeTab, setActiveTab] = useState("account");
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [profile, setProfile] = useState<any>(null);
+    const [fullName, setFullName] = useState("");
+    const [bio, setBio] = useState("");
+    const [email, setEmail] = useState("");
+
+    const supabase = createClient();
+
+    React.useEffect(() => {
+        const fetchProfile = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session?.user) return;
+
+            setEmail(session.user.email || "");
+
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (!error && data) {
+                setProfile(data);
+                setFullName(data.full_name || "");
+                setBio(data.bio || "");
+            }
+            setIsLoading(false);
+        };
+        fetchProfile();
+    }, [supabase]);
+
+    const handleSaveAccount = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return;
+
+        const { error } = await supabase
+            .from('profiles')
+            .update({
+                full_name: fullName,
+                bio: bio
+            })
+            .eq('id', session.user.id);
+
+        if (error) {
+            showToast("Failed to update profile", "error");
+        } else {
+            showToast("Profile updated successfully", "success");
+        }
+    };
 
     const tabs = [
         { id: "account", label: "Account", icon: User },
         { id: "notifications", label: "Notifications", icon: Bell },
         { id: "security", label: "Security", icon: Shield },
         { id: "billing", label: "Billing", icon: CreditCard },
+        { id: "support", label: "Support", icon: LifeBuoy },
     ];
 
     const renderAccount = () => (
@@ -52,8 +103,10 @@ export default function SettingsPage() {
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Full Name</label>
                     <input
                         type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
                         placeholder="John Doe"
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                        className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl px-4 py-3 text-foreground focus:outline-none focus:border-blue-500/50 transition-colors"
                     />
                 </div>
                 <div className="space-y-2">
@@ -63,8 +116,9 @@ export default function SettingsPage() {
                         <input
                             type="email"
                             disabled
+                            value={email}
                             placeholder="user@example.com"
-                            className="w-full bg-white/5 border border-white/5 rounded-2xl pl-12 pr-4 py-3 text-gray-500 cursor-not-allowed"
+                            className="w-full bg-foreground/5 border border-foreground/5 rounded-2xl pl-12 pr-4 py-3 text-gray-500 cursor-not-allowed"
                         />
                     </div>
                 </div>
@@ -72,13 +126,15 @@ export default function SettingsPage() {
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Bio / Headline</label>
                     <textarea
                         rows={3}
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
                         placeholder="Tell the world about yourself..."
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-blue-500/50 transition-colors resize-none"
+                        className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl px-4 py-3 text-foreground focus:outline-none focus:border-blue-500/50 transition-colors resize-none"
                     />
                 </div>
             </div>
             <div className="flex justify-end pt-4">
-                <Button className="bg-blue-600 hover:bg-blue-700 gap-2">
+                <Button onClick={handleSaveAccount} className="bg-blue-600 hover:bg-blue-700 gap-2 h-12 rounded-2xl px-8 font-bold">
                     <Save size={18} /> Save Changes
                 </Button>
             </div>
@@ -101,7 +157,7 @@ export default function SettingsPage() {
                         </div>
                         <div className="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" className="sr-only peer" defaultChecked={i < 3} />
-                            <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            <div className="w-11 h-6 bg-foreground/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-foreground after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-foreground after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </div>
                     </div>
                 ))}
@@ -124,11 +180,11 @@ export default function SettingsPage() {
                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                             <input
                                 type={showPassword ? "text" : "password"}
-                                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-12 py-3 text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                                className="w-full bg-foreground/5 border border-foreground/10 rounded-2xl pl-12 pr-12 py-3 text-foreground focus:outline-none focus:border-blue-500/50 transition-colors"
                             />
                             <button
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-foreground"
                             >
                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                             </button>
@@ -145,7 +201,7 @@ export default function SettingsPage() {
                 <Card className="border-red-500/20 bg-red-500/5">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
                         <div>
-                            <p className="font-bold text-white">Delete Account</p>
+                            <p className="font-bold text-foreground">Delete Account</p>
                             <p className="text-xs text-gray-400">Permanently remove all your data from the platform.</p>
                         </div>
                         <Button variant="outline" className="border-red-500/50 text-red-500 hover:bg-red-500 hover:text-white transition-all">
@@ -159,16 +215,16 @@ export default function SettingsPage() {
 
     const renderBilling = () => (
         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-            <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-white/10 p-8 text-center md:text-left">
+            <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-foreground/10 p-8 text-center md:text-left">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
-                        <span className="px-3 py-1 bg-blue-500 text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-4 inline-block">
+                        <span className="px-3 py-1 bg-blue-500 text-foreground text-[10px] font-bold uppercase tracking-widest rounded-full mb-4 inline-block">
                             Current Plan: Professional
                         </span>
-                        <h3 className="text-3xl font-extrabold mb-2">$49<span className="text-lg font-normal text-gray-400">/month</span></h3>
+                        <h3 className="text-3xl font-extrabold mb-2 text-foreground">$49<span className="text-lg font-normal text-gray-400">/month</span></h3>
                         <p className="text-sm text-gray-400">Next billing date: April 24, 2026</p>
                     </div>
-                    <Button className="bg-white text-black hover:bg-gray-200">Upgrade Plan</Button>
+                    <Button className="bg-foreground text-background hover:bg-gray-200">Upgrade Plan</Button>
                 </div>
             </Card>
 
@@ -200,6 +256,21 @@ export default function SettingsPage() {
         </div>
     );
 
+    const renderSupport = () => (
+        <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+            <SupportTicketForm />
+        </div>
+    );
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+                <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+                <p className="text-muted-foreground font-medium animate-pulse">Loading settings...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div>
@@ -225,6 +296,7 @@ export default function SettingsPage() {
                 {activeTab === "notifications" && renderNotifications()}
                 {activeTab === "security" && renderSecurity()}
                 {activeTab === "billing" && renderBilling()}
+                {activeTab === "support" && renderSupport()}
             </main>
         </div>
     );

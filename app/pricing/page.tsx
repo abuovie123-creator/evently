@@ -265,35 +265,7 @@ export default function PricingPage() {
                 })}
             </div>
 
-            {/* FAQ Section */}
-            <div className="max-w-3xl mx-auto space-y-8 mb-16">
-                <h2 className="text-3xl font-bold text-center">Frequently Asked Questions</h2>
-                <div className="space-y-4">
-                    {[
-                        {
-                            q: "Can I switch plans anytime?",
-                            a: "Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate your billing."
-                        },
-                        {
-                            q: "What payment methods do you accept?",
-                            a: "We accept payments via Paystack, Flutterwave, and direct bank transfers. All transactions are secure and encrypted."
-                        },
-                        {
-                            q: "Is there a contract or commitment?",
-                            a: "No contracts, no commitments. You can cancel your subscription at any time and continue using the features until your billing period ends."
-                        },
-                        {
-                            q: "What happens when my subscription expires?",
-                            a: "Your account will automatically downgrade to the Starter plan. Your data and profile remain intact, but premium features will be disabled."
-                        },
-                    ].map((faq, i) => (
-                        <Card key={i} className="p-6" hover={false}>
-                            <h4 className="font-bold mb-2">{faq.q}</h4>
-                            <p className="text-sm text-gray-400">{faq.a}</p>
-                        </Card>
-                    ))}
-                </div>
-            </div>
+
         </main>
     );
 }

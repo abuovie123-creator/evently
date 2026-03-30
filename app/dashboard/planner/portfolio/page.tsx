@@ -22,7 +22,14 @@ import {
     LayoutGrid,
     ChevronRight,
     Images,
-    ArrowRight
+    ArrowRight,
+    Save,
+    Instagram,
+    Twitter,
+    Linkedin,
+    Facebook,
+    Mail,
+    Globe
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -58,6 +65,20 @@ export default function PlannerPortfolio() {
     const [eventMedia, setEventMedia] = useState<AlbumMedia[]>([]);
     const [imageLimit, setImageLimit] = useState(5);
     const [currentImageCount, setCurrentImageCount] = useState(0);
+    const [stats, setStats] = useState({
+        events_completed: 0,
+        years_experience: 0,
+        clients_served: 0
+    });
+    const [socialLinks, setSocialLinks] = useState({
+        instagram_url: "",
+        twitter_url: "",
+        linkedin_url: "",
+        facebook_url: "",
+        public_email: ""
+    });
+    const [isSavingStats, setIsSavingStats] = useState(false);
+    const [isSavingSocial, setIsSavingSocial] = useState(false);
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [newEvent, setNewEvent] = useState({
@@ -100,7 +121,7 @@ export default function PlannerPortfolio() {
         // Fetch profile and plan info
         const { data: profile } = await supabase
             .from('profiles')
-            .select('plan_id')
+            .select('plan_id, events_completed, years_experience, clients_served, instagram_url, twitter_url, linkedin_url, facebook_url, public_email')
             .eq('id', userId)
             .single();
 
@@ -110,11 +131,27 @@ export default function PlannerPortfolio() {
             .eq('id', 'default')
             .single();
 
-        if (profile && settings) {
-            const plans = settings.subscription_plans || [];
-            const userPlan = plans.find((p: any) => p.id === (profile.plan_id || 'starter')) || plans[0];
-            const limit = userPlan?.imageLimit === -1 ? 9999 : (userPlan?.imageLimit || (userPlan?.id === 'pro' ? 25 : 5));
-            setImageLimit(limit);
+        if (profile) {
+            setStats({
+                events_completed: profile.events_completed || 0,
+                years_experience: profile.years_experience || 0,
+                clients_served: profile.clients_served || 0
+            });
+
+            setSocialLinks({
+                instagram_url: profile.instagram_url || "",
+                twitter_url: profile.twitter_url || "",
+                linkedin_url: profile.linkedin_url || "",
+                facebook_url: profile.facebook_url || "",
+                public_email: profile.public_email || ""
+            });
+
+            if (settings) {
+                const plans = settings.subscription_plans || [];
+                const userPlan = plans.find((p: any) => p.id === (profile.plan_id || 'starter')) || plans[0];
+                const limit = userPlan?.imageLimit === -1 ? 9999 : (userPlan?.imageLimit || (userPlan?.id === 'pro' ? 25 : 5));
+                setImageLimit(limit);
+            }
         }
 
         // Fetch total image count for the user
@@ -132,16 +169,6 @@ export default function PlannerPortfolio() {
         setIsLoading(false);
     }, [router, showToast]);
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    useEffect(() => {
-        if (selectedEvent) {
-            fetchMedia(selectedEvent.id);
-        }
-    }, [selectedEvent, fetchMedia]);
-
     const fetchMedia = useCallback(async (eventId: string) => {
         const supabase = createClient();
         const { data, error } = await supabase
@@ -156,6 +183,70 @@ export default function PlannerPortfolio() {
             setEventMedia(data || []);
         }
     }, [showToast]);
+
+    const handleSaveStats = async () => {
+        setIsSavingStats(true);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) return;
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    events_completed: stats.events_completed,
+                    years_experience: stats.years_experience,
+                    clients_served: stats.clients_served
+                })
+                .eq('id', session.user.id);
+
+            if (error) throw error;
+            showToast("Portfolio highlights updated!", "success");
+        } catch (error: any) {
+            showToast("Failed to update highlights", "error");
+        } finally {
+            setIsSavingStats(false);
+        }
+    };
+
+    const handleSaveSocial = async () => {
+        setIsSavingSocial(true);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) return;
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    instagram_url: socialLinks.instagram_url,
+                    twitter_url: socialLinks.twitter_url,
+                    linkedin_url: socialLinks.linkedin_url,
+                    facebook_url: socialLinks.facebook_url,
+                    public_email: socialLinks.public_email
+                })
+                .eq('id', session.user.id);
+
+            if (error) throw error;
+            showToast("Social links updated!", "success");
+        } catch (error: any) {
+            showToast("Failed to update social links", "error");
+        } finally {
+            setIsSavingSocial(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    useEffect(() => {
+        if (selectedEvent) {
+            fetchMedia(selectedEvent.id);
+        }
+    }, [selectedEvent, fetchMedia]);
 
     const handleCreateEvent = async () => {
         if (!newEvent.title || !newEvent.date) {
@@ -366,7 +457,7 @@ export default function PlannerPortfolio() {
     return (
         <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02]">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-foreground/5 bg-foreground/[0.02]">
                 <div className="flex items-center gap-4 w-full lg:w-auto">
                     <Link href="/dashboard/planner" className="p-3 glass-panel rounded-2xl hover:bg-white/10 transition-colors shrink-0">
                         <ArrowLeft size={20} className="text-gray-400" />
@@ -382,13 +473,13 @@ export default function PlannerPortfolio() {
                     <div className="flex flex-col items-center sm:items-end w-full sm:w-auto">
                         <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Image Usage</span>
                         <div className="flex items-center gap-3 w-full sm:w-auto">
-                            <div className="flex-1 sm:w-32 h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                            <div className="flex-1 sm:w-32 h-2 bg-foreground/5 rounded-full overflow-hidden border border-foreground/5">
                                 <div
                                     className={`h-full rounded-full transition-all duration-1000 ${currentImageCount >= imageLimit ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]'}`}
                                     style={{ width: `${Math.min(100, (currentImageCount / imageLimit) * 100)}%` }}
                                 />
                             </div>
-                            <span className="text-xs font-bold font-mono whitespace-nowrap">{currentImageCount} / {imageLimit}</span>
+                            <span className="text-xs font-bold font-mono whitespace-nowrap text-foreground">{currentImageCount} / {imageLimit}</span>
                         </div>
                     </div>
 
@@ -400,7 +491,146 @@ export default function PlannerPortfolio() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Events Sidebar/List */}
-                <div className="lg:col-span-4 space-y-4">
+                <div className="lg:col-span-4 space-y-6">
+                    {/* Portfolio Highlights Editor */}
+                    <Card className="p-5 border-blue-500/10 bg-blue-500/[0.02]" hover={false}>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Portfolio Highlights</h4>
+                                <Button
+                                    size="sm"
+                                    variant="glass"
+                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-blue-500/20 text-blue-400 hover:bg-blue-500/10"
+                                    onClick={handleSaveStats}
+                                    disabled={isSavingStats}
+                                >
+                                    {isSavingStats ? <Loader2 size={10} className="animate-spin" /> : <Save size={10} className="mr-1.5" />}
+                                    Update
+                                </Button>
+                            </div>
+
+                            <div className="space-y-3">
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-bold text-gray-500 uppercase">Events Completed</label>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            className="h-9 bg-foreground/[0.03] border-foreground/5 text-xs font-bold pl-3 pr-8"
+                                            value={stats.events_completed}
+                                            onChange={(e) => setStats({ ...stats, events_completed: parseInt(e.target.value) || 0 })}
+                                        />
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">+</span>
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-bold text-gray-500 uppercase">Years of Experience</label>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            className="h-9 bg-white/[0.03] border-white/5 text-xs font-bold pl-3 pr-8"
+                                            value={stats.years_experience}
+                                            onChange={(e) => setStats({ ...stats, years_experience: parseInt(e.target.value) || 0 })}
+                                        />
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-600">+</span>
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-[9px] font-bold text-gray-500 uppercase">Happy Clients</label>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            className="h-9 bg-white/[0.03] border-white/5 text-xs font-bold pl-3 pr-8"
+                                            value={stats.clients_served}
+                                            onChange={(e) => setStats({ ...stats, clients_served: parseInt(e.target.value) || 0 })}
+                                        />
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-600">+</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Social & Contact Links */}
+                    <Card className="p-5 border-blue-500/10 bg-blue-500/[0.01]" hover={false}>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Social & Contact</h4>
+                                <Button
+                                    size="sm"
+                                    variant="glass"
+                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-blue-500/20 text-blue-400 hover:bg-blue-500/10"
+                                    onClick={handleSaveSocial}
+                                    disabled={isSavingSocial}
+                                >
+                                    {isSavingSocial ? <Loader2 size={10} className="animate-spin" /> : <Save size={10} className="mr-1.5" />}
+                                    Save Links
+                                </Button>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="space-y-3">
+                                    <div className="relative group">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
+                                            <Instagram size={14} />
+                                        </div>
+                                        <Input
+                                            placeholder="Instagram URL"
+                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                            value={socialLinks.instagram_url}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, instagram_url: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="relative group">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors">
+                                            <Twitter size={14} />
+                                        </div>
+                                        <Input
+                                            placeholder="Twitter URL"
+                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                            value={socialLinks.twitter_url}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, twitter_url: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="relative group">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-700 transition-colors">
+                                            <Linkedin size={14} />
+                                        </div>
+                                        <Input
+                                            placeholder="LinkedIn URL"
+                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                            value={socialLinks.linkedin_url}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, linkedin_url: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="relative group">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-600 transition-colors">
+                                            <Facebook size={14} />
+                                        </div>
+                                        <Input
+                                            placeholder="Facebook URL"
+                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                            value={socialLinks.facebook_url}
+                                            onChange={(e) => setSocialLinks({ ...socialLinks, facebook_url: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="pt-2 border-t border-foreground/5">
+                                        <div className="relative group">
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-yellow-500 transition-colors">
+                                                <Mail size={14} />
+                                            </div>
+                                            <Input
+                                                placeholder="Public Business Email"
+                                                className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                                value={socialLinks.public_email}
+                                                onChange={(e) => setSocialLinks({ ...socialLinks, public_email: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+
                     <h3 className="text-lg font-bold flex items-center gap-2">
                         <LayoutGrid size={18} className="text-blue-400" /> Your Albums
                     </h3>
@@ -424,8 +654,8 @@ export default function PlannerPortfolio() {
                                 key={event.id}
                                 onClick={() => setSelectedEvent(event)}
                                 className={`w-full text-left p-4 rounded-2xl border transition-all group flex items-center justify-between ${selectedEvent?.id === event.id
-                                    ? "bg-white/10 border-blue-500/50 shadow-lg shadow-blue-500/5"
-                                    : "glass-panel border-white/5 hover:border-white/20"
+                                    ? "bg-foreground/10 border-blue-500/50 shadow-lg shadow-blue-500/5"
+                                    : "glass-panel border-foreground/5 hover:border-foreground/20"
                                     }`}
                             >
                                 <div className="space-y-1">
@@ -464,10 +694,10 @@ export default function PlannerPortfolio() {
                                             <ExternalLink size={16} />
                                         </Link>
                                     </div>
-                                    <div className="flex flex-wrap gap-4 text-xs text-gray-400">
-                                        <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/5"><Calendar size={14} className="text-blue-400" /> {new Date(selectedEvent.date).toLocaleDateString()}</span>
-                                        <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/5"><MapPin size={14} className="text-blue-400" /> {selectedEvent.location || "Online"}</span>
-                                        <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/5"><Tag size={14} className="text-blue-400" /> {selectedEvent.category}</span>
+                                    <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><Calendar size={14} className="text-blue-500" /> {new Date(selectedEvent.date).toLocaleDateString()}</span>
+                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><MapPin size={14} className="text-blue-500" /> {selectedEvent.location || "Online"}</span>
+                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><Tag size={14} className="text-blue-500" /> {selectedEvent.category}</span>
                                     </div>
                                     <p className="text-sm text-gray-500 max-w-xl italic">"{selectedEvent.description || "No description provided."}"</p>
                                 </div>
@@ -483,7 +713,7 @@ export default function PlannerPortfolio() {
                                 <div className="flex justify-between items-center">
                                     <h3 className="text-lg font-bold flex items-center gap-2">
                                         <ImageIcon size={18} className="text-blue-400" /> Album Media
-                                        <span className="text-[10px] font-bold text-gray-500 ml-2 bg-white/5 px-2 py-0.5 rounded-full">{eventMedia.length} Items</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground ml-2 bg-foreground/5 px-2 py-0.5 rounded-full">{eventMedia.length} Items</span>
                                     </h3>
 
                                     <div className="flex gap-2">
@@ -529,7 +759,7 @@ export default function PlannerPortfolio() {
                                 ) : (
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                                         {eventMedia.map((media, i) => (
-                                            <div key={media.id} className="relative aspect-square rounded-xl overflow-hidden glass-panel border-white/10 group bg-black/40">
+                                            <div key={media.id} className="relative aspect-square rounded-xl overflow-hidden glass-panel border-foreground/10 group bg-background/40 backdrop-blur-md">
                                                 {media.media_type === 'image' ? (
                                                     <img src={media.media_url} alt="Event Media" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                                 ) : (
@@ -569,7 +799,7 @@ export default function PlannerPortfolio() {
                                                     </Button>
                                                 </div>
 
-                                                <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/50 backdrop-blur-md text-[8px] font-bold uppercase tracking-widest border border-white/10">
+                                                <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-background/50 backdrop-blur-md text-[8px] font-bold uppercase tracking-widest border border-foreground/10">
                                                     {media.media_type}
                                                 </div>
                                             </div>
@@ -611,15 +841,15 @@ export default function PlannerPortfolio() {
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Category</label>
                                     <select
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none appearance-none"
+                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none appearance-none"
                                         value={newEvent.category}
                                         onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })}
                                     >
-                                        <option value="Wedding" className="bg-gray-900">Wedding</option>
-                                        <option value="Corporate" className="bg-gray-900">Corporate</option>
-                                        <option value="Birthday" className="bg-gray-900">Birthday</option>
-                                        <option value="Concert" className="bg-gray-900">Concert</option>
-                                        <option value="Other" className="bg-gray-900">Other</option>
+                                        <option value="Wedding" className="bg-background">Wedding</option>
+                                        <option value="Corporate" className="bg-background">Corporate</option>
+                                        <option value="Birthday" className="bg-background">Birthday</option>
+                                        <option value="Concert" className="bg-background">Concert</option>
+                                        <option value="Other" className="bg-background">Other</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">

@@ -5,11 +5,15 @@ import { ChatList } from "@/components/chat/ChatList";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { Conversation } from "@/lib/hooks/useChat";
 import { createClient } from "@/lib/supabase/client";
+import { useSearchParams } from "next/navigation";
 import { MessageSquare, X } from "lucide-react";
 
 export default function MessagesPage() {
     const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const searchParams = useSearchParams();
+    const convId = searchParams.get('id');
+
     const supabase = createClient();
 
     useEffect(() => {
@@ -44,7 +48,7 @@ export default function MessagesPage() {
                     <ChatList
                         currentUserId={currentUserId}
                         onSelectConversation={(conv) => setSelectedConv(conv)}
-                        activeId={selectedConv?.id}
+                        activeId={selectedConv?.id || convId || undefined}
                     />
                 </div>
 

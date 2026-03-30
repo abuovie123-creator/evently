@@ -7,6 +7,10 @@ import { Card } from "@/components/ui/Card";
 import { AlertCircle, X, Star, ArrowRight, MapPin, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { FAQ } from "@/components/FAQ";
+import { Footer } from "@/components/Footer";
+import { GrowSection } from "@/components/GrowSection";
+import { WhyUsSection } from "@/components/WhyUsSection";
 
 interface FeaturedPlanner {
     id: string;
@@ -249,6 +253,11 @@ export default function Home() {
                     </div>
                 </div>
             )}
+
+            <GrowSection />
+            <WhyUsSection />
+            <FAQ />
+            <Footer />
         </main>
     );
 }

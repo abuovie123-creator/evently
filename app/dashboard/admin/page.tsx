@@ -589,7 +589,7 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-8 md:space-y-12 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02]">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-foreground/5 bg-foreground/[0.02]">
                 <div>
                     <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Admin Control Center</h1>
                     <p className="text-gray-400 text-xs md:text-sm">Manage your platform's heart and soul from one central hub.</p>
@@ -597,14 +597,14 @@ export default function AdminDashboard() {
                 <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
                     <Button
                         variant="outline"
-                        className="w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg border-white/10 hover:bg-white/5 font-bold"
+                        className="w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg border-foreground/10 hover:bg-foreground/5 font-bold"
                         onClick={() => setActiveTab("payments")}
                     >
                         <TrendingUp size={18} className="mr-2" />
                         Analytics
                     </Button>
                     <Button
-                        className={`w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg font-bold ${systemStatus === 'online' ? 'bg-green-500 hover:bg-green-600 shadow-green-500/20' : systemStatus === 'offline' ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20' : 'bg-white/5'}`}
+                        className={`w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg font-bold ${systemStatus === 'online' ? 'bg-green-500 hover:bg-green-600 shadow-green-500/20' : systemStatus === 'offline' ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20' : 'bg-foreground/5'}`}
                         onClick={() => {
                             showToast(systemStatus === 'online' ? "Database connection is healthy" : "Database connection lost", systemStatus === 'online' ? "success" : "error");
                         }}
@@ -621,7 +621,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Sidebar/Tabs Navigation */}
-            <div className="flex gap-2 p-1 bg-white/5 rounded-2xl border border-white/10 w-full overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 p-1 bg-foreground/5 rounded-2xl border border-foreground/10 w-full overflow-x-auto scrollbar-hide">
                 {tabs.map((tab: TabItem) => {
                     const Icon = tab.icon;
                     return (
@@ -629,8 +629,8 @@ export default function AdminDashboard() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
-                                ? "bg-white text-black shadow-lg shadow-white/10"
-                                : "text-gray-400 hover:text-white hover:bg-white/5"
+                                ? "bg-foreground text-background shadow-lg shadow-foreground/10"
+                                : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                                 }`}
                         >
                             <Icon size={16} />
@@ -677,7 +677,7 @@ export default function AdminDashboard() {
                                         <span className="text-xs font-medium text-gray-300 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
                                         <button
                                             onClick={() => toggleFeature(key as keyof typeof features)}
-                                            className={`w-10 h-5 rounded-full transition-all relative ${enabled ? 'bg-blue-500' : 'bg-white/10'}`}
+                                            className={`w-10 h-5 rounded-full transition-all relative ${enabled ? 'bg-blue-500' : 'bg-foreground/10'}`}
                                         >
                                             <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${enabled ? 'right-0.5' : 'left-0.5'}`} />
                                         </button>
@@ -696,7 +696,7 @@ export default function AdminDashboard() {
                         <Card className="p-0 overflow-hidden" hover={false}>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm min-w-[600px]">
-                                    <thead className="bg-white/5 text-gray-400 uppercase text-[10px] font-bold tracking-widest">
+                                    <thead className="bg-foreground/5 text-muted-foreground uppercase text-[10px] font-bold tracking-widest">
                                         <tr>
                                             <th className="p-5">Planner</th>
                                             <th className="p-5">Category</th>
@@ -705,7 +705,7 @@ export default function AdminDashboard() {
                                             <th className="p-5 text-right">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5">
+                                    <tbody className="divide-y divide-foreground/5">
                                         {pendingPlanners.length === 0 ? (
                                             <tr>
                                                 <td colSpan={5} className="p-10 text-center text-gray-500">
@@ -713,7 +713,7 @@ export default function AdminDashboard() {
                                                 </td>
                                             </tr>
                                         ) : pendingPlanners.map((planner: PendingPlanner, i: number) => (
-                                            <tr key={planner.id} className="hover:bg-white/[0.02] transition-colors">
+                                            <tr key={planner.id} className="hover:bg-foreground/[0.02] transition-colors">
                                                 <td className="p-5 font-bold">{planner.name}</td>
                                                 <td className="p-5 text-gray-400">{planner.cat}</td>
                                                 <td className="p-5 text-gray-400">{planner.loc}</td>
@@ -764,7 +764,7 @@ export default function AdminDashboard() {
                             <div className="space-y-4">
                                 <label className="text-sm font-bold uppercase tracking-widest text-gray-500 font-mono">Platform Logo</label>
                                 <div className="aspect-video glass-panel rounded-2xl flex flex-col items-center justify-center p-8 border-dashed border-white/20 hover:border-white/40 cursor-pointer transition-all group">
-                                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                    <div className="w-16 h-16 bg-foreground/5 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                         <Upload size={24} className="text-gray-400" />
                                     </div>
                                     <p className="text-sm font-bold text-white">Upload New Logo</p>
@@ -814,7 +814,7 @@ export default function AdminDashboard() {
                             <h3 className="text-xl font-bold">Preview</h3>
                             <p className="text-gray-400 text-sm">How your changes will look across the platform.</p>
                         </div>
-                        <div className="hidden lg:block space-y-8 p-12 glass-panel rounded-[3rem] border-white/5 bg-black/40 relative overflow-hidden">
+                        <div className="hidden lg:block space-y-8 p-12 glass-panel rounded-[3rem] border-foreground/5 bg-background/40 backdrop-blur-md relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[120px] rounded-full" />
                             <div className="space-y-6 relative">
                                 <div className="flex items-center gap-2">
@@ -847,7 +847,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="flex flex-wrap gap-4 w-full md:w-auto">
                             <select
-                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm font-bold text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-2 text-sm font-bold text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={roleFilter}
                                 onChange={(e) => setRoleFilter(e.target.value)}
                             >
@@ -907,7 +907,7 @@ export default function AdminDashboard() {
                                                     </div>
                                                 </td>
                                                 <td className="p-5">
-                                                    <span className={`px-2 py-1 rounded text-[10px] font-bold ${user.role === 'planner' ? 'bg-blue-500/10 text-blue-400' : 'bg-white/10 text-gray-400'}`}>
+                                                    <span className={`px-2 py-1 rounded text-[10px] font-bold ${user.role === 'planner' ? 'bg-blue-500/10 text-blue-500' : 'bg-foreground/10 text-muted-foreground'}`}>
                                                         {user.role}
                                                     </span>
                                                 </td>
@@ -920,9 +920,9 @@ export default function AdminDashboard() {
                                                 </td>
                                                 <td className="p-5 text-right">
                                                     <div className="flex justify-end gap-2">
-                                                        <button className="p-3 hover:bg-white/5 rounded-xl text-gray-400 hover:text-white transition-all"><MoreVertical size={18} /></button>
-                                                        <button className="p-3 hover:bg-yellow-500/10 rounded-xl text-gray-500 hover:text-yellow-500 transition-all"><ShieldAlert size={18} /></button>
-                                                        <button className="p-3 hover:bg-red-500/10 rounded-xl text-gray-500 hover:text-red-500 transition-all"><Trash2 size={18} /></button>
+                                                        <button className="p-3 hover:bg-foreground/5 rounded-xl text-muted-foreground hover:text-foreground transition-all"><MoreVertical size={18} /></button>
+                                                        <button className="p-3 hover:bg-yellow-500/10 rounded-xl text-muted-foreground hover:text-yellow-500 transition-all"><ShieldAlert size={18} /></button>
+                                                        <button className="p-3 hover:bg-red-500/10 rounded-xl text-muted-foreground hover:text-red-500 transition-all"><Trash2 size={18} /></button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1137,9 +1137,9 @@ export default function AdminDashboard() {
                                     {recentTransactions.length === 0 ? (
                                         <div className="p-10 text-center text-gray-500 text-xs">No recent transactions.</div>
                                     ) : recentTransactions.map((tx: any, i: number) => (
-                                        <div key={i} className="flex items-center justify-between p-4 glass-panel rounded-xl border-white/5 group hover:bg-white/[0.03] transition-all">
+                                        <div key={i} className="flex items-center justify-between p-4 glass-panel rounded-xl border-foreground/5 group hover:bg-foreground/[0.03] transition-all">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center font-bold text-sm text-gray-400 group-hover:text-blue-400 transition-colors">
+                                                <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center font-bold text-sm text-muted-foreground group-hover:text-blue-500 transition-colors">
                                                     {tx.name?.charAt(0)}
                                                 </div>
                                                 <div>
@@ -1252,7 +1252,7 @@ export default function AdminDashboard() {
                                         {/* Edit/Save Toggle */}
                                         <button
                                             onClick={() => plan.isEditing ? savePlan(plan.id) : togglePlanEdit(plan.id)}
-                                            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 transition-all text-gray-400 hover:text-white"
+                                            className="absolute top-4 right-4 p-2 rounded-lg hover:bg-foreground/10 transition-all text-muted-foreground hover:text-foreground"
                                         >
                                             {plan.isEditing ? <Save size={16} /> : <Edit3 size={16} />}
                                         </button>
@@ -1262,7 +1262,7 @@ export default function AdminDashboard() {
                                             <Input
                                                 value={plan.name}
                                                 onChange={(e: any) => updatePlanField(plan.id, "name", e.target.value)}
-                                                className="text-lg font-bold bg-white/5"
+                                                className="text-lg font-bold bg-foreground/5"
                                             />
                                         ) : (
                                             <h4 className="text-lg font-bold">{plan.name}</h4>
@@ -1281,7 +1281,7 @@ export default function AdminDashboard() {
                                                 <select
                                                     value={plan.period}
                                                     onChange={(e: any) => updatePlanField(plan.id, "period", e.target.value)}
-                                                    className="bg-white/5 border border-white/10 rounded-xl px-3 py-3 text-sm text-white focus:outline-none"
+                                                    className="bg-foreground/5 border border-foreground/10 rounded-xl px-3 py-3 text-sm text-foreground focus:outline-none"
                                                 >
                                                     <option value="month">/ month</option>
                                                     <option value="year">/ year</option>
@@ -1398,7 +1398,7 @@ export default function AdminDashboard() {
                                             </div>
                                             <Input
                                                 placeholder="admin"
-                                                className="pl-12 bg-white/5 border-white/10 focus:border-blue-500/50 transition-all h-12 rounded-xl"
+                                                className="pl-12 bg-foreground/5 border-foreground/10 focus:border-blue-500/50 transition-all h-12 rounded-xl"
                                                 value={adminUserUpdate}
                                                 onChange={(e) => setAdminUserUpdate(e.target.value)}
                                             />
@@ -1480,7 +1480,7 @@ export default function AdminDashboard() {
                                             <p className="text-xs text-gray-500">{setting.desc}</p>
                                         </div>
                                         <button
-                                            className={`w-10 h-5 rounded-full transition-all relative ${setting.enabled ? 'bg-blue-500' : 'bg-white/10'}`}
+                                            className={`w-10 h-5 rounded-full transition-all relative ${setting.enabled ? 'bg-blue-500' : 'bg-foreground/10'}`}
                                         >
                                             <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${setting.enabled ? 'right-0.5' : 'left-0.5'}`} />
                                         </button>
@@ -1509,7 +1509,7 @@ export default function AdminDashboard() {
                                     />
                                     <textarea
                                         placeholder="Description/Content"
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500/50 min-h-[100px]"
+                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500/50 min-h-[100px]"
                                         value={newAnnouncement.content}
                                         onChange={e => setNewAnnouncement({ ...newAnnouncement, content: e.target.value })}
                                     />
@@ -1534,7 +1534,7 @@ export default function AdminDashboard() {
                             <div className="space-y-4">
                                 <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">Live Announcements</h4>
                                 {announcements.map(a => (
-                                    <Card key={a.id} className="p-4 flex items-center justify-between border-white/5" hover={false}>
+                                    <Card key={a.id} className="p-4 flex items-center justify-between border-foreground/5" hover={false}>
                                         <div className="flex items-center gap-3">
                                             <div className={`w-2 h-2 rounded-full ${a.is_active ? 'bg-green-500 animate-pulse' : 'bg-gray-600'}`} />
                                             <div>
@@ -1545,7 +1545,7 @@ export default function AdminDashboard() {
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => toggleAnnouncement(a.id, a.is_active)}
-                                                className={`p-2 rounded-lg transition-all ${a.is_active ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-gray-400'}`}
+                                                className={`p-2 rounded-lg transition-all ${a.is_active ? 'bg-green-500/10 text-green-500' : 'bg-foreground/5 text-muted-foreground'}`}
                                             >
                                                 <Info size={14} />
                                             </button>
@@ -1591,9 +1591,9 @@ export default function AdminDashboard() {
                             <div className="space-y-4">
                                 <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">Active Links</h4>
                                 {externalLinks.map(l => (
-                                    <Card key={l.id} className="p-4 flex items-center justify-between border-white/10 group" hover={false}>
+                                    <Card key={l.id} className="p-4 flex items-center justify-between border-foreground/10 group" hover={false}>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400">
+                                            <div className="w-8 h-8 rounded-lg bg-foreground/5 flex items-center justify-center text-muted-foreground">
                                                 <ExternalLink size={14} />
                                             </div>
                                             <div>

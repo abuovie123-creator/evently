@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, Calendar, MapPin, Tag, Star, TrendingUp, X, Check, MessageSquare, Share2 } from "lucide-react";
+import { Loader2, Calendar, MapPin, Tag, Star, TrendingUp, X, Check, MessageSquare, Share2, Instagram, Twitter, Linkedin, Facebook, Mail } from "lucide-react";
 
 interface PlannerProfile {
     id: string;
@@ -31,6 +31,11 @@ interface PlannerProfile {
     satisfied_clients: number;
     review_count: number;
     avatar_url: string;
+    instagram_url?: string;
+    twitter_url?: string;
+    linkedin_url?: string;
+    facebook_url?: string;
+    public_email?: string;
 }
 
 interface Album {
@@ -278,13 +283,13 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
     };
 
     if (isLoading) return (
-        <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="min-h-screen flex items-center justify-center bg-background">
             <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
     );
 
     if (!planner) return (
-        <div className="min-h-screen flex items-center justify-center bg-black text-white flex-col gap-4">
+        <div className="min-h-screen flex items-center justify-center bg-background text-foreground flex-col gap-4">
             <h2 className="text-2xl font-bold">Planner Not Found</h2>
             <Link href="/planners">
                 <Button variant="outline">Back to Planners</Button>
@@ -293,7 +298,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
     );
 
     return (
-        <main className="min-h-screen bg-black text-white">
+        <main className="min-h-screen bg-background text-foreground">
             <div className="relative">
                 <div className="relative h-[250px] md:h-[350px] w-full overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-black/60 to-black z-10" />
@@ -306,7 +311,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
 
                 <div className="absolute inset-x-0 bottom-0 z-20 max-w-7xl mx-auto px-6 md:px-8 translate-y-1/2">
                     <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8">
-                        <div className="w-32 h-32 md:w-44 md:h-44 rounded-2xl overflow-hidden border-4 border-black shadow-2xl glass-panel shrink-0">
+                        <div className="w-32 h-32 md:w-44 md:h-44 rounded-2xl overflow-hidden border-4 border-background shadow-2xl glass-panel shrink-0">
                             <img src={planner.avatar} className="w-full h-full object-cover" alt={planner.name} />
                         </div>
                         <div className="flex-1 text-center md:text-left pb-2 md:pb-4">
@@ -316,7 +321,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                                     <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-white">Verified</span>
                                 </div>
                             </div>
-                            <p className="text-lg md:text-xl text-gray-300 font-medium">{planner.category}</p>
+                            <p className="text-lg md:text-xl text-foreground font-medium drop-shadow-md">{planner.category}</p>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-8 md:mt-0 pb-0 md:pb-4 justify-center md:justify-end">
                             <Button size="lg" className="w-full sm:w-auto shadow-2xl h-14 md:h-12 bg-blue-600 hover:bg-blue-700" onClick={() => setShowBookingModal(true)}>
@@ -354,8 +359,8 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
 
             {showBookingModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-black/90 backdrop-blur-md" onClick={() => !isSubmitting && setShowBookingModal(false)} />
-                    <Card className="relative w-full max-w-lg p-8 space-y-8 animate-in zoom-in-95 duration-300 border-white/10" hover={false}>
+                    <div className="absolute inset-0 bg-background/80 backdrop-blur-md" onClick={() => !isSubmitting && setShowBookingModal(false)} />
+                    <Card className="relative w-full max-w-lg p-8 space-y-8 animate-in zoom-in-95 duration-300 border-foreground/10" hover={false}>
                         <div className="flex justify-between items-start">
                             <div className="space-y-1">
                                 <h3 className="text-2xl font-black">Inquire with {planner.name}</h3>
@@ -371,16 +376,16 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Event Type</label>
                                     <select
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none appearance-none"
+                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none appearance-none"
                                         value={bookingData.eventType}
                                         onChange={(e) => setBookingData({ ...bookingData, eventType: e.target.value })}
                                         required
                                     >
-                                        <option value="Wedding" className="bg-gray-900">Wedding</option>
-                                        <option value="Corporate" className="bg-gray-900">Corporate</option>
-                                        <option value="Birthday" className="bg-gray-900">Birthday</option>
-                                        <option value="Concert" className="bg-gray-900">Concert</option>
-                                        <option value="Other" className="bg-gray-900">Other</option>
+                                        <option value="Wedding" className="bg-background">Wedding</option>
+                                        <option value="Corporate" className="bg-background">Corporate</option>
+                                        <option value="Birthday" className="bg-background">Birthday</option>
+                                        <option value="Concert" className="bg-background">Concert</option>
+                                        <option value="Other" className="bg-background">Other</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
@@ -432,12 +437,12 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 <div className="lg:col-span-1 space-y-12">
                     <div className="space-y-4">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500">About Me</h3>
-                        <p className="text-gray-300 leading-relaxed">{planner.bio}</p>
+                        <p className="text-muted-foreground leading-relaxed">{planner.bio}</p>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         {planner && Object.entries(planner.stats).map(([label, value]) => (
-                            <div key={label} className="glass-panel p-4 rounded-2xl text-center">
+                            <div key={label} className="glass-panel p-4 rounded-2xl text-center last:col-span-2 sm:last:col-span-1">
                                 <span className="block text-2xl font-bold">{String(value)}+</span>
                                 <span className="text-[10px] uppercase font-bold text-gray-500 tracking-tighter">{label}</span>
                             </div>
@@ -447,14 +452,68 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                     <div className="space-y-4">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500">Business Details</h3>
                         <div className="space-y-3">
-                            <div className="flex items-center gap-3 text-sm text-gray-400">
-                                <span>📍</span> {planner.location}
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                <MapPin size={16} className="text-blue-500" /> {planner.location}
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-gray-400">
-                                <span>⭐</span> {planner.rating} ({planner.reviews} reviews)
+                            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                <Star size={16} className="text-yellow-500" /> {planner.rating} ({planner.reviews} reviews)
                             </div>
+                            {planner.public_email && (
+                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                    <Mail size={16} className="text-blue-500" />
+                                    <a href={`mailto:${planner.public_email}`} className="hover:text-blue-400 transition-colors">{planner.public_email}</a>
+                                </div>
+                            )}
                         </div>
                     </div>
+
+                    {(planner.instagram_url || planner.twitter_url || planner.linkedin_url || planner.facebook_url) && (
+                        <div className="space-y-4 pt-4 border-t border-foreground/5">
+                            <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500">Connect With Me</h3>
+                            <div className="flex flex-wrap gap-3">
+                                {planner.instagram_url && (
+                                    <a
+                                        href={planner.instagram_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-gray-400 hover:text-pink-500 hover:border-pink-500/50 hover:bg-pink-500/10 transition-all duration-300 group"
+                                    >
+                                        <Instagram size={20} className="group-hover:scale-110 transition-transform" />
+                                    </a>
+                                )}
+                                {planner.twitter_url && (
+                                    <a
+                                        href={planner.twitter_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-400/50 hover:bg-blue-400/10 transition-all duration-300 group"
+                                    >
+                                        <Twitter size={20} className="group-hover:scale-110 transition-transform" />
+                                    </a>
+                                )}
+                                {planner.linkedin_url && (
+                                    <a
+                                        href={planner.linkedin_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-gray-400 hover:text-blue-700 hover:border-blue-700/50 hover:bg-blue-700/10 transition-all duration-300 group"
+                                    >
+                                        <Linkedin size={20} className="group-hover:scale-110 transition-transform" />
+                                    </a>
+                                )}
+                                {planner.facebook_url && (
+                                    <a
+                                        href={planner.facebook_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-10 h-10 rounded-xl glass-panel flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-600/50 hover:bg-blue-600/10 transition-all duration-300 group"
+                                    >
+                                        <Facebook size={20} className="group-hover:scale-110 transition-transform" />
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="lg:col-span-2 space-y-8">

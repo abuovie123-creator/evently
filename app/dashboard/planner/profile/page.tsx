@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
-import { Upload, Save, User, MapPin, Briefcase, FileText, ArrowLeft, Loader2 } from "lucide-react";
+import { Upload, Save, User, MapPin, Briefcase, FileText, ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -24,7 +24,15 @@ export default function PlannerProfileEdit() {
         bio: "",
         location: "",
         category: "",
-        avatar_url: ""
+        avatar_url: "",
+        events_completed: 0,
+        years_experience: 0,
+        clients_served: 0,
+        instagram_url: "",
+        twitter_url: "",
+        linkedin_url: "",
+        facebook_url: "",
+        public_email: ""
     });
 
     useEffect(() => {
@@ -39,7 +47,7 @@ export default function PlannerProfileEdit() {
 
             const { data, error } = await supabase
                 .from('profiles')
-                .select('full_name, username, bio, location, category, avatar_url')
+                .select('full_name, username, bio, location, category, avatar_url, instagram_url, twitter_url, linkedin_url, facebook_url, public_email')
                 .eq('id', session.user.id)
                 .single();
 
@@ -53,7 +61,15 @@ export default function PlannerProfileEdit() {
                     bio: data.bio || "",
                     location: data.location || "",
                     category: data.category || "",
-                    avatar_url: data.avatar_url || ""
+                    avatar_url: data.avatar_url || "",
+                    events_completed: data.events_completed || 0,
+                    years_experience: data.years_experience || 0,
+                    clients_served: data.clients_served || 0,
+                    instagram_url: data.instagram_url || "",
+                    twitter_url: data.twitter_url || "",
+                    linkedin_url: data.linkedin_url || "",
+                    facebook_url: data.facebook_url || "",
+                    public_email: data.public_email || ""
                 });
             }
             setIsLoading(false);
@@ -130,6 +146,14 @@ export default function PlannerProfileEdit() {
                     location: profile.location,
                     category: profile.category,
                     avatar_url: profile.avatar_url,
+                    events_completed: Number(profile.events_completed),
+                    years_experience: Number(profile.years_experience),
+                    clients_served: Number(profile.clients_served),
+                    instagram_url: profile.instagram_url,
+                    twitter_url: profile.twitter_url,
+                    linkedin_url: profile.linkedin_url,
+                    facebook_url: profile.facebook_url,
+                    public_email: profile.public_email,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', session.user.id);
@@ -155,160 +179,228 @@ export default function PlannerProfileEdit() {
     }
 
     return (
-        <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
-            {/* Header */}
-            <div className="flex items-center gap-4 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02]">
-                <Link href="/dashboard/planner" className="p-3 glass-panel rounded-2xl hover:bg-white/10 transition-colors shrink-0">
-                    <ArrowLeft size={20} className="text-gray-400" />
-                </Link>
-                <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight truncate">Edit Profile</h1>
-                    <p className="text-gray-400 text-xs md:text-sm truncate">Update your public profile details and avatar.</p>
-                </div>
-            </div>
-
-            <Card className="p-8 space-y-8" hover={false}>
-                {/* Avatar Section */}
-                <div className="space-y-4">
-                    <h3 className="text-lg font-bold">Profile Picture</h3>
-                    <div className="flex flex-col sm:flex-row items-center gap-6">
-                        <div className="relative w-32 h-32 rounded-full overflow-hidden glass-panel border border-white/10 bg-black/50 group flex-shrink-0">
-                            {profile.avatar_url ? (
-                                <img
-                                    src={profile.avatar_url}
-                                    alt="Profile"
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                                    <User size={40} />
-                                </div>
-                            )}
-                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <Upload size={24} className="text-white" />
-                            </div>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                disabled={isUploading}
-                                className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-wait"
-                            />
-                        </div>
-                        <div className="space-y-2 text-center sm:text-left">
-                            <p className="text-sm font-bold">Upload a new avatar</p>
-                            <p className="text-xs text-gray-500 max-w-xs">
-                                Recommended size: 400x400px. JPG, PNG or WebP under 5MB.
-                                Click the image to upload.
-                            </p>
-                            {isUploading && (
-                                <p className="text-xs text-blue-400 font-bold flex items-center gap-1 justify-center sm:justify-start">
-                                    <Loader2 size={12} className="animate-spin" /> Uploading...
-                                </p>
-                            )}
-                        </div>
+        <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
+            {/* Compact Header */}
+            <div className="flex items-center justify-between glass-panel p-4 md:p-6 rounded-3xl border-white/5 bg-white/[0.02]">
+                <div className="flex items-center gap-4">
+                    <Link href="/dashboard/planner" className="p-2 glass-panel rounded-xl hover:bg-white/10 transition-colors shrink-0">
+                        <ArrowLeft size={18} className="text-gray-400" />
+                    </Link>
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-black tracking-tight">Profile Settings</h1>
+                        <p className="text-gray-500 text-[10px] uppercase font-bold tracking-widest">Public Identity</p>
                     </div>
                 </div>
-
-                <div className="h-px bg-white/5 w-full" />
-
-                {/* Details Section */}
-                <div className="space-y-6">
-                    <h3 className="text-lg font-bold">Public Details</h3>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                                <User size={14} /> Full Name
-                            </label>
-                            <Input
-                                placeholder="Your Name or Business Name"
-                                value={profile.full_name}
-                                onChange={(e) => handleInputChange('full_name', e.target.value)}
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                                <User size={14} /> Public Username
-                            </label>
-                            <Input
-                                placeholder="e.g. unique_handle"
-                                value={profile.username}
-                                onChange={(e) => handleInputChange('username', e.target.value.toLowerCase().replace(/\s+/g, '_'))}
-                            />
-                            <p className="text-[10px] text-gray-500">This will be your public URL: <span className="text-blue-400">evently.com/planner/{profile.username || 'handle'}</span></p>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                                <Briefcase size={14} /> Category
-                            </label>
-                            <select
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500 focus:bg-white/10 transition-all appearance-none"
-                                value={profile.category}
-                                onChange={(e) => handleInputChange('category', e.target.value)}
-                            >
-                                <option value="" disabled className="bg-gray-900">Select a category</option>
-                                <option value="Wedding Planner" className="bg-gray-900">Wedding Planner</option>
-                                <option value="Corporate Events" className="bg-gray-900">Corporate Events</option>
-                                <option value="Party Planner" className="bg-gray-900">Party Planner</option>
-                                <option value="Event Designer" className="bg-gray-900">Event Designer</option>
-                                <option value="Other" className="bg-gray-900">Other</option>
-                            </select>
-                        </div>
-
-                        <div className="space-y-2 md:col-span-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                                <MapPin size={14} /> Location
-                            </label>
-                            <Input
-                                placeholder="e.g. Lagos, Nigeria"
-                                value={profile.location}
-                                onChange={(e) => handleInputChange('location', e.target.value)}
-                            />
-                        </div>
-
-                        <div className="space-y-2 md:col-span-2">
-                            <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
-                                <FileText size={14} /> Bio
-                            </label>
-                            <Textarea
-                                placeholder="Tell clients about your experience, style, and what makes your events special..."
-                                value={profile.bio}
-                                onChange={(e) => handleInputChange('bio', e.target.value)}
-                                className="min-h-[120px]"
-                            />
-                            <p className="text-[10px] text-gray-500 text-right">
-                                {profile.bio.length} characters
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-white/5">
+                <div className="flex gap-3">
                     <Button
                         variant="glass"
                         onClick={() => router.push("/dashboard/planner")}
                         disabled={isSaving}
-                        className="w-full sm:w-auto h-12 order-2 sm:order-1 font-bold text-gray-400 hover:text-white"
+                        className="hidden sm:flex h-10 px-6 font-bold text-gray-400 hover:text-white border-white/5"
                     >
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSave}
                         disabled={isSaving || isUploading}
-                        className="bg-blue-600 hover:bg-blue-700 w-full sm:min-w-[160px] h-12 order-1 sm:order-2 font-bold shadow-lg shadow-blue-600/20"
+                        className="bg-blue-600 hover:bg-blue-700 h-10 px-8 font-black shadow-lg shadow-blue-600/20 uppercase tracking-widest text-[10px]"
                     >
-                        {isSaving ? (
-                            <><Loader2 size={18} className="animate-spin mr-2" /> Saving...</>
-                        ) : (
-                            <><Save size={18} className="mr-2" /> Save Profile</>
-                        )}
+                        {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} className="mr-2" />}
+                        Save Changes
                     </Button>
                 </div>
-            </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left Column: Avatar & Basic Info */}
+                <div className="space-y-6">
+                    <Card className="p-6 space-y-6" hover={false}>
+                        <div className="flex flex-col items-center text-center space-y-4">
+                            <div className="relative w-28 h-28 rounded-full overflow-hidden glass-panel border-2 border-blue-500/20 bg-black/50 group">
+                                {profile.avatar_url ? (
+                                    <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-gray-600"><User size={32} /></div>
+                                )}
+                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                                    <Upload size={20} className="text-white" />
+                                </div>
+                                <input type="file" accept="image/*" onChange={handleImageUpload} disabled={isUploading} className="absolute inset-0 opacity-0 cursor-pointer" />
+                            </div>
+                            <div className="space-y-1">
+                                <p className="text-sm font-bold text-white">Profile Photo</p>
+                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Click image to change</p>
+                            </div>
+                            {isUploading && <p className="text-[10px] text-blue-400 animate-pulse font-bold">Uploading...</p>}
+                        </div>
+
+                        <div className="space-y-4 pt-4 border-t border-white/5">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Display Name</label>
+                                <Input
+                                    className="h-11 bg-white/[0.03] border-white/10"
+                                    placeholder="Your Name"
+                                    value={profile.full_name}
+                                    onChange={(e) => handleInputChange('full_name', e.target.value)}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Handle (@username)</label>
+                                <Input
+                                    className="h-11 bg-white/[0.03] border-white/10"
+                                    placeholder="handle"
+                                    value={profile.username}
+                                    onChange={(e) => handleInputChange('username', e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+
+                {/* Right/Middle Column: Bio & Pro Stats */}
+                <div className="lg:col-span-2 space-y-6">
+                    <Card className="p-6" hover={false}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Business Category</label>
+                                <select
+                                    className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-sm text-white focus:outline-none focus:border-blue-500 transition-all appearance-none"
+                                    value={profile.category}
+                                    onChange={(e) => handleInputChange('category', e.target.value)}
+                                >
+                                    <option value="Wedding Planner" className="bg-gray-900">Wedding Planner</option>
+                                    <option value="Corporate Events" className="bg-gray-900">Corporate Events</option>
+                                    <option value="Party Planner" className="bg-gray-900">Party Planner</option>
+                                    <option value="Event Designer" className="bg-gray-900">Event Designer</option>
+                                    <option value="Other" className="bg-gray-900">Other</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Primary Location</label>
+                                <Input
+                                    className="h-11 bg-white/[0.03] border-white/10"
+                                    placeholder="e.g. Lagos, Nigeria"
+                                    value={profile.location}
+                                    onChange={(e) => handleInputChange('location', e.target.value)}
+                                />
+                            </div>
+
+                            {/* Pro Stats Grid */}
+                            <div className="md:col-span-2 grid grid-cols-3 gap-4 pt-4 border-t border-white/5">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Events Done</label>
+                                    <Input
+                                        type="number"
+                                        className="h-11 bg-white/[0.03] border-white/10"
+                                        value={profile.events_completed}
+                                        onChange={(e) => setProfile(p => ({ ...p, events_completed: parseInt(e.target.value) || 0 }))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Years Active</label>
+                                    <Input
+                                        type="number"
+                                        className="h-11 bg-white/[0.03] border-white/10"
+                                        value={profile.years_experience}
+                                        onChange={(e) => setProfile(p => ({ ...p, years_experience: parseInt(e.target.value) || 0 }))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Happy Clients</label>
+                                    <Input
+                                        type="number"
+                                        className="h-11 bg-white/[0.03] border-white/10"
+                                        value={profile.clients_served}
+                                        onChange={(e) => setProfile(p => ({ ...p, clients_served: parseInt(e.target.value) || 0 }))}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="md:col-span-2 space-y-2 pt-4">
+                                <Textarea
+                                    rows={4}
+                                    className="bg-white/[0.03] border-white/10 min-h-[140px] resize-none"
+                                    placeholder="Your experience and vision..."
+                                    value={profile.bio}
+                                    onChange={(e) => handleInputChange('bio', e.target.value)}
+                                />
+                            </div>
+
+                            {/* Social Media Integration */}
+                            <div className="md:col-span-2 pt-6 border-t border-white/5 space-y-6">
+                                <div className="flex items-center gap-2">
+                                    <Sparkles className="text-blue-500" size={18} />
+                                    <h3 className="text-sm font-black uppercase tracking-widest">Connect Socials</h3>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Instagram URL</label>
+                                        <Input
+                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            placeholder="https://instagram.com/..."
+                                            value={profile.instagram_url}
+                                            onChange={(e) => handleInputChange('instagram_url', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Twitter URL</label>
+                                        <Input
+                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            placeholder="https://twitter.com/..."
+                                            value={profile.twitter_url}
+                                            onChange={(e) => handleInputChange('twitter_url', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">LinkedIn URL</label>
+                                        <Input
+                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            placeholder="https://linkedin.com/in/..."
+                                            value={profile.linkedin_url}
+                                            onChange={(e) => handleInputChange('linkedin_url', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Facebook URL</label>
+                                        <Input
+                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            placeholder="https://facebook.com/..."
+                                            value={profile.facebook_url}
+                                            onChange={(e) => handleInputChange('facebook_url', e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="md:col-span-2 space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Public Portfolio Email</label>
+                                        <Input
+                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            placeholder="contact@example.com"
+                                            value={profile.public_email}
+                                            onChange={(e) => handleInputChange('public_email', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+            </div>
+
+            {/* Mobile Actions */}
+            <div className="sm:hidden flex flex-col gap-3">
+                <Button
+                    onClick={handleSave}
+                    className="bg-blue-600 w-full h-12 font-black uppercase tracking-widest text-xs"
+                >
+                    Save Profile
+                </Button>
+                <Button
+                    variant="glass"
+                    onClick={() => router.push("/dashboard/planner")}
+                    className="w-full h-12 font-bold text-gray-400 border-white/5"
+                >
+                    Cancel
+                </Button>
+            </div>
         </main>
     );
 }

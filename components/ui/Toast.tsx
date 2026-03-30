@@ -41,11 +41,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                         key={toast.id}
                         className="pointer-events-auto animate-in slide-in-from-right-8 fade-in duration-300"
                     >
-                        <div className={`flex items-center gap-3 p-4 rounded-2xl glass-panel border ${toast.type === "success" ? "border-green-500/20 bg-green-500/10" :
-                            toast.type === "error" ? "border-red-500/20 bg-red-500/10" :
-                                toast.type === "warning" ? "border-yellow-500/20 bg-yellow-500/10" :
-                                    "border-blue-500/20 bg-blue-500/10"
-                            } shadow-2xl min-w-[300px]`}>
+                        <div className={`flex items-center gap-3 p-4 rounded-2xl border ${toast.type === "success" ? "border-green-500/20 bg-emerald-950/95" :
+                            toast.type === "error" ? "border-red-500/20 bg-rose-950/95" :
+                                toast.type === "warning" ? "border-yellow-500/20 bg-amber-950/95" :
+                                    "border-blue-500/20 bg-blue-950/95"
+                            } shadow-2xl min-w-[300px] backdrop-blur-xl animate-in slide-in-from-right-8 duration-300`}>
                             {toast.type === "success" && <CheckCircle className="text-green-500" size={20} />}
                             {toast.type === "error" && <AlertCircle className="text-red-500" size={20} />}
                             {toast.type === "warning" && <AlertTriangle className="text-yellow-500" size={20} />}
