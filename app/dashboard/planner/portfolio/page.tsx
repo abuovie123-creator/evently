@@ -79,6 +79,26 @@ export default function PlannerPortfolio() {
     });
     const [isSavingStats, setIsSavingStats] = useState(false);
     const [isSavingSocial, setIsSavingSocial] = useState(false);
+    const [isSavingImages, setIsSavingImages] = useState(false);
+
+    const [profileImages, setProfileImages] = useState({
+        avatar_url: "",
+        cover_image_url: ""
+    });
+
+    // 10-15 Preset Male/Female avatars
+    const PRESET_AVATARS = [
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&gender=male",
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka&gender=female",
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=Jack&gender=male",
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah&style=circle&gender=female",
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver&gender=male",
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=Emma&gender=female",
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=James&gender=male",
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=Mia&gender=female",
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=William&gender=male",
+        "https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia&gender=female"
+    ];
 
     const [showAddModal, setShowAddModal] = useState(false);
     const [newEvent, setNewEvent] = useState({
@@ -121,7 +141,7 @@ export default function PlannerPortfolio() {
         // Fetch profile and plan info
         const { data: profile } = await supabase
             .from('profiles')
-            .select('plan_id, events_completed, years_experience, clients_served, instagram_url, twitter_url, linkedin_url, facebook_url, public_email')
+            .select('plan_id, events_completed, years_experience, clients_served, instagram_url, twitter_url, linkedin_url, facebook_url, public_email, avatar_url, cover_image_url')
             .eq('id', userId)
             .single();
 
@@ -144,6 +164,11 @@ export default function PlannerPortfolio() {
                 linkedin_url: profile.linkedin_url || "",
                 facebook_url: profile.facebook_url || "",
                 public_email: profile.public_email || ""
+            });
+
+            setProfileImages({
+                avatar_url: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`,
+                cover_image_url: profile.cover_image_url || "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80"
             });
 
             if (settings) {
@@ -235,6 +260,65 @@ export default function PlannerPortfolio() {
             showToast("Failed to update social links", "error");
         } finally {
             setIsSavingSocial(false);
+        }
+    };
+
+    const handleSaveImages = async () => {
+        setIsSavingImages(true);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) return;
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    avatar_url: profileImages.avatar_url,
+                    cover_image_url: profileImages.cover_image_url
+                })
+                .eq('id', session.user.id);
+
+            if (error) throw error;
+            showToast("Profile images updated successfully!", "success");
+        } catch (error: any) {
+            showToast("Failed to update images", "error");
+        } finally {
+            setIsSavingImages(false);
+        }
+    };
+
+    const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsSavingImages(true);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `cover-${session.user.id}-${Date.now()}.${fileExt}`;
+            const filePath = `covers/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('portfolio-media')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('portfolio-media')
+                .getPublicUrl(filePath);
+
+            setProfileImages(prev => ({ ...prev, cover_image_url: publicUrl }));
+            showToast("Cover image uploaded! Click Save to apply.", "success");
+        } catch (error: any) {
+            console.error("Cover upload error:", error);
+            showToast(error.message || "Failed to upload cover", "error");
+        } finally {
+            setIsSavingImages(false);
         }
     };
 
@@ -625,6 +709,91 @@ export default function PlannerPortfolio() {
                                                 onChange={(e) => setSocialLinks({ ...socialLinks, public_email: e.target.value })}
                                             />
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Profile & Cover Images */}
+                    <Card className="p-5 border-blue-500/10 bg-blue-500/[0.01]" hover={false}>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Profile Defaults</h4>
+                                <Button
+                                    size="sm"
+                                    variant="glass"
+                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-blue-500/20 text-blue-400 hover:bg-blue-500/10"
+                                    onClick={handleSaveImages}
+                                    disabled={isSavingImages}
+                                >
+                                    {isSavingImages ? <Loader2 size={10} className="animate-spin" /> : <Save size={10} className="mr-1.5" />}
+                                    Save
+                                </Button>
+                            </div>
+
+                            <div className="space-y-6">
+                                {/* Cover Image */}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-[9px] font-bold text-gray-500 uppercase">Cover Image</label>
+                                        <div className="relative">
+                                            <Button size="sm" variant="outline" className="h-7 text-[10px] px-3 border-foreground/10" disabled={isSavingImages}>
+                                                <Plus size={12} className="mr-1" /> Upload Image
+                                            </Button>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleCoverUpload}
+                                                disabled={isSavingImages}
+                                                className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-wait"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="relative group">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 transition-colors">
+                                            <ImageIcon size={14} />
+                                        </div>
+                                        <Input
+                                            placeholder="Or paste an image URL..."
+                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs text-gray-400"
+                                            value={profileImages.cover_image_url}
+                                            onChange={(e) => setProfileImages({ ...profileImages, cover_image_url: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="h-24 w-full rounded-xl overflow-hidden glass-panel border border-foreground/5 relative group cursor-crosshair">
+                                        <img src={profileImages.cover_image_url} className="w-full h-full object-cover" alt="Cover Preview" onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80")} />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <span className="text-xs font-bold text-white tracking-widest uppercase">Cover Preview</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Avatar Selection */}
+                                <div className="space-y-3 pt-2 border-t border-foreground/5">
+                                    <label className="text-[9px] font-bold text-gray-500 uppercase">Choose Avatar</label>
+                                    <div className="grid grid-cols-5 gap-2">
+                                        {PRESET_AVATARS.map((avatar, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => setProfileImages({ ...profileImages, avatar_url: avatar })}
+                                                className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${profileImages.avatar_url === avatar
+                                                    ? "border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-110 z-10"
+                                                    : "border-transparent opacity-60 hover:opacity-100"
+                                                    }`}
+                                            >
+                                                <img src={avatar} className="w-full h-full object-cover" alt={`Avatar ${i + 1}`} />
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <div className="pt-2">
+                                        <label className="text-[9px] font-bold text-gray-500 uppercase">Or Custom Image URL</label>
+                                        <Input
+                                            placeholder="https://..."
+                                            className="mt-1 h-9 bg-foreground/[0.03] border-foreground/5 text-xs text-gray-400"
+                                            value={profileImages.avatar_url}
+                                            onChange={(e) => setProfileImages({ ...profileImages, avatar_url: e.target.value })}
+                                        />
                                     </div>
                                 </div>
                             </div>

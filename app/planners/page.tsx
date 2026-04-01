@@ -40,13 +40,14 @@ export default function PlannersPage() {
                 .eq('role', 'planner');
 
             if (error) {
-                console.error("Error fetching planners:", {
-                    message: error.message,
-                    code: error.code,
-                    hint: error.hint,
-                    details: error.details,
-                    raw: error,
-                });
+                if (error.message || error.code || error.details) {
+                    console.error("Error fetching planners:", {
+                        message: error.message,
+                        code: error.code,
+                        hint: error.hint,
+                        details: error.details,
+                    });
+                }
             } else if (data) {
                 setPlanners(data.map(p => ({
                     id: p.id,

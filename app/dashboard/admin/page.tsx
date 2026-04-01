@@ -76,6 +76,24 @@ interface PendingPlanner {
     status: string;
 }
 
+function DebouncedSearchInput({ onSearchChange, placeholder }: { onSearchChange: (val: string) => void, placeholder: string }) {
+    const [val, setVal] = useState("");
+
+    useEffect(() => {
+        const timer = setTimeout(() => onSearchChange(val), 300);
+        return () => clearTimeout(timer);
+    }, [val, onSearchChange]);
+
+    return (
+        <Input
+            className="pl-12"
+            placeholder={placeholder}
+            value={val}
+            onChange={(e) => setVal(e.target.value)}
+        />
+    );
+}
+
 export default function AdminDashboard() {
     const { showToast } = useToast();
     const router = useRouter();
@@ -865,11 +883,9 @@ export default function AdminDashboard() {
                     <Card className="flex flex-col md:flex-row justify-between items-center gap-6" hover={false}>
                         <div className="relative w-full md:w-96">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
-                            <Input
-                                className="pl-12"
+                            <DebouncedSearchInput
                                 placeholder="Search users by name, email or ID..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onSearchChange={setSearchQuery}
                             />
                         </div>
                         <div className="flex flex-wrap gap-4 w-full md:w-auto">
@@ -915,8 +931,9 @@ export default function AdminDashboard() {
                                         </tr>
                                     ) : users
                                         .filter(user => {
-                                            const matchesSearch = (user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                                user.email?.toLowerCase().includes(searchQuery.toLowerCase()));
+                                            const query = searchQuery.toLowerCase();
+                                            const matchesSearch = ((user.full_name || "").toLowerCase().includes(query) ||
+                                                (user.email || "").toLowerCase().includes(query));
                                             const matchesRole = roleFilter === "all" || user.role === roleFilter;
                                             return matchesSearch && matchesRole;
                                         })

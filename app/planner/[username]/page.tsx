@@ -31,6 +31,7 @@ interface PlannerProfile {
     satisfied_clients: number;
     review_count: number;
     avatar_url: string;
+    cover_image_url?: string;
     instagram_url?: string;
     twitter_url?: string;
     linkedin_url?: string;
@@ -117,10 +118,11 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 rating: profile.rating || 0.0,
                 reviews: profile.review_count || 0,
                 avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
+                cover_image_url: profile.cover_image_url,
                 stats: {
-                    events: profile.completed_events || 0,
+                    events: profile.events_completed || 0,
                     years: profile.years_experience || 0,
-                    clients: profile.satisfied_clients || 0
+                    clients: profile.clients_served || 0
                 }
             });
 
@@ -300,38 +302,42 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
     return (
         <main className="min-h-screen bg-background text-foreground">
             <div className="relative">
-                <div className="relative h-[250px] md:h-[350px] w-full overflow-hidden">
+                <div className="relative h-[380px] md:h-[400px] w-full overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-b from-blue-900/40 via-black/60 to-black z-10" />
                     <img
-                        src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80"
+                        src={planner.cover_image_url || "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80"}
                         className="w-full h-full object-cover opacity-60"
                         alt="Hero background"
                     />
                 </div>
 
-                <div className="absolute inset-x-0 bottom-0 z-20 max-w-7xl mx-auto px-6 md:px-8 translate-y-1/2">
-                    <div className="flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8">
-                        <div className="w-32 h-32 md:w-44 md:h-44 rounded-2xl overflow-hidden border-4 border-background shadow-2xl glass-panel shrink-0">
+                <div className="absolute inset-x-0 bottom-0 z-20 max-w-7xl mx-auto px-6 md:px-8 translate-y-[45%] md:translate-y-1/2">
+                    <div className="flex flex-col md:flex-row items-center md:items-end gap-5 md:gap-8">
+                        <div className="w-28 h-28 md:w-44 md:h-44 rounded-2xl overflow-hidden border-4 border-background shadow-2xl glass-panel shrink-0">
                             <img src={planner.avatar} className="w-full h-full object-cover" alt={planner.name} />
                         </div>
                         <div className="flex-1 text-center md:text-left pb-2 md:pb-4">
-                            <div className="flex flex-wrap items-center gap-3 justify-center md:justify-start mb-2">
-                                <h1 className="text-3xl md:text-5xl font-bold text-white drop-shadow-xl">{planner.name}</h1>
-                                <div className="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
-                                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-white">Verified</span>
+                            <div className="flex flex-wrap items-center gap-2 justify-center md:justify-start mb-1 md:mb-2">
+                                <h1 className="text-2xl md:text-5xl font-bold text-white drop-shadow-xl">{planner.name}</h1>
+                                <div className="px-2.5 py-0.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
+                                    <span className="text-[9px] md:text-xs font-bold uppercase tracking-wider text-white">Verified</span>
                                 </div>
                             </div>
-                            <p className="text-lg md:text-xl text-foreground font-medium drop-shadow-md">{planner.category}</p>
+                            <p className="text-base md:text-xl text-foreground font-medium drop-shadow-md">{planner.category}</p>
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-8 md:mt-0 pb-0 md:pb-4 justify-center md:justify-end">
-                            <Button size="lg" className="w-full sm:w-auto shadow-2xl h-14 md:h-12 bg-blue-600 hover:bg-blue-700" onClick={() => setShowBookingModal(true)}>
+
+                        {/* Fade-in line separator on mobile */}
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-foreground/20 to-transparent block md:hidden mb-4" />
+
+                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-2 md:mt-0 pb-0 md:pb-4 justify-center md:justify-end">
+                            <Button size="lg" className="w-full sm:w-auto shadow-2xl h-12 md:h-12 bg-blue-600 hover:bg-blue-700" onClick={() => setShowBookingModal(true)}>
                                 Book Now
                             </Button>
                             <div className="flex gap-3 w-full sm:w-auto">
                                 <Button
                                     variant="glass"
                                     size="lg"
-                                    className="flex-1 sm:w-auto shadow-2xl h-14 md:h-12"
+                                    className="flex-1 sm:w-auto shadow-2xl h-12 md:h-12"
                                     onClick={() => {
                                         if (hasApprovedBooking) {
                                             router.push("/dashboard/messages");
@@ -346,7 +352,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                                 <Button
                                     variant="glass"
                                     size="lg"
-                                    className="px-4 shadow-2xl h-14 md:h-12"
+                                    className="px-4 shadow-2xl h-12 md:h-12"
                                     onClick={handleShare}
                                 >
                                     <Share2 size={18} />
@@ -433,7 +439,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 </div>
             )}
 
-            <div className="max-w-7xl mx-auto px-6 md:px-8 pt-32 md:pt-40 pb-20 grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-12">
+            <div className="max-w-7xl mx-auto px-6 md:px-8 pt-56 md:pt-40 pb-20 grid grid-cols-1 lg:grid-cols-3 gap-10 md:gap-12">
                 <div className="lg:col-span-1 space-y-12">
                     <div className="space-y-4">
                         <h3 className="text-sm font-bold uppercase tracking-widest text-gray-500">About Me</h3>
