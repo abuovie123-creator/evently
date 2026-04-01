@@ -57,8 +57,31 @@ export function ChatList({ currentUserId, onSelectConversation, activeId }: Chat
             .channel('conversation_updates')
             .on(
                 'postgres_changes',
-                { event: 'UPDATE', schema: 'public', table: 'conversations' },
-                () => fetchConversations()
+                { event: '*', schema: 'public', table: 'conversations' },
+                (payload) => {
+                    if (payload.eventType === 'UPDATE') {
+                        setConversations(prev => {
+                            const updated = prev.map(conv => {
+                                if (conv.id === payload.new.id) {
+                                    return {
+                                        ...conv,
+                                        last_message: payload.new.last_message,
+                                        last_message_at: payload.new.last_message_at
+                                    };
+                                }
+                                return conv;
+                            });
+                            // Re-sort by last_message_at
+                            return [...updated].sort((a, b) =>
+                                new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime()
+                            );
+                        });
+                    } else if (payload.eventType === 'INSERT') {
+                        // For INSERT, we might need to fetch the full row to get the profile join
+                        // but a quick re-fetch is acceptable for new chats as they are rare
+                        fetchConversations();
+                    }
+                }
             )
             .subscribe();
 

@@ -17,12 +17,11 @@ export function Navbar() {
     const [user, setUser] = useState<User | null>(null);
     const [role, setRole] = useState<string | null>(null);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [externalLinks, setExternalLinks] = useState<any[]>([]);
     const supabase = createClient();
     const router = useRouter();
     const pathname = usePathname();
     const { showToast } = useToast();
-    const [externalLinks, setExternalLinks] = useState<any[]>([]);
-
 
     useEffect(() => {
         const initUser = async () => {
@@ -41,13 +40,16 @@ export function Navbar() {
 
         initUser();
 
-        // Fetch external links
         const fetchLinks = async () => {
             const { data: links } = await supabase
                 .from('external_links')
                 .select('*')
                 .order('order_index', { ascending: true });
-            setExternalLinks(links || []);
+
+            const filteredLinks = (links || []).filter(link =>
+                !['Main Website', 'Documentation'].includes(link.label)
+            );
+            setExternalLinks(filteredLinks);
         };
         fetchLinks();
 
@@ -81,13 +83,11 @@ export function Navbar() {
         }
 
         showToast("Logged out successfully", "success");
-        // Hard redirect to clear all states
         window.location.href = "/";
     };
 
     const dashboardLink = role === 'admin' ? '/dashboard/admin' : role === 'planner' ? '/dashboard/planner' : '/dashboard/client';
 
-    // Hide Navbar on dashboard pages (must be after all hooks)
     if (pathname?.startsWith('/dashboard')) return null;
 
     return (
@@ -98,13 +98,11 @@ export function Navbar() {
                         Evently
                     </Link>
 
-                    {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-8">
                         <Link href="/planners" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors">Browse Planners</Link>
                         <Link href="/events" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors">Events Gallery</Link>
                         <Link href="/pricing" className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-foreground transition-colors">Pricing</Link>
 
-                        {/* Dynamic External Links (Desktop) */}
                         {externalLinks.length > 0 && role !== 'admin' && externalLinks.map((link) => (
                             <a
                                 key={link.id}
@@ -117,8 +115,6 @@ export function Navbar() {
                             </a>
                         ))}
 
-
-
                         {user ? (
                             <div className="flex items-center gap-4">
                                 <Link href={dashboardLink}>
@@ -130,6 +126,7 @@ export function Navbar() {
                                     Logout
                                 </Button>
                                 <div className="h-6 w-px bg-foreground/10 mx-1 hidden lg:block" />
+                                <NotificationBell />
                                 <ThemeToggle />
                             </div>
                         ) : (
@@ -159,7 +156,6 @@ export function Navbar() {
                 </div>
             </nav>
 
-            {/* Public Mobile Sidebar */}
             <div className={`md:hidden fixed inset-0 z-[100] transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <div className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-xl" onClick={() => setIsOpen(false)} />
                 <div className={`absolute top-0 right-0 bottom-0 w-[85%] bg-white dark:bg-black border-l border-foreground/10 transform transition-transform duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
@@ -194,8 +190,6 @@ export function Navbar() {
                                     </span>
                                 </Link>
                             ))}
-
-                            {/* Dynamic External Links (Mobile) */}
                             {externalLinks.length > 0 && role !== 'admin' && externalLinks.map((link, i) => (
                                 <a
                                     key={link.id}

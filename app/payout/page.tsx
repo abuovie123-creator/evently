@@ -99,11 +99,21 @@ function PayoutContent() {
             // 1. Upload screenshot to storage
             const fileExt = screenshot.name.split('.').pop();
             const fileName = `${user.id}_${Date.now()}.${fileExt}`;
-            const { error: uploadError } = await supabase.storage
-                .from('payment-proofs')
-                .upload(fileName, screenshot);
 
-            if (uploadError) throw uploadError;
+            const { error: uploadError, data: uploadData } = await supabase.storage
+                .from('payment-proofs')
+                .upload(fileName, screenshot, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (uploadError) {
+                console.error("Upload Error:", uploadError);
+                if (uploadError.message === "Bucket not found") {
+                    throw new Error("Payment proofs storage is not configured. Please contact admin.");
+                }
+                throw uploadError;
+            }
 
             // 2. Record request in bank_transfers
             const { error: dbError } = await supabase
@@ -229,7 +239,11 @@ function PayoutContent() {
                                         />
                                         <div className={`p-8 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center transition-all ${screenshot ? "border-green-500/50 bg-green-500/5" : "border-white/10 group-hover:border-white/20"
                                             }`}>
-                                            <Upload className={screenshot ? "text-green-400" : "text-gray-500"} size={32} />
+                                            {isSubmitting ? (
+                                                <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                                            ) : (
+                                                <Upload className={screenshot ? "text-green-400" : "text-gray-500"} size={32} />
+                                            )}
                                             <p className="mt-4 font-bold">{screenshot ? screenshot.name : "Click to upload payment receipt"}</p>
                                             <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
                                         </div>

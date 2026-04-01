@@ -58,8 +58,8 @@ export function AnnouncementPopup() {
                 onClick={handleClose}
             />
 
-            <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[110] max-w-lg w-[92%] sm:w-full transition-all duration-700 transform ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                <div className="glass-panel p-6 md:p-10 shadow-[0_0_50px_-12px_rgba(37,99,235,0.3)] border-white/10 relative overflow-hidden group rounded-[2rem] md:rounded-[3rem]">
+            <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[110] max-w-lg w-[94%] sm:w-full transition-all duration-700 transform ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
+                <div className="glass-panel p-5 md:p-10 shadow-[0_0_50px_-12px_rgba(37,99,235,0.3)] border-white/10 relative overflow-hidden group rounded-[2rem] md:rounded-[3rem]">
                     {/* Background Decor */}
                     <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl group-hover:bg-blue-600/20 transition-colors duration-500" />
                     <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl group-hover:bg-purple-600/20 transition-colors duration-500" />

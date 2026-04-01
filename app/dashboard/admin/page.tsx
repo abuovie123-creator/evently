@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -25,6 +27,8 @@ import {
     Wallet,
     TrendingUp,
     DollarSign,
+    History,
+    LifeBuoy,
     Bell,
     Info,
     ExternalLink,
@@ -32,8 +36,6 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 interface UserProfile {
     id: string;
@@ -587,159 +589,184 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <div className="space-y-8 md:space-y-12 animate-in fade-in duration-500">
-            {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-foreground/5 bg-foreground/[0.02]">
-                <div>
-                    <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Admin Control Center</h1>
-                    <p className="text-gray-400 text-xs md:text-sm">Manage your platform's heart and soul from one central hub.</p>
+        <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#050505] -m-4 md:-m-8 p-4 md:p-8 animate-in fade-in duration-500">
+            {/* Admin Header */}
+            <header className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white dark:bg-[#0A0A0A] p-4 rounded-2xl border border-foreground/5 shadow-sm">
+                <div className="relative w-full md:w-96 group">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-blue-500 transition-colors" size={16} />
+                    <input
+                        type="text"
+                        placeholder="Search for a menu"
+                        className="w-full bg-foreground/5 border-none rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-1 focus:ring-blue-500/50 outline-none transition-all"
+                    />
                 </div>
-                <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-                    <Button
-                        variant="outline"
-                        className="w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg border-foreground/10 hover:bg-foreground/5 font-bold"
-                        onClick={() => setActiveTab("payments")}
+
+                <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto justify-end">
+                    <Link
+                        href="/"
+                        target="_blank"
+                        className="p-2.5 rounded-xl bg-foreground/5 hover:bg-blue-500/10 text-muted-foreground hover:text-blue-500 transition-all"
+                        title="View Website"
                     >
-                        <TrendingUp size={18} className="mr-2" />
-                        Analytics
-                    </Button>
-                    <Button
-                        className={`w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg font-bold ${systemStatus === 'online' ? 'bg-green-500 hover:bg-green-600 shadow-green-500/20' : systemStatus === 'offline' ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20' : 'bg-foreground/5'}`}
-                        onClick={() => {
-                            showToast(systemStatus === 'online' ? "Database connection is healthy" : "Database connection lost", systemStatus === 'online' ? "success" : "error");
-                        }}
+                        <ExternalLink size={20} />
+                    </Link>
+                    <button
+                        className="p-2.5 rounded-xl bg-foreground/5 hover:bg-blue-500/10 text-muted-foreground hover:text-blue-500 transition-all"
+                        title="Quick Actions"
                     >
-                        {systemStatus === 'online' ? (
-                            <><Check size={18} className="mr-2" /> System Online</>
-                        ) : systemStatus === 'offline' ? (
-                            <><ShieldAlert size={18} className="mr-2" /> System Offline</>
-                        ) : (
-                            <Loader2 size={18} className="mr-2 animate-spin" />
-                        )}
-                    </Button>
+                        <LayoutDashboard size={20} />
+                    </button>
+                    <div className="h-8 w-[1px] bg-foreground/10 mx-2 hidden md:block" />
+                    <div className="flex items-center gap-3 pl-2">
+                        <div className="text-right hidden sm:block">
+                            <p className="text-xs font-bold text-foreground">Administrator</p>
+                            <p className="text-[10px] text-muted-foreground">Super Admin</p>
+                        </div>
+                        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black shadow-lg shadow-blue-600/20">
+                            A
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </header>
 
-            {/* Sidebar/Tabs Navigation */}
-            <div className="flex gap-2 p-1 bg-foreground/5 rounded-2xl border border-foreground/10 w-full overflow-x-auto scrollbar-hide">
-                {tabs.map((tab: TabItem) => {
-                    const Icon = tab.icon;
-                    return (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
-                                ? "bg-foreground text-background shadow-lg shadow-foreground/10"
-                                : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-                                }`}
-                        >
-                            <Icon size={16} />
-                            {tab.label}
-                        </button>
-                    );
-                })}
-            </div>
-
-            {/* Overview Tab Content */}
+            {/* Overview Content */}
             {activeTab === "overview" && (
-                <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Stats Grid */}
-                        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {[
-                                { label: "Active Planners", value: stats.activePlanners.toString(), change: stats.growth },
-                                { label: "Total Bookings", value: stats.totalBookings.toString(), change: "+0%" },
-                                { label: "Platform Revenue", value: stats.platformRevenue, change: "+0%" },
-                            ].map((stat: StatItem, i: number) => (
-                                <Card key={i} className="space-y-4 group relative overflow-hidden p-6 md:p-8" hover={true}>
-                                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 blur-3xl -mr-12 -mt-12 group-hover:bg-blue-500/10 transition-colors" />
-                                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{stat.label}</span>
-                                    <div className="flex items-end justify-between">
-                                        <span className="text-3xl md:text-4xl font-extrabold group-hover:text-blue-400 transition-colors">{stat.value}</span>
-                                        <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold ${stat.change.startsWith('+') ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
-                                            <TrendingUp size={10} />
-                                            {stat.change}
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {/* Top Full-Width Chart Card */}
+                    <Card className="p-6 overflow-hidden border-none shadow-sm bg-white dark:bg-[#0A0A0A]" hover={false}>
+                        <div className="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 className="text-sm font-black text-foreground uppercase tracking-wider">Recent Transaction</h3>
+                                <p className="text-[10px] text-muted-foreground mt-1">DEPOSIT: 0 NGN</p>
+                            </div>
+                            <div className="flex gap-2">
+                                <button className="px-3 py-1 rounded-lg bg-foreground/5 text-[10px] font-bold text-foreground">This Month</button>
+                                <button className="px-3 py-1 rounded-lg text-[10px] font-bold text-muted-foreground hover:bg-foreground/5 transition-colors">Last Month</button>
+                            </div>
+                        </div>
+                        <div className="h-[200px] w-full bg-foreground/[0.02] rounded-xl flex items-end px-4 pb-8 relative overflow-hidden">
+                            {/* Simple CSS-based Chart Decoration */}
+                            <div className="absolute inset-x-0 bottom-0 h-[1px] bg-blue-500/20 w-full" />
+                            <div className="absolute left-0 bottom-0 w-full h-24 bg-gradient-to-t from-blue-500/5 to-transparent" />
+                            <svg className="w-full h-full text-blue-500 opacity-50" viewBox="0 0 1000 100" preserveAspectRatio="none">
+                                <path d="M0,80 L100,75 L200,85 L300,70 L400,75 L500,60 L600,65 L700,50 L800,55 L900,40 L1000,45" fill="none" stroke="currentColor" strokeWidth="2" />
+                            </svg>
+                            <div className="absolute bottom-2 left-0 w-full flex justify-between px-4 text-[8px] text-muted-foreground font-mono">
+                                <span>Day 01</span><span>Day 05</span><span>Day 10</span><span>Day 15</span><span>Day 20</span><span>Day 25</span><span>Day 30</span>
+                            </div>
+                        </div>
+                    </Card>
+
+                    {/* Stats Grid - 4 Columns */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            { label: "TOTAL USERS", value: stats.activePlanners.toString(), icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
+                            { label: "PENDING TICKETS", value: "0", icon: LifeBuoy, color: "text-purple-500", bg: "bg-purple-500/10" },
+                            { label: "PENDING KYC", value: pendingPlanners.length.toString(), icon: ShieldAlert, color: "text-orange-500", bg: "bg-orange-500/10" },
+                            { label: "THIS MONTH TRANSACTIONS", value: "0", icon: CreditCard, color: "text-green-500", bg: "bg-green-500/10" },
+                        ].map((stat, i) => (
+                            <Card key={i} className="p-6 border-none shadow-sm bg-white dark:bg-[#0A0A0A]" hover={true}>
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className={`p-2 rounded-xl ${stat.bg} ${stat.color}`}>
+                                        <stat.icon size={20} />
+                                    </div>
+                                    <div className="flex items-center gap-1 text-[10px] font-bold text-green-500 bg-green-500/5 px-2 py-0.5 rounded-full">
+                                        <TrendingUp size={10} />
+                                        0%
+                                    </div>
+                                </div>
+                                <h3 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{stat.label}</h3>
+                                <div className="flex items-end justify-between">
+                                    <span className="text-2xl font-black text-foreground">{stat.value}</span>
+                                    <span className="text-[10px] text-muted-foreground">from 0</span>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+
+                    {/* Orders History & Summary Section */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <Card className="lg:col-span-2 p-6 border-none shadow-sm bg-white dark:bg-[#0A0A0A]" hover={false}>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-6">Orders History</h3>
+                            <div className="h-[300px] w-full flex items-end gap-2 px-2 pb-8 bg-foreground/[0.01] rounded-xl relative">
+                                {[40, 70, 45, 90, 65, 80, 50, 30, 85, 60, 75, 55].map((h, i) => (
+                                    <div key={i} className="flex-1 bg-blue-500/20 hover:bg-blue-500 transition-all rounded-t-sm relative group" style={{ height: `${h}%` }}>
+                                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                            Value: {h}
                                         </div>
                                     </div>
-                                </Card>
-                            ))}
-                        </div>
-
-                        {/* Feature Control Panel */}
-                        <Card className="lg:col-span-1 space-y-6" hover={false}>
-                            <div className="flex items-center gap-2 mb-2">
-                                <ShieldAlert className="text-blue-400" size={20} />
-                                <h3 className="text-lg font-bold">Quick Feature Toggle</h3>
-                            </div>
-                            <div className="space-y-3">
-                                {Object.entries(features).map(([key, enabled]) => (
-                                    <div key={key} className="flex items-center justify-between p-3 glass-panel rounded-xl border-white/5">
-                                        <span className="text-xs font-medium text-gray-300 capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
-                                        <button
-                                            onClick={() => toggleFeature(key as keyof typeof features)}
-                                            className={`w-10 h-5 rounded-full transition-all relative ${enabled ? 'bg-blue-500' : 'bg-foreground/10'}`}
-                                        >
-                                            <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${enabled ? 'right-0.5' : 'left-0.5'}`} />
-                                        </button>
-                                    </div>
                                 ))}
+                                <div className="absolute bottom-2 left-0 w-full flex justify-around px-2 text-[8px] text-muted-foreground font-mono">
+                                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map(m => <span key={m}>{m}</span>)}
+                                </div>
+                            </div>
+                        </Card>
+
+                        <Card className="p-6 border-none shadow-sm bg-white dark:bg-[#0A0A0A] flex flex-col justify-center items-center text-center space-y-4" hover={false}>
+                            <div className="w-32 h-32 rounded-full border-8 border-foreground/5 border-t-blue-500 flex items-center justify-center relative">
+                                <span className="text-xl font-black">{stats.platformRevenue}</span>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black text-foreground uppercase tracking-wider">Total Revenue</h3>
+                                <p className="text-xs text-muted-foreground mt-1">Platform wide earnings</p>
+                            </div>
+                            <div className="w-full pt-4 border-t border-foreground/5 text-left">
+                                <div className="flex justify-between items-center text-xs mb-2">
+                                    <span className="text-muted-foreground">This Week</span>
+                                    <span className="font-bold">₦0</span>
+                                </div>
+                                <div className="w-full bg-foreground/5 h-1.5 rounded-full overflow-hidden">
+                                    <div className="bg-blue-500 h-full w-[10%]" />
+                                </div>
                             </div>
                         </Card>
                     </div>
 
-                    {/* Recent Activity Section */}
-                    <div className="space-y-6">
+                    {/* Latest Users Table Section */}
+                    <div className="space-y-4">
                         <div className="flex justify-between items-end">
-                            <h2 className="text-2xl font-bold">Recent Planner Approvals</h2>
-                            <Button variant="outline" size="sm">View All</Button>
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-wider">Latest Users</h3>
+                            <Link href="#users" className="text-[10px] font-bold text-blue-500 hover:underline">View All</Link>
                         </div>
-                        <Card className="p-0 overflow-hidden" hover={false}>
+                        <Card className="p-0 overflow-hidden border-none shadow-sm bg-white dark:bg-[#0A0A0A]" hover={false}>
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left text-sm min-w-[600px]">
-                                    <thead className="bg-foreground/5 text-muted-foreground uppercase text-[10px] font-bold tracking-widest">
+                                <table className="w-full text-left text-xs min-w-[800px]">
+                                    <thead className="bg-[#F8F9FA] dark:bg-foreground/[0.02] text-muted-foreground font-bold border-b border-foreground/5">
                                         <tr>
-                                            <th className="p-5">Planner</th>
-                                            <th className="p-5">Category</th>
-                                            <th className="p-5">Location</th>
-                                            <th className="p-5">Status</th>
-                                            <th className="p-5 text-right">Actions</th>
+                                            <th className="p-4">USER</th>
+                                            <th className="p-4">EMAIL</th>
+                                            <th className="p-4">ROLE</th>
+                                            <th className="p-4">JOINED</th>
+                                            <th className="p-4">STATUS</th>
+                                            <th className="p-4 text-right">ACTION</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-foreground/5">
-                                        {pendingPlanners.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={5} className="p-10 text-center text-gray-500">
-                                                    No pending planner approvals.
+                                    <tbody className="divide-y divide-foreground/5 transition-colors">
+                                        {users.slice(0, 5).map((user) => (
+                                            <tr key={user.id} className="hover:bg-foreground/[0.01]">
+                                                <td className="p-4 font-bold flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-lg bg-foreground/5 flex items-center justify-center text-[10px]">
+                                                        {user.full_name?.[0] || 'U'}
+                                                    </div>
+                                                    {user.full_name}
                                                 </td>
-                                            </tr>
-                                        ) : pendingPlanners.map((planner: PendingPlanner, i: number) => (
-                                            <tr key={planner.id} className="hover:bg-foreground/[0.02] transition-colors">
-                                                <td className="p-5 font-bold">{planner.name}</td>
-                                                <td className="p-5 text-gray-400">{planner.cat}</td>
-                                                <td className="p-5 text-gray-400">{planner.loc}</td>
-                                                <td className="p-5">
-                                                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold ${planner.status === 'Verified' ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'}`}>
-                                                        {planner.status}
+                                                <td className="p-4 text-muted-foreground">{user.email}</td>
+                                                <td className="p-4">
+                                                    <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider ${user.role === 'admin' ? 'bg-red-500/10 text-red-500' : user.role === 'planner' ? 'bg-blue-500/10 text-blue-500' : 'bg-gray-500/10 text-gray-500'}`}>
+                                                        {user.role}
                                                     </span>
                                                 </td>
-                                                <td className="p-5 text-right">
-                                                    <div className="flex flex-col sm:flex-row justify-end gap-2">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            className="text-[10px] h-8 px-3 w-full sm:w-auto"
-                                                            onClick={() => showToast(`Reviewing ${planner.name}`, "info")}
-                                                        >
-                                                            View
-                                                        </Button>
-                                                        <Button
-                                                            size="sm"
-                                                            className="text-[10px] h-8 px-3 bg-green-500 hover:bg-green-600 w-full sm:w-auto"
-                                                            onClick={() => approvePlanner(planner.id)}
-                                                        >
-                                                            Approve
-                                                        </Button>
+                                                <td className="p-4 text-muted-foreground">{user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</td>
+                                                <td className="p-4">
+                                                    <div className="flex items-center gap-1.5 text-green-500 font-bold">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                                        Active
                                                     </div>
+                                                </td>
+                                                <td className="p-4 text-right">
+                                                    <button className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors">
+                                                        <MoreVertical size={14} className="text-muted-foreground" />
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}

@@ -73,19 +73,11 @@ export function useChat(conversationId: string | null) {
             });
 
         if (messageError) {
-            console.error("Error sending message:", messageError);
+            console.error("Supabase Message Insert Error:", messageError);
+            // Revert optimistic update
             setMessages((prev) => prev.filter(m => m.id !== newMessage.id));
             return;
         }
-
-        // 2. Update the conversation preview
-        await supabase
-            .from('conversations')
-            .update({
-                last_message: content.trim(),
-                last_message_at: new Date().toISOString()
-            })
-            .eq('id', conversationId);
     };
 
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -140,9 +132,12 @@ export function useChat(conversationId: string | null) {
                 (payload) => {
                     const newMessage = payload.new as Message;
                     setMessages((prev) => {
-                        // Avoid duplicates if we already added it optimistically
                         if (prev.some(m => m.id === newMessage.id)) return prev;
-                        return [...prev, newMessage];
+                        // Sort by created_at to ensure order
+                        const updated = [...prev, newMessage].sort((a, b) =>
+                            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                        );
+                        return updated;
                     });
                 }
             )

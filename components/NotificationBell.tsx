@@ -162,7 +162,9 @@ export function NotificationBell() {
             {isOpen && (
                 <>
                     <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-                    <div className="absolute right-0 mt-3 w-80 max-h-[480px] z-50 glass-panel !bg-background dark:!bg-slate-900 border-foreground/10 shadow-2xl rounded-[2rem] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 origin-top-right">
+                    <div
+                        className="fixed md:absolute top-20 md:top-full left-4 md:left-auto right-4 md:right-0 mt-2 md:mt-3 w-auto md:w-80 max-h-[calc(100vh-120px)] md:max-h-[480px] z-50 glass-panel !bg-background dark:!bg-slate-900 border-foreground/10 shadow-2xl rounded-[2rem] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 origin-top-right"
+                    >
                         <div className="p-4 border-b border-foreground/5 bg-foreground/[0.02] flex items-center justify-between">
                             <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Notifications</h3>
                             {unreadCount > 0 && (

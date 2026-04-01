@@ -67,9 +67,6 @@ export default function LoginPage() {
 
         const supabase = createClient();
 
-        // Ensure a clean session for every login
-        await supabase.auth.signOut();
-
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
             email,
             password,
