@@ -29,7 +29,12 @@ import {
     Copy,
     Check,
     LogOut,
-    Trash2
+    Trash2,
+    X,
+    Plus,
+    Shield,
+    Bell,
+    Info
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
