@@ -137,6 +137,38 @@ function PayoutContent() {
         }
     };
 
+    const handleGatewayCheckout = async (gateway: "paystack" | "flutterwave") => {
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`/api/checkout/${gateway}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    tierId: selectedTier.id,
+                    amount: selectedTier.price,
+                    userId: user.id,
+                    email: user.email
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.error || "Failed to initialize payment");
+
+            // Redirect to securely generated checkout URL
+            if (data.authorizationUrl) {
+                window.location.href = data.authorizationUrl;
+            } else {
+                throw new Error("Invalid response from payment gateway");
+            }
+
+        } catch (error: any) {
+            console.error("Gateway error:", error);
+            showToast(error.message || `Error connecting to ${gateway}`, "error");
+            setIsSubmitting(false);
+        }
+    };
+
     if (isLoading) return (
         <div className="min-h-screen flex items-center justify-center bg-black">
             <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -273,13 +305,22 @@ function PayoutContent() {
                                             Pay securely using your card or bank app and get upgraded instantly.
                                         </p>
                                     </div>
-                                    <Button
-                                        className="w-full py-6 bg-blue-500 hover:bg-blue-600"
-                                        size="lg"
-                                        onClick={() => showToast("Online payment integration coming soon! Use manual transfer for now.", "info")}
-                                    >
-                                        Pay ₦{Number(selectedTier?.price || 0).toLocaleString()} Now
-                                    </Button>
+                                    <div className="space-y-3 w-full max-w-sm mx-auto">
+                                        <Button
+                                            className="w-full py-6 bg-[#0BA4DB] hover:bg-[#0BA4DB]/90 text-white font-black uppercase tracking-widest text-xs"
+                                            onClick={() => handleGatewayCheckout("paystack")}
+                                            disabled={isSubmitting}
+                                        >
+                                            {isSubmitting ? "Initializing..." : `Pay ₦${Number(selectedTier?.price || 0).toLocaleString()} with Paystack`}
+                                        </Button>
+                                        <Button
+                                            className="w-full py-6 bg-[#FB9129] hover:bg-[#FB9129]/90 text-white font-black uppercase tracking-widest text-xs"
+                                            onClick={() => handleGatewayCheckout("flutterwave")}
+                                            disabled={isSubmitting}
+                                        >
+                                            {isSubmitting ? "Initializing..." : `Pay ₦${Number(selectedTier?.price || 0).toLocaleString()} with Flutterwave`}
+                                        </Button>
+                                    </div>
                                 </div>
                             </section>
                         )}

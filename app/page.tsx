@@ -123,7 +123,7 @@ export default function Home() {
                         Now Live: Professional Portfolio Builder
                     </div>
 
-                    <h1 className="text-5xl xs:text-6xl sm:text-8xl font-black tracking-tight leading-[0.9] bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/40 max-w-5xl mx-auto">
+                    <h1 className="text-5xl xs:text-6xl sm:text-8xl font-black tracking-tight leading-[0.9] bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70 max-w-5xl mx-auto">
                         Elevate Your <span className="text-blue-500">Planning</span> Career.
                     </h1>
 
@@ -158,23 +158,23 @@ export default function Home() {
                     </Link>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
                     {isLoading ? (
-                        [1, 2, 3].map(i => <div key={i} className="aspect-[4/5] glass-panel rounded-[2.5rem] animate-pulse" />)
+                        [1, 2, 3].map(i => <div key={i} className="aspect-[4/5] glass-panel rounded-2xl md:rounded-[2.5rem] animate-pulse" />)
                     ) : (
                         featuredPlanners.map((planner, i) => (
                             <Link key={planner.id} href={`/planner/${planner.username}`}>
-                                <Card className="group overflow-hidden p-0 rounded-[2.5rem] border-foreground/5 hover:border-blue-500/30 transition-all bg-background dark:bg-black animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ transitionDelay: `${i * 100}ms` }}>
+                                <Card className="group overflow-hidden p-0 rounded-2xl md:rounded-[2.5rem] border-foreground/5 hover:border-blue-500/30 transition-all bg-background dark:bg-black animate-in fade-in slide-in-from-bottom-8 duration-700" style={{ transitionDelay: `${i * 100}ms` }}>
                                     <div className="aspect-[4/5] relative overflow-hidden">
                                         <img src={planner.avatar_url} alt={`${planner.full_name}'s profile picture`} className="w-full h-full object-cover group-hover:scale-110 transition-transform [transition-duration:2000ms] ease-out brightness-75 group-hover:brightness-100" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-                                        <div className="absolute bottom-6 left-6 right-6">
-                                            <div className="flex items-center gap-1.5 text-yellow-500 mb-1">
-                                                <Star size={12} className="fill-yellow-500" />
-                                                <span className="text-xs font-black text-white">{planner.rating.toFixed(1)}</span>
+                                        <div className="absolute bottom-3 left-3 md:bottom-6 md:left-6 md:right-6 right-3">
+                                            <div className="flex items-center gap-1 md:gap-1.5 text-yellow-500 mb-0.5 md:mb-1">
+                                                <Star size={10} className="fill-yellow-500 md:w-3 md:h-3" />
+                                                <span className="text-[10px] md:text-xs font-black text-white">{planner.rating.toFixed(1)}</span>
                                             </div>
-                                            <h3 className="text-2xl font-black text-white group-hover:text-blue-400 transition-colors leading-none">{planner.full_name}</h3>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">{planner.category}</p>
+                                            <h3 className="text-sm md:text-2xl font-black text-white group-hover:text-blue-400 transition-colors leading-none truncate">{planner.full_name}</h3>
+                                            <p className="text-[6px] md:text-[10px] font-bold text-gray-300 md:text-gray-400 uppercase tracking-widest mt-0.5 md:mt-1 truncate">{planner.category}</p>
                                         </div>
                                     </div>
                                 </Card>

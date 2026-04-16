@@ -58,6 +58,9 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
     const [albums, setAlbums] = useState<Album[]>([]);
     const [hasApprovedBooking, setHasApprovedBooking] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+
+    // Auth States
+    const [isUserAdmin, setIsUserAdmin] = useState(false);
     const [isTogglingSave, setIsTogglingSave] = useState(false);
 
     // Booking Form States
@@ -116,20 +119,37 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 return;
             }
 
+            // Realtime dynamic aggregation
+            const { data: reviewsData } = await supabase
+                .from('reviews')
+                .select('rating')
+                .eq('planner_id', profile.id);
+
+            const reviewCount = reviewsData?.length || 0;
+            const avgRating = reviewCount > 0
+                ? parseFloat((reviewsData!.reduce((acc, curr) => acc + curr.rating, 0) / reviewCount).toFixed(1))
+                : profile.rating || 0.0;
+
+            const { count: clientsCount } = await supabase
+                .from('bookings')
+                .select('id', { count: 'exact', head: true })
+                .eq('planner_id', profile.id)
+                .in('status', ['approved', 'confirmed']);
+
             setPlanner({
                 ...profile,
                 name: profile.full_name || username,
                 category: profile.category || "Wedding & Event Planner",
                 location: profile.location || "Nigeria",
                 bio: profile.bio || "No bio available.",
-                rating: profile.rating || 0.0,
-                reviews: profile.review_count || 0,
+                rating: avgRating,
+                reviews: reviewCount,
                 avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
                 cover_image_url: profile.cover_image_url,
                 stats: {
                     events: profile.events_completed || 0,
                     years: profile.years_experience || 0,
-                    clients: profile.clients_served || 0
+                    clients: clientsCount || profile.clients_served || 0
                 },
                 unavailable_dates: profile.planners?.[0]?.unavailable_dates || profile.planners?.unavailable_dates || [],
                 verification_status: profile.verification_status || 'unverified'
@@ -159,9 +179,14 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 })));
             }
 
-            // 3. Check for approved booking to enable chat
+            // 3. Check for approved booking to enable chat and verify user role
             const { data: { user } } = await supabase.auth.getUser();
             if (user && profile.id !== user.id) {
+                const { data: currentUserProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                if (currentUserProfile?.role === 'admin') {
+                    setIsUserAdmin(true);
+                }
+
                 const { data: booking } = await supabase
                     .from('bookings')
                     .select('id')
@@ -392,34 +417,40 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                         <div className="w-full h-px bg-gradient-to-r from-transparent via-foreground/20 to-transparent block md:hidden mb-4" />
 
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-2 md:mt-0 pb-0 md:pb-4 justify-center md:justify-end">
-                            <Button size="lg" className="w-full sm:w-auto shadow-2xl h-12 md:h-12 bg-blue-600 hover:bg-blue-700" onClick={() => setShowBookingModal(true)}>
-                                Book Now
-                            </Button>
+                            {!isUserAdmin && (
+                                <Button size="lg" className="w-full sm:w-auto shadow-2xl h-12 md:h-12 bg-blue-600 hover:bg-blue-700" onClick={() => setShowBookingModal(true)}>
+                                    Book Now
+                                </Button>
+                            )}
                             <div className="flex gap-3 w-full sm:w-auto">
-                                <Button
-                                    variant="glass"
-                                    size="lg"
-                                    className="flex-1 sm:w-auto shadow-2xl h-12 md:h-12"
-                                    onClick={() => {
-                                        if (hasApprovedBooking) {
-                                            router.push("/dashboard/messages");
-                                        } else {
-                                            showToast("Chat becomes available once your booking is approved!", "info");
-                                        }
-                                    }}
-                                >
-                                    <MessageSquare size={18} className="mr-2" />
-                                    Chat
-                                </Button>
-                                <Button
-                                    variant="glass"
-                                    size="lg"
-                                    className="px-4 shadow-2xl h-12 md:h-12"
-                                    onClick={toggleSavePlanner}
-                                    disabled={isTogglingSave}
-                                >
-                                    {isTogglingSave ? <Loader2 size={18} className="animate-spin" /> : <Heart size={18} className={isSaved ? "fill-red-500 text-red-500" : ""} />}
-                                </Button>
+                                {!isUserAdmin && (
+                                    <>
+                                        <Button
+                                            variant="glass"
+                                            size="lg"
+                                            className="flex-1 sm:w-auto shadow-2xl h-12 md:h-12"
+                                            onClick={() => {
+                                                if (hasApprovedBooking) {
+                                                    router.push("/dashboard/messages");
+                                                } else {
+                                                    showToast("Chat becomes available once your booking is approved!", "info");
+                                                }
+                                            }}
+                                        >
+                                            <MessageSquare size={18} className="mr-2" />
+                                            Chat
+                                        </Button>
+                                        <Button
+                                            variant="glass"
+                                            size="lg"
+                                            className="px-4 shadow-2xl h-12 md:h-12"
+                                            onClick={toggleSavePlanner}
+                                            disabled={isTogglingSave}
+                                        >
+                                            {isTogglingSave ? <Loader2 size={18} className="animate-spin" /> : <Heart size={18} className={isSaved ? "fill-red-500 text-red-500" : ""} />}
+                                        </Button>
+                                    </>
+                                )}
                                 <Button
                                     variant="glass"
                                     size="lg"

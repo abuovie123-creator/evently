@@ -7,32 +7,29 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import {
-    LayoutDashboard,
-    Palette,
+    CreditCard,
+    Building2,
     Users,
     Settings,
+    LayoutDashboard,
     Search,
-    MoreVertical,
-    Shield,
-    ShieldAlert,
-    Trash2,
-    Upload,
-    Check,
-    CreditCard,
-    Plus,
-    X,
-    Edit3,
-    Save,
-    Building2,
-    Wallet,
-    TrendingUp,
-    DollarSign,
-    History,
     LifeBuoy,
-    Bell,
-    Info,
+    ShieldAlert,
+    TrendingUp,
+    MoreVertical,
+    FileText,
+    Save,
+    Edit3,
+    Upload,
+    CheckCircle2,
+    ArrowRight,
+    Palette,
     ExternalLink,
-    Loader2
+    AlertCircle,
+    Copy,
+    Check,
+    LogOut,
+    Trash2
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
@@ -232,6 +229,7 @@ export default function AdminDashboard() {
             const { data: profiles, error: fetchError } = await supabase
                 .from('profiles')
                 .select('*')
+                .neq('role', 'admin') // Filter out the master admin
                 .order('created_at', { ascending: false });
 
             if (fetchError) {
@@ -811,10 +809,18 @@ export default function AdminDashboard() {
                                                         Active
                                                     </div>
                                                 </td>
-                                                <td className="p-4 text-right">
+                                                <td className="p-4 text-right relative group">
                                                     <button className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors">
                                                         <MoreVertical size={14} className="text-muted-foreground" />
                                                     </button>
+                                                    <div className="absolute right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center bg-background border border-foreground/10 rounded-lg shadow-xl overflow-hidden z-10 pointer-events-none group-hover:pointer-events-auto">
+                                                        <button
+                                                            onClick={(e) => { e.preventDefault(); deleteUser(user.id); }}
+                                                            className="px-3 py-1.5 text-[10px] uppercase font-black tracking-widest text-red-500 hover:bg-red-500/10 flex items-center gap-1"
+                                                        >
+                                                            <Trash2 size={12} /> Delete
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         ))}

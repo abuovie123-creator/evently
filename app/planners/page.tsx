@@ -174,9 +174,9 @@ export default function PlannersPage() {
                 {/* Planner Grid Area */}
                 <div className="lg:col-span-9">
                     {loading ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
                             {[1, 2, 3, 4, 5, 6].map(i => (
-                                <div key={i} className="aspect-[3/4] glass-panel rounded-[2.5rem] animate-pulse" />
+                                <div key={i} className="aspect-[3/4] glass-panel rounded-2xl md:rounded-[2.5rem] animate-pulse" />
                             ))}
                         </div>
                     ) : filteredPlanners.length === 0 ? (
@@ -193,35 +193,35 @@ export default function PlannersPage() {
                             </Button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
                             {filteredPlanners.map((planner, i) => (
                                 <Link key={planner.id} href={`/planner/${planner.username}`}>
-                                    <Card className="group overflow-hidden p-0 h-full flex flex-col border-foreground/5 hover:border-blue-500/30 transition-all bg-background dark:bg-black/40 rounded-[2.5rem] animate-in fade-in slide-in-from-bottom-8 duration-500" style={{ transitionDelay: `${i * 50}ms` }}>
+                                    <Card className="group overflow-hidden p-0 h-full flex flex-col border-foreground/5 hover:border-blue-500/30 transition-all bg-background dark:bg-black/40 rounded-2xl md:rounded-[2.5rem] animate-in fade-in slide-in-from-bottom-8 duration-500" style={{ transitionDelay: `${i * 50}ms` }}>
                                         <div className="relative aspect-[4/5] overflow-hidden">
                                             <img
                                                 src={planner.avatar_url}
                                                 alt={planner.full_name}
                                                 className="object-cover w-full h-full group-hover:scale-110 transition-transform [transition-duration:1500ms] ease-out brightness-90 group-hover:brightness-100"
                                             />
-                                            <div className="absolute top-6 left-6 flex flex-col gap-2">
-                                                <div className="bg-background/40 backdrop-blur-md px-3 py-1.5 rounded-xl border border-foreground/10 flex items-center gap-1.5 shadow-xl text-foreground">
-                                                    <Star size={12} className="text-yellow-500 fill-yellow-500" />
-                                                    <span className="text-xs font-black">{planner.rating.toFixed(1)}</span>
+                                            <div className="absolute top-3 left-3 md:top-6 md:left-6 flex flex-col gap-1.5 md:gap-2">
+                                                <div className="bg-background/40 backdrop-blur-md px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border border-foreground/10 flex items-center gap-1 md:gap-1.5 shadow-xl text-foreground">
+                                                    <Star size={10} className="text-yellow-500 fill-yellow-500 md:w-3 md:h-3" />
+                                                    <span className="text-[10px] md:text-xs font-black">{planner.rating.toFixed(1)}</span>
                                                 </div>
-                                                <div className="bg-blue-600/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 shadow-xl self-start">
-                                                    <span className="text-[8px] font-black text-white uppercase tracking-widest">Verified</span>
+                                                <div className="bg-blue-600/80 backdrop-blur-md px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl border border-white/10 shadow-xl self-start">
+                                                    <span className="text-[6px] md:text-[8px] font-black text-white uppercase tracking-widest">Verified</span>
                                                 </div>
                                             </div>
 
-                                            <div className="absolute inset-x-6 bottom-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                                                <div className="bg-background/80 dark:bg-black/60 backdrop-blur-xl p-6 rounded-[1.5rem] border border-foreground/10 shadow-2xl shadow-black/50">
-                                                    <p className="text-[8px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-[0.2em] mb-1">{planner.category}</p>
-                                                    <h3 className="text-xl font-black text-foreground dark:text-white mb-2 leading-tight">{planner.full_name}</h3>
-                                                    <div className="flex items-center justify-between pt-4 border-t border-foreground/5 mt-2">
-                                                        <span className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground">
-                                                            <MapPin size={12} className="text-blue-500" /> {planner.location}
+                                            <div className="absolute inset-x-2 bottom-2 md:inset-x-6 md:bottom-6 translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
+                                                <div className="bg-background/80 dark:bg-black/60 backdrop-blur-xl p-3 md:p-6 rounded-xl md:rounded-[1.5rem] border border-foreground/10 shadow-lg md:shadow-2xl shadow-black/50">
+                                                    <p className="text-[6px] md:text-[8px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-[0.2em] mb-0.5 md:mb-1 truncate">{planner.category}</p>
+                                                    <h3 className="text-sm md:text-xl font-black text-foreground dark:text-white mb-1 md:mb-2 leading-tight truncate">{planner.full_name}</h3>
+                                                    <div className="flex flex-col md:flex-row md:items-center justify-between pt-2 md:pt-4 border-t border-foreground/5 mt-1 md:mt-2 gap-1 md:gap-0">
+                                                        <span className="flex items-center gap-1 md:gap-1.5 text-[8px] md:text-[10px] font-bold text-muted-foreground truncate">
+                                                            <MapPin size={10} className="text-blue-500 md:w-3 md:h-3" /> {planner.location}
                                                         </span>
-                                                        <span className="text-[10px] font-black text-muted-foreground/60">{planner.review_count} Reviews</span>
+                                                        <span className="text-[8px] md:text-[10px] font-black text-muted-foreground/60">{planner.review_count} Reviews</span>
                                                     </div>
                                                 </div>
                                             </div>

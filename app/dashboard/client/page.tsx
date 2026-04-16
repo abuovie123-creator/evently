@@ -84,10 +84,18 @@ export default function ClientDashboard() {
                 throw error;
             }
             showToast("Review submitted successfully!", "success");
+            // Optimistically update the exact booking to show 'Reviewed Event' state immediately
+            setBookings(prev => prev.map(b =>
+                b.id === bookingId
+                    ? { ...b, reviews: [{ rating, comment, id: "temp-optimistic-id" }] }
+                    : b
+            ));
+
             setReviewingBookingId(null);
             setRating(5);
             setComment("");
-            fetchDashboardData();
+
+            await fetchDashboardData();
         } catch (error: any) {
             console.error("Review error:", error);
             showToast(error.message || "Failed to submit review", "error");
@@ -286,14 +294,19 @@ export default function ClientDashboard() {
                 <Card className="space-y-6" hover={false}>
                     <h3 className="text-2xl font-bold">Quick Links</h3>
                     <div className="space-y-3">
-                        {['My Bookings', 'Message History', 'Receipts', 'Settings'].map((link) => (
-                            <button
-                                key={link}
-                                onClick={() => showToast(`${link} module coming soon!`, "info")}
-                                className="w-full text-left p-4 glass-panel rounded-2xl border-foreground/5 text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
+                        {[
+                            { label: 'My Bookings', href: '#bookings' },
+                            { label: 'Message History', href: '/dashboard/messages' },
+                            { label: 'Receipts', href: '/dashboard/client/receipts' },
+                            { label: 'Settings', href: '/dashboard/client/settings' }
+                        ].map((link) => (
+                            <Link
+                                key={link.label}
+                                href={link.href}
+                                className="block w-full text-left p-4 glass-panel rounded-2xl border-foreground/5 text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
                             >
-                                {link}
-                            </button>
+                                {link.label}
+                            </Link>
                         ))}
                     </div>
                 </Card>

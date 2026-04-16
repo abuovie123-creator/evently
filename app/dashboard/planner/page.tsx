@@ -733,12 +733,12 @@ export default function PlannerDashboard() {
                                     Your subscription renews in <span className="font-bold text-foreground">{currentPlan.daysLeft} days</span>
                                 </span>
                             </div>
-                            <button
-                                onClick={() => showToast("Manage billing coming soon!", "info")}
+                            <Link
+                                href="/dashboard/planner/billing"
                                 className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors"
                             >
                                 Manage Billing
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
