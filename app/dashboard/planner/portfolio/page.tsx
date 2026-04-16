@@ -322,6 +322,40 @@ export default function PlannerPortfolio() {
         }
     };
 
+    const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsSavingImages(true);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `avatar-${session.user.id}-${Date.now()}.${fileExt}`;
+            const filePath = `avatars/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('portfolio-media')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('portfolio-media')
+                .getPublicUrl(filePath);
+
+            setProfileImages(prev => ({ ...prev, avatar_url: publicUrl }));
+            showToast("Avatar uploaded! Click Save to apply.", "success");
+        } catch (error: any) {
+            console.error("Avatar upload error:", error);
+            showToast(error.message || "Failed to upload avatar", "error");
+        } finally {
+            setIsSavingImages(false);
+        }
+    };
+
     useEffect(() => {
         fetchData();
     }, [fetchData]);
@@ -770,30 +804,55 @@ export default function PlannerPortfolio() {
                                 </div>
 
                                 {/* Avatar Selection */}
-                                <div className="space-y-3 pt-2 border-t border-foreground/5">
-                                    <label className="text-[9px] font-bold text-gray-500 uppercase">Choose Avatar</label>
-                                    <div className="grid grid-cols-5 gap-2">
-                                        {PRESET_AVATARS.map((avatar, i) => (
-                                            <button
-                                                key={i}
-                                                onClick={() => setProfileImages({ ...profileImages, avatar_url: avatar })}
-                                                className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${profileImages.avatar_url === avatar
-                                                    ? "border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-110 z-10"
-                                                    : "border-transparent opacity-60 hover:opacity-100"
-                                                    }`}
-                                            >
-                                                <img src={avatar} className="w-full h-full object-cover" alt={`Avatar ${i + 1}`} />
-                                            </button>
-                                        ))}
+                                <div className="space-y-4 pt-4 border-t border-foreground/5">
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 border border-foreground/10 bg-black/50">
+                                            <img src={profileImages.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} className="w-full h-full object-cover" alt="Current Avatar" onError={(e) => (e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback")} />
+                                        </div>
+                                        <div className="space-y-2 flex-1">
+                                            <div className="flex items-center justify-between">
+                                                <label className="text-[9px] font-bold text-gray-500 uppercase">Profile Avatar</label>
+                                                <div className="relative">
+                                                    <Button size="sm" variant="outline" className="h-7 text-[10px] px-3 border-foreground/10" disabled={isSavingImages}>
+                                                        <Plus size={12} className="mr-1" /> Upload Image
+                                                    </Button>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={handleAvatarUpload}
+                                                        disabled={isSavingImages}
+                                                        className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-wait"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="relative group">
+                                                <Input
+                                                    placeholder="Or Custom Image URL..."
+                                                    className="h-8 bg-foreground/[0.03] border-foreground/5 text-xs text-gray-400 pl-3"
+                                                    value={profileImages.avatar_url}
+                                                    onChange={(e) => setProfileImages({ ...profileImages, avatar_url: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
+
                                     <div className="pt-2">
-                                        <label className="text-[9px] font-bold text-gray-500 uppercase">Or Custom Image URL</label>
-                                        <Input
-                                            placeholder="https://..."
-                                            className="mt-1 h-9 bg-foreground/[0.03] border-foreground/5 text-xs text-gray-400"
-                                            value={profileImages.avatar_url}
-                                            onChange={(e) => setProfileImages({ ...profileImages, avatar_url: e.target.value })}
-                                        />
+                                        <label className="text-[9px] font-bold text-gray-500 uppercase mb-2 block">Or choose a preset</label>
+                                        <div className="grid grid-cols-5 gap-2">
+                                            {PRESET_AVATARS.map((avatar, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => setProfileImages({ ...profileImages, avatar_url: avatar })}
+                                                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${profileImages.avatar_url === avatar
+                                                        ? "border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-110 z-10"
+                                                        : "border-transparent opacity-60 hover:opacity-100"
+                                                        }`}
+                                                >
+                                                    <img src={avatar} className="w-full h-full object-cover" alt={`Avatar ${i + 1}`} />
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -32,7 +32,9 @@ export default function PlannerProfileEdit() {
         twitter_url: "",
         linkedin_url: "",
         facebook_url: "",
-        public_email: ""
+        facebook_url: "",
+        public_email: "",
+        cover_image_url: ""
     });
 
     useEffect(() => {
@@ -47,7 +49,7 @@ export default function PlannerProfileEdit() {
 
             const { data, error } = await supabase
                 .from('profiles')
-                .select('full_name, username, bio, location, category, avatar_url, instagram_url, twitter_url, linkedin_url, facebook_url, public_email')
+                .select('full_name, username, bio, location, category, avatar_url, cover_image_url, instagram_url, twitter_url, linkedin_url, facebook_url, public_email')
                 .eq('id', session.user.id)
                 .single();
 
@@ -69,7 +71,8 @@ export default function PlannerProfileEdit() {
                     twitter_url: data.twitter_url || "",
                     linkedin_url: data.linkedin_url || "",
                     facebook_url: data.facebook_url || "",
-                    public_email: data.public_email || ""
+                    public_email: data.public_email || "",
+                    cover_image_url: data.cover_image_url || ""
                 });
             }
             setIsLoading(false);
@@ -120,10 +123,58 @@ export default function PlannerProfileEdit() {
                 .getPublicUrl(filePath);
 
             setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
-            showToast("Avatar uploaded successfully", "success");
+
+            // Auto Update Database to ensure it reflects immediately
+            await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', session.user.id);
+
+            showToast("Avatar uploaded and saved successfully", "success");
         } catch (error: any) {
             console.error("Upload error:", error);
             showToast(error.message || "Failed to upload image", "error");
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            showToast("Please select an image file", "error");
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            showToast("Image must be less than 5MB", "error");
+            return;
+        }
+
+        setIsUploading(true);
+        const supabase = createClient();
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) throw new Error("Not authenticated");
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `cover-${session.user.id}-${Date.now()}.${fileExt}`;
+            const filePath = `avatars/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('portfolio-media')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('portfolio-media')
+                .getPublicUrl(filePath);
+
+            setProfile(prev => ({ ...prev, cover_image_url: publicUrl }));
+            await supabase.from('profiles').update({ cover_image_url: publicUrl }).eq('id', session.user.id);
+            showToast("Cover image uploaded and saved successfully", "success");
+        } catch (error: any) {
+            console.error("Upload error:", error);
+            showToast(error.message || "Failed to upload cover image", "error");
         } finally {
             setIsUploading(false);
         }
@@ -229,9 +280,30 @@ export default function PlannerProfileEdit() {
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm font-bold text-white">Profile Photo</p>
-                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Click image to change</p>
+                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Click image to change (Auto-Saves)</p>
                             </div>
-                            {isUploading && <p className="text-[10px] text-blue-400 animate-pulse font-bold">Uploading...</p>}
+                            {isUploading && <p className="text-[10px] text-blue-400 animate-pulse font-bold">Uploading media...</p>}
+
+                            <hr className="w-full border-white/5 my-4" />
+
+                            {/* Cover Image Uploader */}
+                            <div className="relative w-full h-32 rounded-xl overflow-hidden glass-panel border border-white/5 group bg-black/50">
+                                {profile.cover_image_url ? (
+                                    <img src={profile.cover_image_url} alt="Cover" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-gray-700 bg-gradient-to-r from-blue-900/10 to-purple-900/10">
+                                        Cover Photo
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
+                                    <Upload size={20} className="text-white mb-1" />
+                                    <span className="text-[10px] font-bold text-white uppercase tracking-widest">Update Cover</span>
+                                </div>
+                                <input type="file" accept="image/*" onChange={handleCoverImageUpload} disabled={isUploading} className="absolute inset-0 opacity-0 cursor-pointer" />
+                            </div>
+                            <div className="space-y-1 text-center w-full">
+                                <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Cover Photo (Auto-Saves)</p>
+                            </div>
                         </div>
 
                         <div className="space-y-4 pt-4 border-t border-white/5">

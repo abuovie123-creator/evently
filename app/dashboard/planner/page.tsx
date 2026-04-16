@@ -136,6 +136,15 @@ export default function PlannerDashboard() {
         },
     });
 
+    const [unavailableDates, setUnavailableDates] = useState<string[]>([]);
+    const [newBlockedDate, setNewBlockedDate] = useState("");
+    const [isSavingDates, setIsSavingDates] = useState(false);
+
+    const [verificationStatus, setVerificationStatus] = useState("verified");
+    const [kycRequirements, setKycRequirements] = useState<any[]>([]);
+    const [kycFormData, setKycFormData] = useState<Record<string, any>>({});
+    const [isSubmittingKyc, setIsSubmittingKyc] = useState(false);
+
     const [stats, setStats] = useState([
         { label: "Bookings", value: "0", change: "+0", icon: Calendar },
         { label: "Profile Views", value: "0", change: "+0%", icon: TrendingUp },
@@ -184,18 +193,29 @@ export default function PlannerDashboard() {
         // 1. Fetch Profile & Subscription Info
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('*, plan_id')
+            .select(`
+                *,
+                planners(unavailable_dates)
+            `)
             .eq('id', uid)
             .single();
 
         if (profileError) logError("Error fetching planner profile", profileError);
 
+        if (profile?.planners?.[0]?.unavailable_dates || profile?.planners?.unavailable_dates) {
+            const fetchedDates = profile?.planners?.[0]?.unavailable_dates || profile?.planners?.unavailable_dates;
+            setUnavailableDates(fetchedDates || []);
+        }
+
         // 2. Fetch Platform Settings for plan details
         const { data: settings } = await supabase
             .from('platform_settings')
-            .select('subscription_plans')
+            .select('subscription_plans, kyc_requirements')
             .eq('id', 'default')
             .single();
+
+        setVerificationStatus(profile?.verification_status || 'verified');
+        setKycRequirements(settings?.kyc_requirements || []);
 
         // 3. Fetch Portfolio Image Count
         let imageCount = 0;
@@ -400,6 +420,170 @@ export default function PlannerDashboard() {
 
         init();
     }, [fetchDashboardData]);
+    const handleAddBlockedDate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newBlockedDate) return;
+        if (unavailableDates.includes(newBlockedDate)) {
+            showToast("Date already blocked", "info");
+            return;
+        }
+
+        setIsSavingDates(true);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) return;
+
+        const updatedDates = [...unavailableDates, newBlockedDate].sort();
+
+        const { error } = await supabase
+            .from('planners')
+            .update({ unavailable_dates: updatedDates })
+            .eq('id', session.user.id);
+
+        if (error) {
+            logError("Error updating dates", error);
+            showToast("Failed to block date", "error");
+        } else {
+            setUnavailableDates(updatedDates);
+            setNewBlockedDate("");
+            showToast("Date blocked successfully", "success");
+        }
+        setIsSavingDates(false);
+    };
+
+    const handleRemoveBlockedDate = async (dateToRemove: string) => {
+        setIsSavingDates(true);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) return;
+
+        const updatedDates = unavailableDates.filter(d => d !== dateToRemove);
+
+        const { error } = await supabase
+            .from('planners')
+            .update({ unavailable_dates: updatedDates })
+            .eq('id', session.user.id);
+
+        if (error) {
+            logError("Error removing date", error);
+            showToast("Failed to unblock date", "error");
+        } else {
+            setUnavailableDates(updatedDates);
+            showToast("Date unblocked", "success");
+        }
+        setIsSavingDates(false);
+    };
+
+    const handleKycSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSubmittingKyc(true);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        // Upload any files
+        let finalKycData: Record<string, string> = { ...kycFormData };
+
+        for (const req of kycRequirements) {
+            if (req.type === 'file' && finalKycData[req.id]) {
+                const file = finalKycData[req.id] as any;
+                if (file instanceof File) {
+                    const { data, error } = await supabase.storage
+                        .from('kyc-documents')
+                        .upload(`${session.user.id}/${req.id}_${Date.now()}`, file);
+
+                    if (data?.path) {
+                        const { data: { publicUrl } } = supabase.storage.from('kyc-documents').getPublicUrl(data.path);
+                        finalKycData[req.id] = publicUrl;
+                    }
+                }
+            }
+        }
+
+        // Update planners table
+        await supabase.from('planners').update({ kyc_data: finalKycData }).eq('id', session.user.id);
+
+        // Update user verification status
+        await supabase.from('profiles').update({ verification_status: 'pending' }).eq('id', session.user.id);
+
+        setVerificationStatus('pending');
+        setIsSubmittingKyc(false);
+        showToast("Verification submitted successfully!", "success");
+    };
+
+    if (isLoading) {
+        return (
+            <div className="animate-pulse space-y-8 p-6">
+                <div className="h-32 bg-foreground/5 rounded-[2rem]" />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2 h-64 bg-foreground/5 rounded-[2rem]" />
+                    <div className="h-64 bg-foreground/5 rounded-[2rem]" />
+                </div>
+            </div>
+        );
+    }
+
+    if (verificationStatus === 'requires_verification') {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground animate-in fade-in zoom-in-95 duration-500">
+                <Card className="max-w-2xl w-full p-8 space-y-8 overflow-hidden relative shadow-2xl shadow-blue-500/10">
+                    <div className="absolute top-0 right-0 p-8 opacity-5">
+                        <Sparkles size={120} />
+                    </div>
+                    <div className="space-y-2 relative z-10">
+                        <h2 className="text-3xl font-black tracking-tight text-white">Account Verification Required</h2>
+                        <p className="text-gray-400">To maintain trust on the Evently platform, please complete your professional planner verification by providing the following documents.</p>
+                    </div>
+                    <form onSubmit={handleKycSubmit} className="space-y-6 relative z-10">
+                        <div className="space-y-4">
+                            {kycRequirements.map(req => (
+                                <div key={req.id} className="space-y-2 p-4 glass-panel rounded-2xl border border-white/5">
+                                    <label className="text-sm font-bold text-gray-200 uppercase tracking-widest">{req.label} {req.required && <span className="text-red-400">*</span>}</label>
+                                    {req.type === 'file' ? (
+                                        <Input
+                                            type="file"
+                                            accept="image/*,application/pdf"
+                                            required={req.required}
+                                            onChange={(e) => setKycFormData({ ...kycFormData, [req.id]: e.target.files?.[0] })}
+                                            className="bg-black/20"
+                                        />
+                                    ) : (
+                                        <Input
+                                            type="text"
+                                            required={req.required}
+                                            onChange={(e) => setKycFormData({ ...kycFormData, [req.id]: e.target.value })}
+                                            className="bg-black/20"
+                                        />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                        <Button type="submit" className="w-full h-14 text-base font-bold bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-500/20" disabled={isSubmittingKyc}>
+                            {isSubmittingKyc ? "Uploading Credentials..." : "Submit Verification"}
+                        </Button>
+                    </form>
+                </Card>
+            </div>
+        );
+    }
+
+    if (verificationStatus === 'pending') {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-6 bg-background text-foreground animate-in fade-in duration-500">
+                <Card className="max-w-md w-full p-10 text-center space-y-6 flex flex-col items-center">
+                    <div className="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center animate-pulse">
+                        <Calendar size={32} className="text-yellow-500" />
+                    </div>
+                    <div className="space-y-2">
+                        <h2 className="text-2xl font-black text-white">Under Review</h2>
+                        <p className="text-gray-400 text-sm">Your verification documents have been received and are currently pending admin approval. You will be notified once complete.</p>
+                    </div>
+                </Card>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-12 animate-in fade-in duration-700">
@@ -561,6 +745,52 @@ export default function PlannerDashboard() {
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Availability Calendar (Pro/Elite Only) */}
+                {(currentPlan.name.toLowerCase() === 'pro' || currentPlan.name.toLowerCase() === 'elite') && (
+                    <Card className="lg:col-span-2 p-6 border-white/5 space-y-4" hover={false}>
+                        <div className="space-y-1">
+                            <h3 className="text-xl font-bold flex items-center gap-2">
+                                <Calendar className="text-blue-500" size={20} />
+                                Availability Calendar
+                            </h3>
+                            <p className="text-sm text-gray-400">Block out dates to prevent clients from booking you on days you are unavailable.</p>
+                        </div>
+                        <form onSubmit={handleAddBlockedDate} className="flex gap-2 max-w-sm">
+                            <Input
+                                type="date"
+                                required
+                                className="flex-1"
+                                value={newBlockedDate}
+                                onChange={(e) => setNewBlockedDate(e.target.value)}
+                                min={new Date().toISOString().split("T")[0]}
+                            />
+                            <Button type="submit" disabled={isSavingDates || !newBlockedDate} className="whitespace-nowrap bg-blue-600 hover:bg-blue-700">
+                                {isSavingDates ? "Saving..." : "Block Date"}
+                            </Button>
+                        </form>
+                        {unavailableDates.length > 0 && (
+                            <div className="space-y-2 pt-4 border-t border-foreground/5 mt-4">
+                                <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">Currently Blocked Dates</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {unavailableDates.map((date) => (
+                                        <div key={date} className="flex items-center gap-2 glass-panel border border-foreground/10 px-3 py-1.5 rounded-full text-sm">
+                                            <span className="font-mono font-bold text-blue-400">{date}</span>
+                                            <button
+                                                onClick={() => handleRemoveBlockedDate(date)}
+                                                disabled={isSavingDates}
+                                                className="p-1 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-500 transition-colors"
+                                                title="Unblock this date"
+                                            >
+                                                <X size={14} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </Card>
+                )}
+
                 <Card id="bookings" className="space-y-6" hover={false}>
                     <h3 className="text-xl font-bold">Recent Bookings</h3>
                     <div className="space-y-4">

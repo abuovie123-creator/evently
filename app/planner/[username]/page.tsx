@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2, Calendar, MapPin, Tag, Star, TrendingUp, X, Check, MessageSquare, Share2, Instagram, Twitter, Linkedin, Facebook, Mail } from "lucide-react";
+import { Loader2, Calendar, MapPin, Tag, Star, TrendingUp, X, Check, MessageSquare, Share2, Instagram, Twitter, Linkedin, Facebook, Mail, Heart } from "lucide-react";
 
 interface PlannerProfile {
     id: string;
@@ -37,6 +37,8 @@ interface PlannerProfile {
     linkedin_url?: string;
     facebook_url?: string;
     public_email?: string;
+    unavailable_dates?: string[];
+    verification_status?: string;
 }
 
 interface Album {
@@ -55,6 +57,8 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
     const [planner, setPlanner] = useState<PlannerProfile | null>(null);
     const [albums, setAlbums] = useState<Album[]>([]);
     const [hasApprovedBooking, setHasApprovedBooking] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
+    const [isTogglingSave, setIsTogglingSave] = useState(false);
 
     // Booking Form States
     const [showBookingModal, setShowBookingModal] = useState(false);
@@ -99,7 +103,10 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
             // 1. Fetch Profile
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
-                .select('*')
+                .select(`
+                    *,
+                    planners(unavailable_dates)
+                `)
                 .eq('username', username)
                 .single();
 
@@ -123,7 +130,9 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                     events: profile.events_completed || 0,
                     years: profile.years_experience || 0,
                     clients: profile.clients_served || 0
-                }
+                },
+                unavailable_dates: profile.planners?.[0]?.unavailable_dates || profile.planners?.unavailable_dates || [],
+                verification_status: profile.verification_status || 'unverified'
             });
 
             // 2. Fetch Events (Albums)
@@ -163,6 +172,18 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
 
                 if (booking) {
                     setHasApprovedBooking(true);
+                }
+
+                // Check if planner is saved
+                const { data: savedStatus } = await supabase
+                    .from('saved_planners')
+                    .select('id')
+                    .eq('client_id', user.id)
+                    .eq('planner_id', profile.id)
+                    .maybeSingle();
+
+                if (savedStatus) {
+                    setIsSaved(true);
                 }
             }
 
@@ -284,6 +305,45 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
         }
     };
 
+    const toggleSavePlanner = async () => {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            showToast("Please login to save planners", "error");
+            return;
+        }
+
+        if (session.user.id === planner?.id) {
+            showToast("You cannot save yourself!", "error");
+            return;
+        }
+
+        setIsTogglingSave(true);
+        try {
+            if (isSaved) {
+                const { error } = await supabase.from('saved_planners').delete()
+                    .eq('client_id', session.user.id)
+                    .eq('planner_id', planner.id);
+                if (error) throw error;
+                setIsSaved(false);
+                showToast("Planner removed from saved list", "success");
+            } else {
+                const { error } = await supabase.from('saved_planners').insert({
+                    client_id: session.user.id,
+                    planner_id: planner.id
+                });
+                if (error) throw error;
+                setIsSaved(true);
+                showToast("Planner saved!", "success");
+            }
+        } catch (err: any) {
+            logError("Toggle save failed", err);
+            showToast("Failed to update saved planners", "error");
+        } finally {
+            setIsTogglingSave(false);
+        }
+    };
+
     if (isLoading) return (
         <div className="min-h-screen flex items-center justify-center bg-background">
             <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
@@ -319,9 +379,11 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                         <div className="flex-1 text-center md:text-left pb-2 md:pb-4">
                             <div className="flex flex-wrap items-center gap-2 justify-center md:justify-start mb-1 md:mb-2">
                                 <h1 className="text-2xl md:text-5xl font-bold text-white drop-shadow-xl">{planner.name}</h1>
-                                <div className="px-2.5 py-0.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
-                                    <span className="text-[9px] md:text-xs font-bold uppercase tracking-wider text-white">Verified</span>
-                                </div>
+                                {planner.verification_status === "verified" && (
+                                    <div className="px-2.5 py-0.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
+                                        <span className="text-[9px] md:text-xs font-bold uppercase tracking-wider text-white">Verified</span>
+                                    </div>
+                                )}
                             </div>
                             <p className="text-base md:text-xl text-foreground font-medium drop-shadow-md">{planner.category}</p>
                         </div>
@@ -348,6 +410,15 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                                 >
                                     <MessageSquare size={18} className="mr-2" />
                                     Chat
+                                </Button>
+                                <Button
+                                    variant="glass"
+                                    size="lg"
+                                    className="px-4 shadow-2xl h-12 md:h-12"
+                                    onClick={toggleSavePlanner}
+                                    disabled={isTogglingSave}
+                                >
+                                    {isTogglingSave ? <Loader2 size={18} className="animate-spin" /> : <Heart size={18} className={isSaved ? "fill-red-500 text-red-500" : ""} />}
                                 </Button>
                                 <Button
                                     variant="glass"
@@ -399,7 +470,16 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                                     <Input
                                         type="date"
                                         value={bookingData.eventDate}
-                                        onChange={(e) => setBookingData({ ...bookingData, eventDate: e.target.value })}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (planner?.unavailable_dates?.includes(val)) {
+                                                showToast("This date is unavailable. Please select another.", "error");
+                                                setBookingData({ ...bookingData, eventDate: "" });
+                                            } else {
+                                                setBookingData({ ...bookingData, eventDate: val });
+                                            }
+                                        }}
+                                        min={new Date().toISOString().split("T")[0]}
                                         required
                                     />
                                 </div>

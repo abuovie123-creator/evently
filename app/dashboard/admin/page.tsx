@@ -74,6 +74,9 @@ interface PendingPlanner {
     cat: string;
     loc: string;
     status: string;
+    nin?: string;
+    id_url?: string;
+    passport_url?: string;
 }
 
 function DebouncedSearchInput({ onSearchChange, placeholder }: { onSearchChange: (val: string) => void, placeholder: string }) {
@@ -141,6 +144,8 @@ export default function AdminDashboard() {
         },
     ]);
     const [newFeatureInputs, setNewFeatureInputs] = useState<Record<string, string>>({});
+
+    const [kycRequirements, setKycRequirements] = useState<any[]>([]);
 
     const [features, setFeatures] = useState({
         bookingRequests: true,
@@ -259,6 +264,7 @@ export default function AdminDashboard() {
 
             if (psData) {
                 if (psData.branding) setBranding(psData.branding);
+                if (psData.kyc_requirements) setKycRequirements(psData.kyc_requirements);
                 if (psData.features) setFeatures(psData.features);
                 if (psData.gateway_keys) setGatewayKeys(psData.gateway_keys);
                 if (psData.admin_username) setAdminUserUpdate(psData.admin_username);
@@ -299,7 +305,10 @@ export default function AdminDashboard() {
             // Fetch Pending Planners
             const { data: pendingData, error: pendingError } = await supabase
                 .from('profiles')
-                .select('*')
+                .select(`
+                    *,
+                    planners(nin, id_url, passport_url)
+                `)
                 .eq('role', 'planner')
                 .eq('verification_status', 'pending');
 
@@ -313,7 +322,11 @@ export default function AdminDashboard() {
                     name: p.full_name,
                     cat: "Event Planner", // Default or fetch category
                     loc: "Nigeria", // Default or fetch location
-                    status: "Pending"
+                    status: "Pending",
+                    nin: p.planners?.[0]?.nin || p.planners?.nin,
+                    id_url: p.planners?.[0]?.id_url || p.planners?.id_url,
+                    passport_url: p.planners?.[0]?.passport_url || p.planners?.passport_url,
+                    kyc_data: p.planners?.[0]?.kyc_data || p.planners?.kyc_data || {}
                 })));
             }
 
@@ -358,7 +371,7 @@ export default function AdminDashboard() {
         return () => window.removeEventListener('hashchange', handleHashChange);
     }, [router, showToast, logError]);
 
-    const saveSettings = async (type: 'branding' | 'features' | 'gateways' | 'plans') => {
+    const saveSettings = async (type: 'branding' | 'features' | 'gateways' | 'plans' | 'kyc') => {
         setIsSaving(true);
         const supabase = createClient();
 
@@ -367,6 +380,7 @@ export default function AdminDashboard() {
         if (type === 'features') payload.features = features;
         if (type === 'gateways') payload.gateway_keys = gatewayKeys;
         if (type === 'plans') payload.subscription_plans = plans.map((p: SubscriptionPlan) => ({ ...p, isEditing: false }));
+        if (type === 'kyc') payload.kyc_requirements = kycRequirements;
 
         const { error } = await supabase
             .from('platform_settings')
@@ -454,6 +468,22 @@ export default function AdminDashboard() {
         } else {
             setPendingPlanners((prev: PendingPlanner[]) => prev.filter((p: PendingPlanner) => p.id !== plannerId));
             showToast("Planner approved successfully", "success");
+        }
+    };
+
+    const declinePlanner = async (plannerId: string) => {
+        const supabase = createClient();
+        const { error } = await supabase
+            .from('profiles')
+            .update({ verification_status: 'requires_verification' })
+            .eq('id', plannerId);
+
+        if (error) {
+            logError("Failed to decline planner", error);
+            showToast("Failed to decline planner", "error");
+        } else {
+            setPendingPlanners((prev: PendingPlanner[]) => prev.filter((p: PendingPlanner) => p.id !== plannerId));
+            showToast("Planner request declined (Set to require verification)", "info");
         }
     };
 
@@ -904,6 +934,79 @@ export default function AdminDashboard() {
                         </div>
                     </Card>
 
+                    {/* Pending KYC Approvals */}
+                    {pendingPlanners.length > 0 && (
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-end">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <ShieldAlert className="text-orange-500" size={20} />
+                                    Action Required: Pending KYC Approvals
+                                </h3>
+                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-foreground/5 px-3 py-1 rounded-full">
+                                    {pendingPlanners.length} Pending
+                                </span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {pendingPlanners.map((planner: PendingPlanner) => (
+                                    <Card key={planner.id} className="p-5 border-orange-500/20 bg-orange-500/[0.02]" hover={false}>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center font-bold text-orange-400">
+                                                    {(planner.name || "U").charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-lg">{planner.name}</p>
+                                                    <p className="text-xs text-muted-foreground uppercase tracking-widest">{planner.id.substring(0, 8)}</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    variant="outline"
+                                                    className="border-red-500/50 text-red-500 hover:bg-red-500/10"
+                                                    onClick={() => declinePlanner(planner.id)}
+                                                >
+                                                    Decline
+                                                </Button>
+                                                <Button
+                                                    className="bg-green-600 hover:bg-green-700"
+                                                    onClick={() => approvePlanner(planner.id)}
+                                                >
+                                                    Verify & Approve
+                                                </Button>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4 pt-4 border-t border-foreground/5">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">NIN:</span>
+                                                <span className="font-mono text-sm">{planner.nin || "Not Provided"}</span>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                {planner.passport_url && (
+                                                    <a href={planner.passport_url} target="_blank" className="block w-full p-2 rounded-xl bg-foreground/5 border border-foreground/10 hover:border-blue-500/50 transition-colors">
+                                                        <div className="aspect-square bg-foreground/5 rounded-lg mb-2 overflow-hidden">
+                                                            <img src={planner.passport_url} alt="Passport" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <p className="text-[10px] font-bold text-center uppercase tracking-wider text-muted-foreground">View Passport</p>
+                                                    </a>
+                                                )}
+                                                {planner.id_url && (
+                                                    <a href={planner.id_url} target="_blank" className="block w-full p-2 rounded-xl bg-foreground/5 border border-foreground/10 hover:border-blue-500/50 transition-colors">
+                                                        <div className="aspect-square bg-foreground/5 rounded-lg mb-2 overflow-hidden flex items-center justify-center text-blue-500">
+                                                            <ExternalLink size={24} />
+                                                        </div>
+                                                        <p className="text-[10px] font-bold text-center uppercase tracking-wider text-muted-foreground">View Document</p>
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Users List */}
                     <Card className="p-0 overflow-hidden w-full" hover={false}>
                         <div className="overflow-x-auto scrollbar-hide">
                             <table className="w-full text-left text-sm min-w-[800px]">
@@ -1530,6 +1633,66 @@ export default function AdminDashboard() {
                                         </button>
                                     </div>
                                 ))}
+                            </Card>
+                        </section>
+                        <section className="space-y-6">
+                            <h3 className="text-xl font-bold flex items-center gap-2">
+                                <Shield className="text-blue-500" size={20} />
+                                KYC & Verification Requirements
+                            </h3>
+                            <Card className="p-6 space-y-6" hover={false}>
+                                <p className="text-sm text-gray-400">Configure what planners need to provide to get verified.</p>
+                                <div className="space-y-4">
+                                    {kycRequirements.map((req, i) => (
+                                        <div key={i} className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 glass-panel rounded-xl border border-white/5 relative group">
+                                            <div className="flex-1 space-y-1">
+                                                <Input
+                                                    value={req.label}
+                                                    onChange={e => setKycRequirements(prev => prev.map((r, idx) => idx === i ? { ...r, label: e.target.value } : r))}
+                                                    className="font-bold border-transparent px-0 focus:border-blue-500"
+                                                    placeholder="Requirement Label"
+                                                />
+                                                <div className="flex gap-4">
+                                                    <select
+                                                        className="bg-transparent border border-white/10 rounded-md text-xs px-2 py-1 text-gray-400 focus:outline-none focus:border-blue-500"
+                                                        value={req.type}
+                                                        onChange={e => setKycRequirements(prev => prev.map((r, idx) => idx === i ? { ...r, type: e.target.value } : r))}
+                                                    >
+                                                        <option value="text">Text Input</option>
+                                                        <option value="file">File Upload (Document/Image)</option>
+                                                    </select>
+                                                    <label className="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={req.required}
+                                                            onChange={e => setKycRequirements(prev => prev.map((r, idx) => idx === i ? { ...r, required: e.target.checked } : r))}
+                                                        /> Required
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => setKycRequirements(prev => prev.filter((_, idx) => idx !== i))}
+                                                className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg shrink-0"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-dashed"
+                                        onClick={() => setKycRequirements(prev => [...prev, { id: `req_${Date.now()}`, label: "New Requirement", type: "text", required: true }])}
+                                    >
+                                        <Plus size={16} className="mr-2" /> Add Requirement
+                                    </Button>
+                                    <Button
+                                        onClick={() => saveSettings('kyc')}
+                                        disabled={isSaving}
+                                        className="w-full bg-blue-600 hover:bg-blue-700"
+                                    >
+                                        {isSaving ? "Saving..." : "Save KYC Requirements"}
+                                    </Button>
+                                </div>
                             </Card>
                         </section>
                     </div>
