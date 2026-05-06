@@ -7,13 +7,16 @@ import { useToast } from "@/components/ui/Toast";
 
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState, useCallback } from "react";
-import { Calendar, MessageCircle, AlertCircle, Star, CheckCircle2 } from "lucide-react";
+import { Calendar, MessageCircle, AlertCircle, Star, CheckCircle2, Bookmark, User } from "lucide-react";
 import { BookingCountdown } from "@/components/BookingCountdown";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export default function ClientDashboard() {
     const { showToast } = useToast();
     const [isLoading, setIsLoading] = useState(true);
     const [bookings, setBookings] = useState<any[]>([]);
+    const [profileName, setProfileName] = useState("");
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [savedPlanners, setSavedPlanners] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState<"bookings" | "saved">("bookings");
 
@@ -30,6 +33,17 @@ export default function ClientDashboard() {
             showToast("Please login to access your dashboard", "error");
             window.location.href = "/auth/login";
             return;
+        }
+
+        const { data: profileData } = await supabase
+            .from('profiles')
+            .select('full_name, avatar_url')
+            .eq('id', session.user.id)
+            .single();
+
+        if (profileData) {
+            setProfileName(profileData.full_name || "");
+            setAvatarUrl(profileData.avatar_url);
         }
 
         const { data: bookingsData, error } = await supabase
@@ -119,197 +133,134 @@ export default function ClientDashboard() {
     }, [fetchDashboardData]);
 
     if (isLoading) return (
-        <div className="min-h-screen flex items-center justify-center">
-            <div className="w-8 h-8 border-4 border-blue-500 border-t-foreground rounded-full animate-spin" />
+        <div className="min-h-screen flex items-center justify-center bg-cream/30">
+            <div className="w-10 h-10 border-2 border-charcoal/5 border-t-gold rounded-none animate-spin" />
         </div>
     );
     return (
         <div className="space-y-12 animate-in fade-in duration-500">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                <div>
-                    <h1 className="text-4xl font-extrabold tracking-tight mb-2">My Dashboard</h1>
-                    <p className="text-gray-400 text-sm">Track your events and manage your bookings.</p>
+            {/* Top Navigation Bar - Hidden on Mobile (provided by sidebar top-bar) */}
+            <div className="hidden md:flex flex-row justify-between items-center pb-12 w-full border-b border-om-border/20">
+                <div className="text-2xl font-serif text-charcoal tracking-widest uppercase">
+                    EVENTLY<span className="text-gold">.</span>
                 </div>
-                <div className="flex gap-4 w-full md:w-auto">
-                    <Link href="/planners">
-                        <Button variant="outline">Browse Planners</Button>
+                <nav className="flex gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-[#6B5E4E]">
+                    <Link href="/portfolio" className="hover:text-charcoal transition-colors">Portfolio</Link>
+                    <Link href="/planners" className="hover:text-charcoal transition-colors">Browse Planners</Link>
+                    <Link href="/events" className="hover:text-charcoal transition-colors">Event Gallery</Link>
+                </nav>
+                <div className="flex gap-6 items-center text-charcoal">
+                    <button className="hover:text-gold transition-colors"><Bookmark size={18} /></button>
+                    <Link href="/dashboard/client/settings" className="w-8 h-8 rounded-none border border-om-border/40 overflow-hidden flex items-center justify-center text-charcoal hover:border-gold transition-colors bg-cream">
+                        {avatarUrl ? (
+                            <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                            <User size={16} />
+                        )}
                     </Link>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <Card id="bookings" className="md:col-span-2 space-y-6 scroll-mt-24" hover={false}>
-                    <div className="flex gap-6 border-b border-foreground/10 pb-4">
-                        <button
-                            onClick={() => setActiveTab("bookings")}
-                            className={`text-2xl font-bold transition-colors ${activeTab === 'bookings' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                        >
-                            Upcoming Events
-                        </button>
-                        <button
-                            onClick={() => setActiveTab("saved")}
-                            className={`text-2xl font-bold transition-colors ${activeTab === 'saved' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                        >
-                            Saved Planners
-                        </button>
+            {/* Header Section - Well aligned to the left */}
+            <div className="space-y-4 pt-8 md:pt-2">
+                <h1 className="text-4xl md:text-6xl font-serif italic text-charcoal leading-tight">Welcome back, {profileName.split(' ')[0] || "Client"}.</h1>
+                <p className="text-[11px] font-sans uppercase tracking-[0.15em] text-muted-foreground max-w-2xl opacity-70">
+                    The Estate has curated new architectural inspirations and updated your consultation status for the heritage gala.
+                </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 pt-4">
+                {/* Left/Center Column: My Favorites */}
+                <div className="lg:col-span-2 space-y-8">
+                    <div className="flex justify-between items-center border-b border-om-border/50 pb-4">
+                        <h2 className="text-3xl font-serif text-charcoal">My Favorites</h2>
+                        <Link href="/planners" className="text-[10px] font-bold uppercase tracking-widest text-[#6B5E4E] hover:text-charcoal border-b border-transparent hover:border-charcoal transition-all">View All Collections</Link>
                     </div>
 
-                    {activeTab === 'bookings' ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {bookings.length === 0 ? (
-                                <div className="text-center py-12 glass-panel rounded-3xl border-dashed border-foreground/10">
-                                    <Calendar className="mx-auto text-muted-foreground/20 mb-3" size={32} />
-                                    <p className="text-muted-foreground text-sm font-medium">No bookings found. Start by browsing planners!</p>
-                                </div>
-                            ) : bookings.map((booking, i) => (
-                                <div key={i} className="p-6 glass-panel rounded-[2rem] border-foreground/5 space-y-4 border hover:border-blue-500/20 transition-all group relative overflow-hidden">
-                                    {booking.status === 'rejected' && (
-                                        <div className="absolute top-0 right-0 p-2">
-                                            <AlertCircle className="text-red-500/50" size={16} />
-                                        </div>
-                                    )}
-                                    <div className="space-y-1">
-                                        <h4 className="text-xl font-black tracking-tight group-hover:text-blue-400 transition-colors">
-                                            {booking.event_type}
-                                        </h4>
-                                        <p className="text-xs text-muted-foreground font-medium">with {booking.profiles?.full_name || "Planner"}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+                        {savedPlanners.length === 0 ? (
+                            <div className="text-center py-16 bg-surface/50 rounded-none border border-om-border/30 col-span-1 md:col-span-2">
+                                <Star className="mx-auto text-muted-foreground/30 mb-4" size={32} />
+                                <p className="text-[#6B5E4E] font-serif italic text-lg opacity-70">No collections saved yet.</p>
+                            </div>
+                        ) : savedPlanners.map((saved, i) => (
+                            <Link href={`/planner/${saved.profiles?.username || saved.profiles?.id}`} key={i} className="group block space-y-4">
+                                <div className="relative aspect-[4/5] overflow-hidden bg-surface border border-om-border/20">
+                                    <img src={saved.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${saved.profiles?.id}`} alt={saved.profiles?.full_name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                                    <div className="absolute top-4 right-4 bg-cream p-3 rounded-none border border-gold/20 text-gold shadow-sm transition-transform group-hover:scale-110">
+                                        <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
                                     </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-0.5">
-                                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">Date</p>
-                                            <p className="text-sm font-bold text-foreground">{new Date(booking.event_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-                                        </div>
-                                        <div className="flex flex-col items-end justify-center">
-                                            <span className={`px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full ${booking.status === 'approved' || booking.status === 'confirmed' ? 'bg-green-500/10 text-green-500 border border-green-500/20' :
-                                                booking.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
-                                                    'bg-red-500/10 text-red-500 border border-red-500/20'
-                                                }`}>
-                                                {booking.status}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {booking.status === 'rejected' && booking.decline_reason && (
-                                        <div className="p-3 bg-red-500/5 border border-red-500/10 rounded-xl space-y-1">
-                                            <p className="text-[9px] font-black text-red-400 uppercase tracking-widest">Reason for declining</p>
-                                            <p className="text-xs text-muted-foreground italic">"{booking.decline_reason}"</p>
-                                        </div>
-                                    )}
-
-                                    {(booking.status === 'approved' || booking.status === 'confirmed') && (
-                                        <div className="space-y-3">
-                                            {new Date(booking.event_date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0) ? (
-                                                booking.reviews && booking.reviews.length > 0 ? (
-                                                    <div className="p-3 bg-green-500/5 border border-green-500/10 rounded-xl space-y-2 relative">
-                                                        <div className="flex items-center gap-1 text-green-500">
-                                                            <CheckCircle2 size={12} />
-                                                            <span className="text-[9px] uppercase font-black tracking-widest text-green-400">Reviewed Event</span>
-                                                        </div>
-                                                        <div className="flex text-yellow-500">
-                                                            {[...Array(5)].map((_, idx) => (
-                                                                <Star key={idx} size={12} className={idx < booking.reviews[0].rating ? "fill-yellow-500" : "opacity-30"} />
-                                                            ))}
-                                                        </div>
-                                                        {booking.reviews[0].comment && (
-                                                            <p className="text-xs text-muted-foreground italic">"{booking.reviews[0].comment}"</p>
-                                                        )}
-                                                    </div>
-                                                ) : reviewingBookingId === booking.id ? (
-                                                    <div className="p-4 bg-foreground/[0.02] border border-foreground/5 rounded-2xl space-y-4 animate-in slide-in-from-top-2">
-                                                        <h5 className="text-[10px] font-black uppercase tracking-widest text-foreground">Rate your experience</h5>
-                                                        <div className="flex gap-1">
-                                                            {[1, 2, 3, 4, 5].map((starVal) => (
-                                                                <button
-                                                                    key={starVal}
-                                                                    onClick={(e) => { e.preventDefault(); setRating(starVal); }}
-                                                                    className={`p-1 transition-transform hover:scale-110 ${starVal <= rating ? 'text-yellow-500' : 'text-gray-600'}`}
-                                                                >
-                                                                    <Star size={20} className={starVal <= rating ? "fill-yellow-500" : ""} />
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                        <textarea
-                                                            className="w-full bg-background border border-foreground/10 rounded-xl p-3 text-sm focus:border-blue-500 focus:outline-none resize-none mx-auto block"
-                                                            rows={2}
-                                                            placeholder="Share your thoughts..."
-                                                            value={comment}
-                                                            onChange={(e) => setComment(e.target.value)}
-                                                        />
-                                                        <div className="flex gap-2">
-                                                            <Button onClick={() => setReviewingBookingId(null)} variant="outline" size="sm" className="w-full text-xs" disabled={isSubmittingReview}>Cancel</Button>
-                                                            <Button onClick={() => handleSubmitReview(booking.id, booking.planner_id)} className="w-full bg-yellow-500 hover:bg-yellow-600 text-black text-xs font-bold" size="sm" disabled={isSubmittingReview}>
-                                                                {isSubmittingReview ? "Submitting..." : "Submit Review"}
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <Button onClick={() => setReviewingBookingId(booking.id)} size="sm" className="w-full bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-500 border border-yellow-500/20 text-[10px] font-black uppercase tracking-widest">
-                                                        <Star size={12} className="mr-2 fill-yellow-500" /> Leave a Review
-                                                    </Button>
-                                                )
-                                            ) : (
-                                                <>
-                                                    <BookingCountdown eventDate={booking.event_date} />
-                                                    {booking.status === 'approved' && (
-                                                        <Link href="/dashboard/messages" className="block">
-                                                            <Button size="sm" className="w-full bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-600/30 text-[10px] font-black uppercase tracking-widest">
-                                                                <MessageCircle size={12} className="mr-2" />
-                                                                Chat with Planner
-                                                            </Button>
-                                                        </Link>
-                                                    )}
-                                                </>
-                                            )}
-                                        </div>
-                                    )}
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {savedPlanners.length === 0 ? (
-                                <div className="text-center py-12 glass-panel rounded-3xl border-dashed border-foreground/10 col-span-1 md:col-span-2">
-                                    <Star className="mx-auto text-muted-foreground/20 mb-3" size={32} />
-                                    <p className="text-muted-foreground text-sm font-medium">No saved planners yet.</p>
+                                <div className="space-y-2">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-accent text-opacity-80">{saved.profiles?.category || "ESTATE SERIES"}</p>
+                                    <h3 className="text-xl font-serif text-charcoal group-hover:text-gold transition-colors">{saved.profiles?.full_name}</h3>
                                 </div>
-                            ) : savedPlanners.map((saved, i) => (
-                                <Link href={`/planner/${saved.profiles?.username || saved.profiles?.id}`} key={i}>
-                                    <Card className="p-4 hover:border-blue-500/30 transition-all flex items-center gap-4 bg-background border-foreground/5 shadow-sm group">
-                                        <div className="w-14 h-14 rounded-2xl overflow-hidden shrink-0 border border-foreground/10 bg-foreground/5">
-                                            <img src={saved.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${saved.profiles?.id}`} alt="" className="w-full h-full object-cover" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-base tracking-tight group-hover:text-blue-400 transition-colors">{saved.profiles?.full_name}</h4>
-                                            <p className="text-xs text-muted-foreground">{saved.profiles?.category}</p>
-                                            <p className="text-[10px] text-blue-500 mt-1 uppercase tracking-widest font-bold">{saved.profiles?.location}</p>
-                                        </div>
-                                    </Card>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
-                </Card>
-
-                <Card className="space-y-6" hover={false}>
-                    <h3 className="text-2xl font-bold">Quick Links</h3>
-                    <div className="space-y-3">
-                        {[
-                            { label: 'My Bookings', href: '#bookings' },
-                            { label: 'Message History', href: '/dashboard/messages' },
-                            { label: 'Receipts', href: '/dashboard/client/receipts' },
-                            { label: 'Settings', href: '/dashboard/client/settings' }
-                        ].map((link) => (
-                            <Link
-                                key={link.label}
-                                href={link.href}
-                                className="block w-full text-left p-4 glass-panel rounded-2xl border-foreground/5 text-sm font-bold text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
-                            >
-                                {link.label}
                             </Link>
                         ))}
                     </div>
-                </Card>
+                </div>
+
+                {/* Right Column: Booking Requests */}
+                <div className="lg:col-span-1 border border-om-border/30 bg-surface p-6 md:p-8 space-y-8 h-fit shadow-sm">
+                    <h3 className="text-[10px] font-bold tracking-[0.3em] uppercase text-accent/70 italic">Booking Requests</h3>
+
+                    <div className="space-y-8">
+                        {bookings.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-[#6B5E4E] font-serif italic text-sm">No active bookings.</p>
+                            </div>
+                        ) : bookings.map((booking, i) => (
+                            <div key={i} className="space-y-4 group border-b border-om-border/40 pb-8 last:border-0 last:pb-0">
+                                <div className="flex gap-4 items-start">
+                                    <div className="w-10 h-10 bg-forest flex items-center justify-center text-cream shrink-0 group-hover:bg-charcoal transition-colors">
+                                        <Calendar size={14} />
+                                    </div>
+                                    <div className="space-y-1.5 w-full">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <h4 className="font-serif text-[17px] leading-tight text-charcoal group-hover:text-forest transition-colors">{booking.event_type}</h4>
+                                            <span className={`px-2 py-1 text-[8px] font-bold uppercase tracking-[0.1em] ${booking.status === 'approved' || booking.status === 'confirmed' ? 'bg-[#DDE5DC] text-forest' : booking.status === 'pending' ? 'bg-[#E8D9A8]/40 text-[#8B7355]' : 'bg-red-900/10 text-red-900'}`}>
+                                                {booking.status === 'approved' ? 'ACCEPTED' : booking.status}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs font-sans text-muted-foreground/90">{new Date(booking.event_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • {booking.profiles?.full_name || "Planner"}</p>
+                                    </div>
+                                </div>
+
+                                {booking.status === 'approved' || booking.status === 'confirmed' ? (
+                                    <div className="pl-14 space-y-3">
+                                        {new Date(booking.event_date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0) ? (
+                                            booking.reviews && booking.reviews.length > 0 ? (
+                                                <div className="text-[11px] italic text-forest flex items-center gap-1.5 font-serif">
+                                                    <Star size={10} className="fill-forest" />
+                                                    Reviewed ({booking.reviews[0].rating}/5)
+                                                </div>
+                                            ) : reviewingBookingId === booking.id ? (
+                                                <div className="space-y-3 pt-2">
+                                                    <div className="flex gap-1.5 text-gold">
+                                                        {[1, 2, 3, 4, 5].map(v => <Star key={v} size={14} className={`cursor-pointer ${v <= rating ? 'fill-gold' : 'text-om-border'}`} onClick={(e) => { e.preventDefault(); setRating(v); }} />)}
+                                                    </div>
+                                                    <textarea className="w-full text-xs p-3 bg-transparent border border-om-border/70 focus:border-gold transition-colors focus:outline-none placeholder:text-muted-foreground/50 resize-none" rows={2} value={comment} onChange={e => setComment(e.target.value)} placeholder="Share your experience..."></textarea>
+                                                    <div className="flex gap-4">
+                                                        <button className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-charcoal transition-colors" onClick={() => setReviewingBookingId(null)}>Cancel</button>
+                                                        <button className="text-[10px] uppercase tracking-widest font-bold text-charcoal hover:text-forest transition-colors" disabled={isSubmittingReview} onClick={() => handleSubmitReview(booking.id, booking.planner_id)}>{isSubmittingReview ? "Submitting..." : "Submit"}</button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <button onClick={() => setReviewingBookingId(booking.id)} className="text-[9px] uppercase font-bold tracking-widest text-[#8B7355] hover:text-charcoal transition-colors border-b border-[#8B7355]/30 hover:border-charcoal pb-0.5 inline-block">Leave Review</button>
+                                            )
+                                        ) : (
+                                            <Link href="/dashboard/messages" className="text-[9px] uppercase font-bold tracking-widest text-[#8B7355] hover:text-charcoal transition-colors border-b border-[#8B7355]/30 hover:border-charcoal pb-0.5 inline-block">Consultation Open</Link>
+                                        )}
+                                    </div>
+                                ) : booking.status === 'rejected' && booking.decline_reason && (
+                                    <div className="pl-14">
+                                        <p className="text-[10px] text-red-900/70 italic font-serif">DECLINED: "{booking.decline_reason}"</p>
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     );

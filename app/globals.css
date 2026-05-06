@@ -2,55 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Old-Money Design Tokens ───────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #09090b;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-  --muted: #f4f4f5;
-  --muted-foreground: #4b5563;
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
-  --glass-bg: rgba(0, 0, 0, 0.05);
+  /* Core Palette */
+  --background: #FAF8F3;
+  --foreground: #1C1A16;
+  --secondary: #F0ECE3;
+  --secondary-foreground: #1C1A16;
+  --muted: #EDE8DC;
+  --muted-foreground: #6B5E4E;
+
+  /* Accent – Bronze / Gold */
+  --accent: #8B7355;
+  --accent-foreground: #FAF8F3;
+  --gold: #C4A55A;
+  --gold-light: #E8D9A8;
+
+  /* Surface / Border */
+  --surface: #F5F0E8;
+  --border: #D4C5A9;
+  --border-light: #E8DDD0;
+
+  /* Deep tones */
+  --charcoal: #1C1A16;
+  --forest: #1A2E1A;
+  --forest-mid: #2C3A2E;
+  --cream: #FAF8F3;
+
+  /* Legacy glass vars (kept for dashboard compat) */
+  --glass-bg: rgba(0, 0, 0, 0.04);
   --glass-border: rgba(0, 0, 0, 0.08);
 }
 
-.dark {
-  --background: #0a0a0a;
-  --foreground: #ffffff;
-  --secondary: #27272a;
-  --secondary-foreground: #fafafa;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --accent: #27272a;
-  --accent-foreground: #fafafa;
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
-
+/* ─── Base ───────────────────────────────────────────────────────── */
 html {
   background: var(--background);
+  color-scheme: light;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   color: var(--foreground);
-  background: transparent;
-  font-family: 'Inter', sans-serif;
-  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--background);
+  font-family: 'DM Sans', 'Inter', sans-serif;
 }
 
-/* Glassmorphism Utilities */
+/* ─── Typography helpers ─────────────────────────────────────────── */
+.font-serif {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+}
+
+.font-sans-body {
+  font-family: 'DM Sans', 'Inter', sans-serif;
+}
+
+/* ─── Old-Money Card / Panel ─────────────────────────────────────── */
+.om-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 12px 0 rgba(28, 26, 22, 0.06);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.om-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 4px 24px 0 rgba(196, 165, 90, 0.12);
+}
+
+/* Legacy glass-panel – keep for dashboard pages */
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
   transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.dark .glass-panel {
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
 .glass-card {
@@ -61,12 +88,90 @@ body {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+/* ─── Gold rule divider ──────────────────────────────────────────── */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+  width: 100%;
 }
 
+/* ─── Section labels (small-caps) ───────────────────────────────── */
+.section-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ─── Old-Money Button styles ────────────────────────────────────── */
+.om-btn-primary {
+  background: var(--charcoal);
+  color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 36px;
+  border: 1px solid var(--charcoal);
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  cursor: pointer;
+}
+
+.om-btn-primary:hover {
+  background: var(--forest);
+  border-color: var(--forest);
+}
+
+.om-btn-outline {
+  background: transparent;
+  color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 13px 36px;
+  border: 1px solid var(--gold);
+  transition: background 0.25s ease, color 0.25s ease;
+  cursor: pointer;
+}
+
+.om-btn-outline:hover {
+  background: var(--gold);
+  color: var(--charcoal);
+}
+
+/* ─── Planner Carousel ───────────────────────────────────────────── */
+.carousel-track {
+  display: flex;
+  transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.carousel-arrow {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  color: var(--charcoal);
+  flex-shrink: 0;
+}
+
+.carousel-arrow:hover {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--charcoal);
+}
+
+/* ─── Animations ─────────────────────────────────────────────────── */
 @keyframes float {
   0% {
     transform: translateY(0px) rotate(0deg);
@@ -103,7 +208,23 @@ body {
   animation: spin-slow 8s linear infinite;
 }
 
-/* Hide scrollbar but keep scroll functionality */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeSlideUp 0.7s ease-out forwards;
+}
+
+/* ─── Scrollbar hide ─────────────────────────────────────────────── */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

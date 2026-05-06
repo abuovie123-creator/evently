@@ -126,44 +126,39 @@ export default function PricingPage() {
     }
 
     return (
-        <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-7xl mx-auto animate-in fade-in duration-500">
+        <main className="min-h-screen p-6 md:p-8 pt-32 md:pt-48 max-w-7xl mx-auto animate-in fade-in duration-1000 bg-cream">
             {/* Hero Section */}
-            <div className="text-center max-w-3xl mx-auto mb-16 space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-widest mb-4">
-                    <Sparkles size={14} />
-                    Pricing Plans
+            <div className="text-center max-w-4xl mx-auto mb-24 space-y-8">
+                <div className="inline-flex items-center gap-3 px-6 py-2 rounded-none bg-charcoal/5 border border-om-border/30 text-charcoal text-[10px] font-bold uppercase tracking-[0.3em] mb-4">
+                    The Heritage Collections
                 </div>
-                <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight">
-                    Grow Your Event
-                    <br />
-                    <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                        Planning Business
-                    </span>
+                <h1 className="text-5xl md:text-8xl font-serif italic text-charcoal tracking-tight leading-[0.9]">
+                    Curated Tier Selection
                 </h1>
-                <p className="text-gray-400 text-lg max-w-xl mx-auto">
-                    Choose the plan that fits your ambitions. Upgrade, downgrade, or cancel anytime.
+                <p className="text-[#6B5E4E] text-[11px] md:text-xs font-sans uppercase tracking-[0.25em] max-w-2xl mx-auto opacity-70 italic leading-relaxed">
+                    Select the architectural foundation for your estate management. Each tier is meticulously curated to elevate your heritage planning operations.
                 </p>
 
-                {/* Billing Toggle */}
-                <div className="flex items-center justify-center gap-4 mt-8">
+                {/* Heritage Billing Toggle */}
+                <div className="flex items-center justify-center gap-8 mt-12">
                     <button
                         onClick={() => setBillingCycle("monthly")}
-                        className={`text-sm font-bold transition-colors ${billingCycle === "monthly" ? "text-white" : "text-gray-500 hover:text-gray-300"}`}
+                        className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${billingCycle === "monthly" ? "text-charcoal border-b border-gold pb-1" : "text-[#6B5E4E]/40 hover:text-charcoal"}`}
                     >
                         Monthly
                     </button>
                     <button
                         onClick={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
-                        className={`w-12 h-6 rounded-full transition-all relative ${billingCycle === "yearly" ? "bg-blue-500" : "bg-white/10"}`}
+                        className={`w-14 h-7 rounded-none transition-all relative border border-om-border/40 ${billingCycle === "yearly" ? "bg-charcoal" : "bg-cream"}`}
                     >
-                        <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${billingCycle === "yearly" ? "right-1" : "left-1"}`} />
+                        <div className={`absolute top-1 w-4 h-4 rounded-none transition-all ${billingCycle === "yearly" ? "right-1.5 bg-gold" : "left-1.5 bg-charcoal/20"}`} />
                     </button>
                     <button
                         onClick={() => setBillingCycle("yearly")}
-                        className={`text-sm font-bold transition-colors flex items-center gap-2 ${billingCycle === "yearly" ? "text-white" : "text-gray-500 hover:text-gray-300"}`}
+                        className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${billingCycle === "yearly" ? "text-charcoal border-b border-gold pb-1" : "text-[#6B5E4E]/40 hover:text-charcoal"}`}
                     >
                         Yearly
-                        <span className="px-2 py-0.5 bg-green-500/10 text-green-400 text-[10px] font-bold rounded-full">Save 20%</span>
+                        <span className="px-2 py-0.5 bg-gold/10 text-gold text-[9px] font-bold tracking-widest">− 20%</span>
                     </button>
                 </div>
             </div>
@@ -189,52 +184,50 @@ export default function PricingPage() {
                         >
                             {/* Popular Badge */}
                             {tier.popular && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                                    <div className="px-6 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full text-[10px] font-bold uppercase tracking-widest text-white shadow-lg shadow-blue-500/30 animate-pulse">
-                                        Most Popular
+                                <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
+                                    <div className="px-8 py-2 bg-gold text-[9px] font-bold uppercase tracking-[0.3em] text-charcoal shadow-xl">
+                                        Signature Choice
                                     </div>
                                 </div>
                             )}
 
                             <Card
-                                className={`h-full flex flex-col p-8 ${tier.popular
-                                    ? "border-blue-500/30 bg-blue-500/[0.03] shadow-2xl shadow-blue-500/10"
-                                    : ""
+                                className={`h-full flex flex-col p-10 md:p-14 border border-om-border/30 rounded-none bg-surface shadow-none ${tier.popular
+                                    ? "border-gold/40 scale-105 z-10"
+                                    : "opacity-90"
                                     }`}
-                                hover={true}
+                                hover={false}
                             >
                                 {/* Tier Header */}
-                                <div className="space-y-4 mb-8">
-                                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${tier.color} flex items-center justify-center shadow-lg`}>
-                                        <Icon size={22} className="text-white" />
+                                <div className="space-y-6 mb-12">
+                                    <div className="w-16 h-16 bg-cream border border-om-border/30 flex items-center justify-center">
+                                        <Icon size={28} className="text-charcoal" />
                                     </div>
-                                    <h3 className="text-xl font-bold">{tier.name}</h3>
-                                    <p className="text-sm text-gray-400">{tier.description}</p>
+                                    <h3 className="text-3xl font-serif italic text-charcoal leading-tight">{tier.name} Suite</h3>
+                                    <p className="text-[11px] text-[#6B5E4E] uppercase tracking-widest leading-relaxed opacity-60 italic">{tier.description}</p>
                                 </div>
 
                                 {/* Price */}
-                                <div className="mb-8">
-                                    <div className="flex items-baseline gap-1">
-                                        <span className="text-4xl font-extrabold">{displayPrice}</span>
+                                <div className="mb-12 border-y border-om-border/20 py-8">
+                                    <div className="flex items-baseline gap-2">
+                                        <span className="text-5xl font-serif text-charcoal">{displayPrice}</span>
                                         {displayPeriod && (
-                                            <span className="text-sm text-gray-500 font-medium">{displayPeriod}</span>
+                                            <span className="text-[10px] text-[#6B5E4E] uppercase tracking-widest opacity-60">{displayPeriod}</span>
                                         )}
                                     </div>
                                     {billingCycle === "yearly" && tier.price !== "Free" && (
-                                        <p className="text-xs text-green-400 mt-1 font-medium">
-                                            Save ₦{(parseInt(tier.price.replace(/[₦,]/g, "")) * 2).toLocaleString()} per year
+                                        <p className="text-[9px] text-accent mt-3 font-bold uppercase tracking-[0.2em] italic">
+                                            Heritage Discount Applied
                                         </p>
                                     )}
                                 </div>
 
                                 {/* Features */}
-                                <div className="space-y-3 mb-8 flex-1">
+                                <div className="space-y-4 mb-12 flex-1">
                                     {tier.features.map((feature, i) => (
-                                        <div key={i} className="flex items-start gap-3">
-                                            <div className={`w-5 h-5 rounded-full bg-gradient-to-br ${tier.color} flex items-center justify-center flex-shrink-0 mt-0.5`}>
-                                                <Check size={12} className="text-white" />
-                                            </div>
-                                            <span className="text-sm text-gray-300">{feature}</span>
+                                        <div key={i} className="flex items-start gap-4">
+                                            <Check size={14} className="text-gold mt-1 flex-shrink-0" />
+                                            <span className="text-[11px] text-[#6B5E4E] uppercase tracking-widest leading-relaxed opacity-80">{feature}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -248,15 +241,14 @@ export default function PricingPage() {
                                     className="block"
                                 >
                                     <Button
-                                        className={`w-full group ${tier.popular
-                                            ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-none hover:shadow-lg hover:shadow-blue-500/25"
-                                            : ""
+                                        className={`w-full h-16 rounded-none font-bold uppercase tracking-[0.3em] text-[10px] transition-all duration-700 ${tier.popular
+                                            ? "bg-charcoal text-cream hover:bg-black border-charcoal"
+                                            : "bg-transparent border-charcoal text-charcoal hover:bg-charcoal hover:text-cream"
                                             }`}
                                         variant={tier.popular ? "primary" : "outline"}
                                         size="lg"
                                     >
                                         {tier.cta}
-                                        <ArrowRight size={16} className="inline ml-2 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </Link>
                             </Card>

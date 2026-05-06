@@ -102,7 +102,7 @@ function DebouncedSearchInput({ onSearchChange, placeholder }: { onSearchChange:
 export default function AdminDashboard() {
     const { showToast } = useToast();
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<"overview" | "branding" | "users" | "settings" | "payments" | "platform">("overview");
+    const [activeTab, setActiveTab] = useState<"overview" | "branding" | "users" | "settings" | "payments" | "platform" | "homepage">("overview");
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter] = useState<string>("all");
 
@@ -185,7 +185,30 @@ export default function AdminDashboard() {
     const [externalLinks, setExternalLinks] = useState<any[]>([]);
     const [newLink, setNewLink] = useState({ label: "", url: "" });
 
-    // Admin Account Update State
+    // Homepage Settings State (Old Money Redesign)
+    const [homepageSettings, setHomepageSettings] = useState<Record<string, string>>({
+        site_logo_text: "Evently",
+        hero_headline_part1: "Curate Your",
+        hero_headline_part2: "Legacy.",
+        hero_bg_url: "https://images.unsplash.com/photo-1519167758481-83f550bb49b3",
+        hero_search_loc_placeholder: "Where is your event?",
+        hero_search_type_placeholder: "Event Type",
+        grow_section_label: "Philosophy",
+        grow_section_title: "The Digital Estate",
+        grow_section_subtitle: "We transcend the standard directory; Evently is a curated sanctuary where excellence and talent intersect.",
+        why_us_label: "The Standard",
+        why_us_title: "Why the Best Choose Evently",
+        why_us_subtitle: "We’ve re-imagined the architectural foundation of the event planning industry.",
+        planners_label: "Planners",
+        planners_title: "The Master Planners",
+        portfolio_label: "Portfolio",
+        portfolio_title: "Notable Heritage Moments",
+        visionaries_title: "For the Visionaries",
+        visionaries_subtitle: "Are you an architect of memories? Showcase your portfolio to the world's most discerning guests.",
+        footer_tagline: "Curating excellence in the world's most prestigious event planning circles.",
+        footer_newsletter_description: "Join our legacy network for exclusive insights.",
+    });
+
     const [adminUserUpdate, setAdminUserUpdate] = useState("");
     const [adminPassUpdate, setAdminPassUpdate] = useState("");
 
@@ -353,6 +376,17 @@ export default function AdminDashboard() {
 
             const { data: linkData } = await supabase.from('external_links').select('*').order('order_index', { ascending: true });
             if (linkData) setExternalLinks(linkData);
+
+            // Fetch Homepage Settings
+            const { data: homeSettingsData } = await supabase
+                .from('site_settings')
+                .select('key, value');
+
+            if (homeSettingsData) {
+                const s: Record<string, string> = { ...homepageSettings };
+                homeSettingsData.forEach(item => s[item.key] = item.value);
+                setHomepageSettings(s);
+            }
 
             setIsLoadingUsers(false);
         };
@@ -630,6 +664,30 @@ export default function AdminDashboard() {
         setExternalLinks(externalLinks.filter(l => l.id !== id));
     };
 
+    const saveHomepageSettings = async () => {
+        setIsSaving(true);
+        const supabase = createClient();
+
+        try {
+            const updates = Object.entries(homepageSettings).map(([key, value]) => ({
+                key,
+                value,
+                updated_at: new Date().toISOString()
+            }));
+
+            const { error } = await supabase
+                .from('site_settings')
+                .upsert(updates, { onConflict: 'key' });
+
+            if (error) throw error;
+            showToast("Homepage settings updated successfully!", "success");
+        } catch (error: any) {
+            logError("Failed to save homepage settings", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     const tabs = [
         { id: "overview", label: "Overview", icon: LayoutDashboard },
         { id: "branding", label: "Branding", icon: Palette },
@@ -637,6 +695,7 @@ export default function AdminDashboard() {
         { id: "payments", label: "Payments", icon: CreditCard },
         { id: "settings", label: "Platform Settings", icon: Settings },
         { id: "platform", label: "Platform", icon: LayoutDashboard },
+        { id: "homepage", label: "Hero & Homepage", icon: LayoutDashboard },
     ];
 
     return (
@@ -1831,8 +1890,269 @@ export default function AdminDashboard() {
                         </section>
                     </div>
                 </div>
-            )
-            }
+            )}
+
+            {activeTab === "homepage" && (
+                <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 className="text-2xl font-black text-foreground">Homepage Content Control</h2>
+                            <p className="text-sm text-muted-foreground">Manage every text, image and link on your landing page.</p>
+                        </div>
+                        <Button
+                            className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 px-8 h-12 rounded-xl flex items-center gap-2"
+                            onClick={saveHomepageSettings}
+                            disabled={isSaving}
+                        >
+                            <Save size={18} />
+                            {isSaving ? "Saving changes..." : "Save All Changes"}
+                        </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                        {/* Hero Section Management */}
+                        <Card className="p-8 space-y-8 bg-white dark:bg-[#0A0A0A] border-none shadow-sm" hover={false}>
+                            <div className="flex items-center gap-3 border-b border-foreground/5 pb-4">
+                                <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500"><Palette size={20} /></div>
+                                <h3 className="font-bold uppercase tracking-widest text-sm">Hero & Global</h3>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Site Logo Text</label>
+                                    <Input
+                                        value={homepageSettings.site_logo_text}
+                                        onChange={e => setHomepageSettings({ ...homepageSettings, site_logo_text: e.target.value })}
+                                        className="h-12 bg-foreground/5 border-foreground/10 focus:border-blue-500/50 rounded-xl"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Headline Part 1</label>
+                                        <Input
+                                            value={homepageSettings.hero_headline_part1}
+                                            onChange={e => setHomepageSettings({ ...homepageSettings, hero_headline_part1: e.target.value })}
+                                            className="h-12 bg-foreground/5 border-foreground/10 focus:border-blue-500/50 rounded-xl font-serif text-lg"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Headline Part 2 (Italic)</label>
+                                        <Input
+                                            value={homepageSettings.hero_headline_part2}
+                                            onChange={e => setHomepageSettings({ ...homepageSettings, hero_headline_part2: e.target.value })}
+                                            className="h-12 bg-foreground/5 border-foreground/10 focus:border-blue-500/50 rounded-xl font-serif italic text-lg"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Hero Background Image URL</label>
+                                    <div className="flex gap-2">
+                                        <Input
+                                            value={homepageSettings.hero_bg_url}
+                                            onChange={e => setHomepageSettings({ ...homepageSettings, hero_bg_url: e.target.value })}
+                                            className="flex-1 h-12 bg-foreground/5 border-foreground/10 focus:border-blue-500/50 rounded-xl"
+                                        />
+                                        <div className="w-12 h-12 rounded-xl border border-foreground/10 overflow-hidden shrink-0">
+                                            <img src={homepageSettings.hero_bg_url} className="w-full h-full object-cover" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Location Placeholder</label>
+                                        <Input
+                                            value={homepageSettings.hero_search_loc_placeholder}
+                                            onChange={e => setHomepageSettings({ ...homepageSettings, hero_search_loc_placeholder: e.target.value })}
+                                            className="h-12 bg-foreground/5 border-foreground/10 focus:border-blue-500/50 rounded-xl"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Event Type Placeholder</label>
+                                        <Input
+                                            value={homepageSettings.hero_search_type_placeholder}
+                                            onChange={e => setHomepageSettings({ ...homepageSettings, hero_search_type_placeholder: e.target.value })}
+                                            className="h-12 bg-foreground/5 border-foreground/10 focus:border-blue-500/50 rounded-xl"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+
+                        {/* Digital Estate & Why Us */}
+                        <div className="space-y-8">
+                            <Card className="p-8 space-y-6 bg-white dark:bg-[#0A0A0A] border-none shadow-sm" hover={false}>
+                                <div className="flex items-center gap-3 border-b border-foreground/5 pb-4">
+                                    <div className="p-2 rounded-lg bg-green-500/10 text-green-500"><LayoutDashboard size={20} /></div>
+                                    <h3 className="font-bold uppercase tracking-widest text-sm">The Digital Estate (Grow)</h3>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Label</label>
+                                            <Input
+                                                value={homepageSettings.grow_section_label}
+                                                onChange={e => setHomepageSettings({ ...homepageSettings, grow_section_label: e.target.value })}
+                                                className="bg-foreground/5 border-foreground/10 rounded-xl"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Section Title</label>
+                                            <Input
+                                                value={homepageSettings.grow_section_title}
+                                                onChange={e => setHomepageSettings({ ...homepageSettings, grow_section_title: e.target.value })}
+                                                className="bg-foreground/5 border-foreground/10 rounded-xl"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Description/Subtitle</label>
+                                        <textarea
+                                            value={homepageSettings.grow_section_subtitle}
+                                            onChange={e => setHomepageSettings({ ...homepageSettings, grow_section_subtitle: e.target.value })}
+                                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500/50 min-h-[80px]"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground italic flex items-center gap-2">
+                                        <Info size={12} /> Individual features are managed in the "Home Features" table.
+                                    </p>
+                                </div>
+                            </Card>
+
+                            <Card className="p-8 space-y-6 bg-white dark:bg-[#0A0A0A] border-none shadow-sm" hover={false}>
+                                <div className="flex items-center gap-3 border-b border-foreground/5 pb-4">
+                                    <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500"><Star size={20} /></div>
+                                    <h3 className="font-bold uppercase tracking-widest text-sm">The Standard (Why Us)</h3>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Label</label>
+                                            <Input
+                                                value={homepageSettings.why_us_label}
+                                                onChange={e => setHomepageSettings({ ...homepageSettings, why_us_label: e.target.value })}
+                                                className="bg-foreground/5 border-foreground/10 rounded-xl"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Section Title</label>
+                                            <Input
+                                                value={homepageSettings.why_us_title}
+                                                onChange={e => setHomepageSettings({ ...homepageSettings, why_us_title: e.target.value })}
+                                                className="bg-foreground/5 border-foreground/10 rounded-xl"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Description/Subtitle</label>
+                                        <textarea
+                                            value={homepageSettings.why_us_subtitle}
+                                            onChange={e => setHomepageSettings({ ...homepageSettings, why_us_subtitle: e.target.value })}
+                                            className="w-full bg-foreground/5 border border-foreground/10 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500/50 min-h-[80px]"
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground italic flex items-center gap-2">
+                                        <Info size={12} /> Individual reasons are managed in the "Home Reasons" table.
+                                    </p>
+                                </div>
+                            </Card>
+
+                            <Card className="p-8 space-y-6 bg-white dark:bg-[#0A0A0A] border-none shadow-sm" hover={false}>
+                                <div className="flex items-center gap-3 border-b border-foreground/5 pb-4">
+                                    <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-500"><Users size={20} /></div>
+                                    <h3 className="font-bold uppercase tracking-widest text-sm">Planners & Portfolio</h3>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Planners Label</label>
+                                            <Input
+                                                value={homepageSettings.planners_label}
+                                                onChange={e => setHomepageSettings({ ...homepageSettings, planners_label: e.target.value })}
+                                                className="bg-foreground/5 border-foreground/10 rounded-xl"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Planners Title</label>
+                                            <Input
+                                                value={homepageSettings.planners_title}
+                                                onChange={e => setHomepageSettings({ ...homepageSettings, planners_title: e.target.value })}
+                                                className="bg-foreground/5 border-foreground/10 rounded-xl"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Portfolio Label</label>
+                                            <Input
+                                                value={homepageSettings.portfolio_label}
+                                                onChange={e => setHomepageSettings({ ...homepageSettings, portfolio_label: e.target.value })}
+                                                className="bg-foreground/5 border-foreground/10 rounded-xl"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Portfolio Title</label>
+                                            <Input
+                                                value={homepageSettings.portfolio_title}
+                                                onChange={e => setHomepageSettings({ ...homepageSettings, portfolio_title: e.target.value })}
+                                                className="bg-foreground/5 border-foreground/10 rounded-xl"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+
+                        {/* Visionaries & Footer */}
+                        <Card className="p-8 space-y-8 bg-white dark:bg-[#0A0A0A] border-none shadow-sm" hover={false}>
+                            <div className="flex items-center gap-3 border-b border-foreground/5 pb-4">
+                                <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500"><Users size={20} /></div>
+                                <h3 className="font-bold uppercase tracking-widest text-sm">Visionaries & Footer</h3>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Visionaries Title</label>
+                                    <Input
+                                        value={homepageSettings.visionaries_title}
+                                        onChange={e => setHomepageSettings({ ...homepageSettings, visionaries_title: e.target.value })}
+                                        className="h-12 bg-foreground/5 border-foreground/10 focus:border-blue-500/50 rounded-xl"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Visionaries Subtitle</label>
+                                    <textarea
+                                        value={homepageSettings.visionaries_subtitle}
+                                        onChange={e => setHomepageSettings({ ...homepageSettings, visionaries_subtitle: e.target.value })}
+                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500/50 min-h-[80px]"
+                                    />
+                                </div>
+
+                                <div className="h-[1px] bg-foreground/5 w-full my-4" />
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Footer Tagline</label>
+                                    <textarea
+                                        value={homepageSettings.footer_tagline}
+                                        onChange={e => setHomepageSettings({ ...homepageSettings, footer_tagline: e.target.value })}
+                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500/50 min-h-[60px]"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Newsletter Description</label>
+                                    <textarea
+                                        value={homepageSettings.footer_newsletter_description}
+                                        onChange={e => setHomepageSettings({ ...homepageSettings, footer_newsletter_description: e.target.value })}
+                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl p-4 text-sm focus:outline-none focus:border-blue-500/50 min-h-[60px]"
+                                    />
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+            )}
         </div >
     );
 }

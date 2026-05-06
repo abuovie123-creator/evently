@@ -27,7 +27,8 @@ import {
     LifeBuoy,
     ShieldAlert,
     Wallet,
-    Bell
+    Bell,
+    Star
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "./ui/Toast";
@@ -195,47 +196,43 @@ export function DashboardSidebar() {
             }
         ],
         client: [
-            { label: "My Dashboard", href: "/dashboard/client", icon: LayoutDashboard },
+            { label: "Overview", href: "/dashboard/client", icon: LayoutDashboard },
             {
-                label: "Explore",
-                icon: Search,
+                label: "Events",
+                icon: Calendar,
                 subItems: [
+                    { label: "Upcoming Events", href: "/dashboard/client#bookings" },
+                    { label: "Booking History", href: "/dashboard/client#history" },
                     { label: "Find Planners", href: "/planners" },
                     { label: "Featured Events", href: "/events" }
                 ]
             },
-            {
-                label: "My Journey",
-                icon: Briefcase,
-                subItems: [
-                    { label: "Upcoming Events", href: "/dashboard/client#bookings" },
-                    { label: "Booking History", href: "/dashboard/client#history" }
-                ]
-            },
+            { label: "Favorites", href: "/dashboard/client#saved", icon: Star },
             { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
-            { label: "Settings", href: "/dashboard/settings", icon: Settings },
+            { label: "Settings", href: "/dashboard/client/settings", icon: Settings },
+            { label: "Pricing", href: "/pricing", icon: CreditCard },
         ]
     };
 
     const currentNav = role ? navGroups[role as keyof typeof navGroups] : [];
 
     const SidebarContent = () => (
-        <div className="flex flex-col h-full bg-background dark:bg-[#0A0A0A] border-r border-foreground/5 py-8 transition-colors duration-500 overflow-hidden">
-            <div className="px-6 mb-8 flex items-center justify-between">
-                <Link href="/" className="text-2xl font-black tracking-tighter text-foreground">
-                    EVENTLY<span className="text-blue-500">.</span>
+        <div className="flex flex-col h-full bg-cream border-r border-om-border/40 py-10 transition-colors duration-700 overflow-hidden">
+            <div className="px-8 mb-10 flex items-center justify-between">
+                <Link href="/" className="text-2xl font-serif text-charcoal tracking-widest uppercase">
+                    EVENTLY<span className="text-gold">.</span>
                 </Link>
                 <NotificationBell />
             </div>
 
             {role === 'admin' && (
-                <div className="px-6 mb-6">
+                <div className="px-8 mb-8">
                     <div className="relative group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-blue-500 transition-colors" size={14} />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/30 group-focus-within:text-gold transition-colors" size={14} />
                         <input
                             type="text"
-                            placeholder="Search for a menu"
-                            className="w-full bg-foreground/5 border-none rounded-xl py-2.5 pl-10 pr-4 text-xs focus:ring-1 focus:ring-blue-500/50 outline-none transition-all"
+                            placeholder="Search parameters..."
+                            className="w-full bg-charcoal/5 border border-om-border/30 rounded-none py-3 pl-10 pr-4 text-[11px] font-sans uppercase tracking-widest focus:ring-1 focus:ring-gold/50 outline-none transition-all placeholder:text-charcoal/30"
                             value={menuSearch}
                             onChange={(e) => setMenuSearch(e.target.value)}
                         />
@@ -243,7 +240,7 @@ export function DashboardSidebar() {
                 </div>
             )}
 
-            <nav className="flex-1 overflow-y-auto scrollbar-hide px-4 space-y-6">
+            <nav className="flex-1 overflow-y-auto scrollbar-hide px-6 space-y-8">
                 {role === 'admin' ? (
                     navGroups.admin.map((group: any, groupIdx: number) => {
                         const filteredItems = group.items.filter((item: any) =>
@@ -253,8 +250,8 @@ export function DashboardSidebar() {
                         if (filteredItems.length === 0) return null;
 
                         return (
-                            <div key={group.category} className="space-y-2 animate-in fade-in slide-in-from-left-4 duration-500" style={{ animationDelay: `${groupIdx * 50}ms` }}>
-                                <h3 className="px-4 text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-3 opacity-50">
+                            <div key={group.category} className="space-y-3 animate-in fade-in slide-in-from-left-4 duration-500" style={{ animationDelay: `${groupIdx * 50}ms` }}>
+                                <h3 className="px-4 text-[9px] font-bold text-[#8B7355]/60 uppercase tracking-[0.3em] mb-4">
                                     {group.category}
                                 </h3>
                                 <div className="space-y-1">
@@ -264,9 +261,9 @@ export function DashboardSidebar() {
                                             <Link
                                                 key={item.label}
                                                 href={item.href}
-                                                className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-300 group ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'}`}
+                                                className={`flex items-center gap-4 px-4 py-3 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream shadow-xl' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
                                             >
-                                                <item.icon size={18} className={isActive ? 'text-white' : 'group-hover:text-blue-500 transition-colors'} />
+                                                <item.icon size={16} className={isActive ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
                                                 <span>{item.label}</span>
                                             </Link>
                                         );
@@ -276,7 +273,7 @@ export function DashboardSidebar() {
                         );
                     })
                 ) : (
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                         {currentNav.map((item: NavItem, index: number) => {
                             const hasSubItems = item.subItems && item.subItems.length > 0;
                             const isActive = pathname === item.href;
@@ -292,27 +289,27 @@ export function DashboardSidebar() {
                                     {hasSubItems ? (
                                         <button
                                             onClick={() => toggleSubMenu(item.label)}
-                                            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 group ${isOpen ? 'bg-foreground/5 text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'}`}
+                                            className={`w-full flex items-center justify-between px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isOpen ? 'bg-charcoal/5 text-charcoal' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
                                         >
-                                            <div className="flex items-center gap-3">
-                                                <item.icon size={18} className={isOpen ? 'text-blue-400' : 'group-hover:text-blue-400 transition-colors'} />
+                                            <div className="flex items-center gap-4">
+                                                <item.icon size={16} className={isOpen ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
                                                 <span>{item.label}</span>
                                             </div>
-                                            {isOpen ? <ChevronDown size={14} className="text-muted-foreground/60" /> : <ChevronRight size={14} className="text-muted-foreground/60" />}
+                                            {isOpen ? <ChevronDown size={14} className="text-charcoal/40" /> : <ChevronRight size={14} className="text-charcoal/40" />}
                                         </button>
                                     ) : (
                                         <Link
                                             href={item.href || "#"}
                                             onClick={() => setIsMobileOpen(false)}
-                                            className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all duration-300 group ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'}`}
+                                            className={`flex items-center gap-4 px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream font-black' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
                                         >
-                                            <div className={`p-2 rounded-xl transition-colors ${isActive ? 'bg-white/20' : 'bg-foreground/5 group-hover:bg-foreground/10'}`}>
-                                                <item.icon size={18} className={isActive ? 'text-white' : 'group-hover:text-blue-400 transition-colors'} />
+                                            <div className={`p-2 rounded-none transition-colors ${isActive ? 'bg-transparent' : 'bg-charcoal/5 group-hover:bg-charcoal/10'}`}>
+                                                <item.icon size={16} className={isActive ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
                                             </div>
-                                            <div className="flex-1 flex items-center justify-between text-[13px]">
+                                            <div className="flex-1 flex items-center justify-between">
                                                 <span>{item.label}</span>
                                                 {item.label === "Messages" && unreadCount > 0 && (
-                                                    <span className="bg-blue-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full animate-pulse">
+                                                    <span className="bg-charcoal text-cream text-[9px] font-black px-2 py-0.5 rounded-full border border-gold/30">
                                                         {unreadCount}
                                                     </span>
                                                 )}
@@ -321,13 +318,13 @@ export function DashboardSidebar() {
                                     )}
 
                                     {hasSubItems && isOpen && (
-                                        <div className="ml-14 space-y-1 animate-in slide-in-from-top-2 duration-300">
+                                        <div className="ml-16 space-y-1 animate-in slide-in-from-top-2 duration-300">
                                             {item.subItems?.map((sub: SubItem) => (
                                                 <Link
                                                     key={sub.label}
                                                     href={sub.href}
                                                     onClick={() => setIsMobileOpen(false)}
-                                                    className={`block py-2 text-[13px] transition-colors relative before:absolute before:left-[-16px] before:top-1/2 before:w-1.5 before:h-1.5 before:rounded-full before:-translate-y-1/2 before:transition-all ${pathname === sub.href ? 'text-blue-500 font-bold before:bg-blue-500' : 'text-muted-foreground hover:text-foreground before:bg-foreground/10 hover:before:bg-blue-500/40'}`}
+                                                    className={`block py-3 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors relative before:absolute before:left-[-20px] before:top-1/2 before:w-1 before:h-1 before:rounded-full before:-translate-y-1/2 before:transition-all ${pathname === sub.href ? 'text-forest font-black before:bg-forest' : 'text-[#6B5E4E] hover:text-charcoal before:bg-charcoal/10 hover:before:bg-gold/60'}`}
                                                 >
                                                     {sub.label}
                                                 </Link>
@@ -340,49 +337,64 @@ export function DashboardSidebar() {
                     </div>
                 )}
 
-                {externalLinks.length > 0 && role !== 'admin' && (
-                    <div className="pt-4 mt-4 border-t border-foreground/5 space-y-1">
-                        <p className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">Platform Links</p>
+                {role !== 'admin' && (
+                    <div className="pt-8 mt-8 border-t border-om-border/30 space-y-2">
+                        <p className="px-4 text-[9px] font-bold text-[#8B7355]/40 uppercase tracking-[0.3em] mb-4 italic">Estate Resources</p>
                         {externalLinks.map((link, idx) => (
                             <a
                                 key={link.id}
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all duration-300 group"
+                                className="flex items-center justify-between px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5 transition-all duration-300 group"
                                 style={{ animationDelay: `${(currentNav.length + idx) * 50}ms` }}
                             >
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-xl bg-foreground/5 group-hover:bg-foreground/10 transition-colors">
-                                        <ExternalLink size={18} className="group-hover:text-blue-400 transition-colors" />
+                                <div className="flex items-center gap-4">
+                                    <div className="p-2 rounded-none bg-charcoal/5 group-hover:bg-charcoal/10 transition-colors">
+                                        <ExternalLink size={16} className="group-hover:text-gold transition-colors" />
                                     </div>
                                     <span>{link.label}</span>
                                 </div>
-                                <ExternalLink size={12} className="opacity-0 group-hover:opacity-50 transition-opacity" />
+                                <ExternalLink size={12} className="opacity-0 group-hover:opacity-40 transition-opacity" />
                             </a>
                         ))}
+                        {role === 'client' && (
+                            <Link
+                                href="/dashboard/client/support"
+                                onClick={() => setIsMobileOpen(false)}
+                                className={`flex items-center justify-between px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${pathname === '/dashboard/client/support' ? 'bg-charcoal text-cream font-black' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className={`p-2 rounded-none transition-colors ${pathname === '/dashboard/client/support' ? 'bg-transparent' : 'bg-charcoal/5 group-hover:bg-charcoal/10'}`}>
+                                        <LifeBuoy size={16} className={pathname === '/dashboard/client/support' ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
+                                    </div>
+                                    <span>Concierge Help</span>
+                                </div>
+                            </Link>
+                        )}
                     </div>
                 )}
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-foreground/5 px-4 space-y-3">
-                <div className="mb-2 pl-1">
+            <div className="mt-auto pt-8 border-t border-om-border/30 px-6 space-y-4">
+                <div className="flex items-center justify-between px-2">
                     <ThemeToggle />
                 </div>
-                <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm border border-foreground/10">
+                <div className="flex items-center gap-4 p-3 bg-surface border border-om-border/20 shadow-sm">
+                    <div className="w-12 h-12 rounded-none bg-charcoal flex items-center justify-center text-gold font-serif text-lg border border-gold/30">
                         {user?.email?.[0].toUpperCase() || "U"}
                     </div>
                     <div className="overflow-hidden">
-                        <p className="text-xs font-bold truncate text-foreground">{fullName || user?.email}</p>
+                        <p className="text-[11px] font-black uppercase tracking-widest truncate text-charcoal">{fullName || "ESTATE AGENT"}</p>
+                        <p className="text-[10px] text-[#6B5E4E] truncate font-sans italic opacity-70">{user?.email}</p>
                     </div>
                 </div>
                 <button
                     onClick={handleSignOut}
-                    className="w-full flex items-center gap-3 px-4 py-2 text-xs font-bold text-red-400 hover:text-red-300 hover:bg-red-500/5 rounded-xl transition-all"
+                    className="w-full flex items-center justify-center gap-3 px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-red-900/60 hover:text-red-900 hover:bg-red-900/5 border border-transparent hover:border-red-900/10 transition-all font-serif italic"
                 >
                     <LogOut size={14} />
-                    Sign Out
+                    Depart Estate
                 </button>
             </div>
         </div>
@@ -390,32 +402,41 @@ export function DashboardSidebar() {
 
     return (
         <>
-            <button
-                onClick={() => setIsMobileOpen(true)}
-                className="md:hidden fixed bottom-6 right-6 z-50 p-4 bg-blue-600 text-white rounded-full shadow-2xl active:scale-90 transition-transform hover:scale-110"
-            >
-                <Menu size={24} />
-            </button>
+            {/* Mobile Top Bar */}
+            <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-cream border-b border-om-border/30 px-6 flex items-center justify-between z-50">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setIsMobileOpen(true)}
+                        className="p-2 text-charcoal hover:bg-charcoal/5 transition-colors"
+                    >
+                        <Menu size={24} />
+                    </button>
+                    <Link href="/" className="text-xl font-serif text-charcoal tracking-widest uppercase">
+                        EVENTLY<span className="text-gold">.</span>
+                    </Link>
+                </div>
+                <NotificationBell />
+            </div>
 
-            <aside className="hidden md:block fixed top-0 left-0 bottom-0 w-72 z-40 transform-gpu transition-transform duration-500 ease-out">
+            <aside className="hidden md:block fixed top-0 left-0 bottom-0 w-72 z-40 transform-gpu transition-transform duration-700 ease-out">
                 <SidebarContent />
             </aside>
 
-            <div className={`md:hidden fixed inset-0 z-[60] transition-opacity duration-300 ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-                <div className="absolute inset-0 bg-foreground/10 dark:bg-black/80 backdrop-blur-md" onClick={() => setIsMobileOpen(false)} />
-                <div className={`absolute top-0 left-0 bottom-0 w-80 transform transition-transform duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+            <div className={`md:hidden fixed inset-0 z-[60] transition-opacity duration-500 ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                <div className="absolute inset-0 bg-charcoal/40" onClick={() => setIsMobileOpen(false)} />
+                <div className={`absolute top-0 left-0 bottom-0 w-80 transform transition-transform duration-700 cubic-bezier(0.16, 1, 0.3, 1) ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <SidebarContent />
                 </div>
                 <button
                     onClick={() => setIsMobileOpen(false)}
-                    className="absolute top-8 right-8 z-[70] p-3 text-foreground/50 hover:text-foreground hover:bg-foreground/10 rounded-full transition-all"
+                    className="absolute top-10 right-10 z-[70] h-12 w-12 flex items-center justify-center text-charcoal hover:bg-charcoal/10 rounded-full transition-all border border-charcoal/20 bg-cream"
                 >
                     <X size={24} />
                 </button>
             </div>
 
             {isLoggingOut && (
-                <LoadingScreen message="Logging you out..." subMessage="See you soon!!" />
+                <LoadingScreen message="Departing the Estate" subMessage="Preparing your safe travels..." />
             )}
         </>
     );

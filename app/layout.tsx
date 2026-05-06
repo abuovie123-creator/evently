@@ -1,15 +1,24 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { ToastProvider } from "@/components/ui/Toast";
-import { AnimatedBackground } from "@/components/AnimatedBackground";
 import { AnnouncementPopup } from "@/components/AnnouncementPopup";
 
+const cormorant = Cormorant_Garamond({
+    subsets: ["latin"],
+    weight: ["300", "400", "500", "600", "700"],
+    style: ["normal", "italic"],
+    variable: "--font-cormorant",
+    display: "swap",
+});
 
-import { ThemeProvider } from "@/components/ThemeProvider";
-
-const inter = Inter({ subsets: ["latin"] });
+const dmSans = DM_Sans({
+    subsets: ["latin"],
+    weight: ["300", "400", "500", "600", "700"],
+    variable: "--font-dm-sans",
+    display: "swap",
+});
 
 export const metadata: Metadata = {
     title: "Evently | Professional Event Planner Discovery",
@@ -27,25 +36,13 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" suppressHydrationWarning>
-            <body className={`${inter.className} antialiased transition-colors duration-300`}>
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="dark"
-                    enableSystem
-                    disableTransitionOnChange
-                >
-                    <ToastProvider>
-                        {/* Background Gradients */}
-                        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-black -z-10 dark:block hidden transition-opacity duration-700" />
-                        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/30 via-white to-white dark:hidden block -z-10 transition-opacity duration-700" />
-
-                        <AnimatedBackground />
-                        <Navbar />
-                        {children}
-                        <AnnouncementPopup />
-                    </ToastProvider>
-                </ThemeProvider>
+        <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
+            <body className="antialiased bg-background text-foreground" style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}>
+                <ToastProvider>
+                    <Navbar />
+                    {children}
+                    <AnnouncementPopup />
+                </ToastProvider>
             </body>
         </html>
     );

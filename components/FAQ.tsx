@@ -46,37 +46,34 @@ export function FAQ() {
     if (faqs.length === 0) return null;
 
     return (
-        <section className="max-w-3xl mx-auto py-32 px-6">
-            <div className="text-center mb-16 space-y-4">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest shadow-xl">
-                    <Sparkles size={12} />
-                    Got Questions?
-                </div>
-                <h2 className="text-4xl font-black tracking-tight">Frequently Asked Questions</h2>
-                <p className="text-muted-foreground font-light">Everything you need to know about the platform.</p>
+        <section className="max-w-4xl mx-auto py-24 md:py-32 px-6">
+            <div className="text-center mb-12 md:mb-16 space-y-4">
+                <span className="section-label">Assistance</span>
+                <h2 className="text-3xl md:text-5xl font-serif text-[#1C1A16] leading-tight">Frequently Asked Questions</h2>
+                <p className="text-base md:text-lg text-[#6B5E4E] font-light leading-relaxed">Refining the details of your heritage journey.</p>
             </div>
 
             <div className="space-y-4">
                 {faqs.map((faq, i) => (
                     <Card
                         key={faq.id}
-                        className={`p-0 overflow-hidden border-foreground/5 transition-all duration-500 ${openIndex === i ? 'border-blue-500/30 ring-1 ring-blue-500/10' : 'hover:border-foreground/10'}`}
+                        className={`p-0 overflow-hidden border-[#D4C5A9]/30 transition-all duration-500 bg-white ${openIndex === i ? 'ring-1 ring-[#C4A55A]/20' : 'hover:border-[#D4C5A9]/60'}`}
                         hover={false}
                     >
                         <button
                             onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                            className="w-full p-8 text-left flex items-center justify-between group"
+                            className="w-full p-6 md:p-8 text-left flex items-center justify-between group"
                         >
-                            <span className={`text-lg font-bold transition-colors ${openIndex === i ? 'text-blue-500' : 'text-foreground group-hover:text-blue-400'}`}>
+                            <span className={`text-base md:text-xl font-serif transition-colors ${openIndex === i ? 'text-[#8B7355]' : 'text-[#1C1A16] group-hover:text-[#8B7355]'}`}>
                                 {faq.question}
                             </span>
                             <ChevronDown
                                 size={20}
-                                className={`text-muted-foreground transition-transform duration-500 ${openIndex === i ? 'rotate-180 text-blue-500' : ''}`}
+                                className={`text-[#8B7355] transition-transform duration-500 ${openIndex === i ? 'rotate-180' : ''}`}
                             />
                         </button>
-                        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${openIndex === i ? 'max-h-96 opacity-100 p-8 pt-0' : 'max-h-0 opacity-0'}`}>
-                            <p className="text-muted-foreground leading-relaxed border-t border-foreground/5 pt-6 font-light">
+                        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${openIndex === i ? 'max-h-96 opacity-100 px-6 md:px-8 pb-6 md:pb-8' : 'max-h-0 opacity-0'}`}>
+                            <p className="text-[#6B5E4E] text-sm md:text-base leading-relaxed border-t border-[#D4C5A9]/20 pt-6 font-light italic">
                                 {faq.answer}
                             </p>
                         </div>

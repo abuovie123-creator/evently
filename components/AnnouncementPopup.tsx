@@ -54,15 +54,12 @@ export function AnnouncementPopup() {
         <>
             {/* Backdrop */}
             <div
-                className={`fixed inset-0 z-[100] bg-black/60 backdrop-blur-md transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`fixed inset-0 z-[100] bg-black/40 transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 onClick={handleClose}
             />
 
             <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[110] max-w-lg w-[94%] sm:w-full transition-all duration-700 transform ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                <div className="glass-panel p-5 md:p-10 shadow-[0_0_50px_-12px_rgba(37,99,235,0.3)] border-white/10 relative overflow-hidden group rounded-[2rem] md:rounded-[3rem]">
-                    {/* Background Decor */}
-                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl group-hover:bg-blue-600/20 transition-colors duration-500" />
-                    <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl group-hover:bg-purple-600/20 transition-colors duration-500" />
+                <div className="om-card bg-[#F5F0E8] p-5 md:p-10 shadow-2xl border-[#D4C5A9] relative overflow-hidden group rounded-sm">
 
                     <button
                         onClick={handleClose}
@@ -72,25 +69,26 @@ export function AnnouncementPopup() {
                     </button>
 
                     <div className="flex flex-col items-center text-center space-y-6 relative z-10">
-                        <div className="w-16 h-16 rounded-3xl bg-blue-600/10 flex items-center justify-center text-blue-500 shadow-xl shadow-blue-500/5">
-                            <Bell size={32} className="animate-bounce" />
+                        <div className="w-16 h-16 rounded-sm bg-[#1A2E1A]/10 flex items-center justify-center text-[#1A2E1A] shadow-lg">
+                            <Bell size={28} className="animate-bounce" />
                         </div>
 
                         <div className="space-y-3">
-                            <h3 className="text-2xl md:text-3xl font-black tracking-tight text-foreground leading-tight">
+                            <span className="section-label">Institutional Notice</span>
+                            <h3 className="text-3xl md:text-4xl font-serif text-charcoal leading-tight">
                                 {announcement.title}
                             </h3>
-                            <p className="text-base text-muted-foreground leading-relaxed font-light max-w-sm mx-auto">
+                            <p className="text-base text-muted-foreground leading-relaxed font-light italic max-w-sm mx-auto">
                                 {announcement.content}
                             </p>
                         </div>
 
                         {announcement.image_url && (
-                            <div className="w-full rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
+                            <div className="w-full rounded-sm overflow-hidden border border-border shadow-xl">
                                 <img
                                     src={announcement.image_url}
                                     alt={announcement.title}
-                                    className="w-full h-48 md:h-64 object-cover hover:scale-105 transition-transform duration-700"
+                                    className="w-full h-48 md:h-64 object-cover grayscale hover:grayscale-0 transition-all duration-700 hover:scale-105"
                                 />
                             </div>
                         )}
@@ -103,15 +101,15 @@ export function AnnouncementPopup() {
                                     rel="noopener noreferrer"
                                     className="w-full sm:flex-1"
                                 >
-                                    <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white gap-2 h-12 rounded-2xl shadow-lg shadow-blue-600/20 text-sm font-bold">
-                                        View Details <ExternalLink size={18} />
+                                    <Button className="w-full bg-charcoal hover:bg-forest text-cream h-12 rounded-sm text-[10px] tracking-widest font-bold uppercase transition-all">
+                                        Explore Details <ExternalLink size={14} />
                                     </Button>
                                 </a>
                             )}
                             <Button
                                 variant="outline"
                                 onClick={handleClose}
-                                className={`h-12 rounded-2xl border-white/10 text-sm font-bold ${announcement.link_url ? "w-full sm:w-32" : "w-full"}`}
+                                className={`h-12 rounded-sm text-[10px] tracking-widest font-bold uppercase ${announcement.link_url ? "w-full sm:w-32" : "w-full"}`}
                             >
                                 Dismiss
                             </Button>

@@ -10,6 +10,8 @@ import { useToast } from "@/components/ui/Toast";
 import { useOnlineStatus } from "@/lib/hooks/useOnlineStatus";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
+import { DashboardFooter } from "@/components/DashboardFooter";
+
 export default function DashboardLayout({
     children,
 }: {
@@ -55,8 +57,9 @@ export default function DashboardLayout({
         <div className="min-h-screen bg-background text-foreground selection:bg-blue-500/30 overflow-x-hidden transition-colors duration-500">
             {!isAdminLogin && <DashboardSidebar />}
             <main className={`${!isAdminLogin ? "md:pl-72" : ""} transition-all duration-300 overflow-x-hidden`}>
-                <div className={`${!isAdminLogin ? "p-4 md:p-8" : ""} max-w-7xl mx-auto pb-24 md:pb-8`}>
+                <div className={`${!isAdminLogin ? "p-4 md:p-8" : ""} max-w-7xl mx-auto pb-24 md:pb-8 pt-20 md:pt-8`}>
                     {children}
+                    {!isAdminLogin && <DashboardFooter />}
                 </div>
             </main>
         </div>

@@ -57,39 +57,39 @@ export function BookingCountdown({ eventDate, className = "" }: BookingCountdown
 
     if (timeLeft.isExpired) {
         return (
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-[10px] font-bold text-gray-500 ${className}`}>
-                <CalendarCheck size={12} />
-                Event Completed
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-none bg-charcoal/[0.03] border border-om-border/30 text-[10px] font-bold text-[#6B5E4E] uppercase tracking-widest ${className}`}>
+                <CalendarCheck size={12} className="opacity-50" />
+                Estate Event Concluded
             </div>
         );
     }
 
     if (timeLeft.isToday) {
         return (
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-[10px] font-black text-blue-400 uppercase tracking-widest animate-pulse ${className}`}>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-none bg-forest/10 border border-forest/20 text-[10px] font-black text-forest uppercase tracking-[0.2em] animate-pulse ${className}`}>
                 <Sparkles size={12} />
-                It's Event Day!
+                Commencement Today
             </div>
         );
     }
 
     return (
-        <div className={`flex items-center gap-3 px-4 py-2 rounded-2xl bg-blue-500/5 border border-blue-500/10 ${className}`}>
-            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
+        <div className={`flex items-center gap-4 px-5 py-3 rounded-none bg-cream border border-om-border/40 shadow-sm ${className}`}>
+            <div className="p-2.5 rounded-none bg-charcoal/5 text-accent animate-in zoom-in duration-700">
                 <Timer size={14} className="animate-pulse" />
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
                 <div className="flex flex-col">
-                    <span className="text-xs font-black text-foreground leading-none">{timeLeft.days}</span>
-                    <span className="text-[8px] uppercase tracking-tighter text-muted-foreground font-bold">Days</span>
+                    <span className="text-sm font-serif font-black text-charcoal leading-none transition-all duration-500">{timeLeft.days}</span>
+                    <span className="text-[8px] uppercase tracking-widest text-[#6B5E4E] font-bold opacity-60">Days</span>
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-xs font-black text-foreground leading-none">{timeLeft.hours}</span>
-                    <span className="text-[8px] uppercase tracking-tighter text-muted-foreground font-bold">Hrs</span>
+                    <span className="text-sm font-serif font-black text-charcoal leading-none transition-all duration-500">{timeLeft.hours}</span>
+                    <span className="text-[8px] uppercase tracking-widest text-[#6B5E4E] font-bold opacity-60">Hours</span>
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-xs font-black text-foreground leading-none">{timeLeft.minutes}</span>
-                    <span className="text-[8px] uppercase tracking-tighter text-muted-foreground font-bold">Min</span>
+                    <span className="text-sm font-serif font-black text-charcoal leading-none transition-all duration-500">{timeLeft.minutes}</span>
+                    <span className="text-[8px] uppercase tracking-widest text-[#6B5E4E] font-bold opacity-60">Mins</span>
                 </div>
             </div>
         </div>

@@ -14,54 +14,60 @@ interface Reason {
 export function WhyUsSection() {
     const [reasons, setReasons] = useState<Reason[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [settings, setSettings] = useState<Record<string, string>>({});
     const supabase = createClient();
 
     useEffect(() => {
-        const fetchReasons = async () => {
-            const { data } = await supabase
+        const fetchContent = async () => {
+            const { data: rData } = await supabase
                 .from('home_reasons')
                 .select('*')
                 .order('order_index', { ascending: true });
 
-            if (data) setReasons(data);
+            if (rData) setReasons(rData);
+
+            const { data: sData } = await supabase
+                .from('site_settings')
+                .select('key, value');
+            if (sData) {
+                const s: Record<string, string> = {};
+                sData.forEach(item => s[item.key] = item.value);
+                setSettings(s);
+            }
             setIsLoading(false);
         };
-        fetchReasons();
+        fetchContent();
     }, [supabase]);
 
     if (isLoading || reasons.length === 0) return null;
 
     return (
-        <section className="py-32 px-6 overflow-hidden relative">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-blue-600/[0.03] blur-[150px] -z-10 rounded-full" />
-
-            <div className="max-w-7xl mx-auto space-y-20">
-                <div className="text-center space-y-4 max-w-3xl mx-auto">
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest shadow-xl mb-4">
-                        Professional Standard
-                    </div>
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight">
-                        Why the Best <span className="text-blue-500">Choice</span> is Evently
+        <section className="py-20 md:py-32 px-6 overflow-hidden relative bg-[#FAF8F3]">
+            <div className="max-w-7xl mx-auto space-y-12 md:space-y-20">
+                <div className="text-center space-y-4 md:space-y-6 max-w-3xl mx-auto">
+                    <span className="section-label">{settings.why_us_label || "The Standard"}</span>
+                    <h2 className="text-3xl md:text-6xl font-serif text-[#1C1A16] leading-tight">
+                        {settings.why_us_title || "Why the Best Choose Evently"}
                     </h2>
-                    <p className="text-xl text-muted-foreground font-light">
-                        We’ve re-imagined how event planning business is conducted globally.
+                    <p className="text-base md:text-lg text-[#6B5E4E] font-light leading-relaxed">
+                        {settings.why_us_subtitle || "We’ve re-imagined the architectural foundation of the event planning industry."}
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12">
                     {reasons.map((reason) => {
                         const Icon = (LucideIcons as any)[reason.icon] || LucideIcons.Check;
 
                         return (
                             <div
                                 key={reason.id}
-                                className="group p-8 glass-panel border-foreground/5 rounded-[2.5rem] hover:border-blue-500/30 transition-all duration-500 hover:-translate-y-2"
+                                className="group p-6 md:p-10 bg-white border border-[#D4C5A9]/40 hover:border-[#C4A55A] transition-all duration-500 hover:-translate-y-2"
                             >
-                                <div className="w-14 h-14 rounded-2xl bg-foreground/[0.03] border border-foreground/5 flex items-center justify-center text-blue-500 mb-8 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-xl">
-                                    <Icon size={24} />
+                                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border border-[#D4C5A9]/60 flex items-center justify-center text-[#2C3A2E] mb-6 md:mb-10 group-hover:bg-[#1A2E1A] group-hover:text-[#FAF8F3] transition-all duration-500">
+                                    <Icon size={24} strokeWidth={1} />
                                 </div>
-                                <h3 className="text-xl font-bold mb-4 group-hover:text-blue-500 transition-colors">{reason.title}</h3>
-                                <p className="text-muted-foreground font-light leading-relaxed text-sm">
+                                <h3 className="text-xl font-serif text-[#1C1A16] mb-4 group-hover:text-[#8B7355] transition-colors">{reason.title}</h3>
+                                <p className="text-[#6B5E4E] font-light leading-relaxed text-sm">
                                     {reason.description}
                                 </p>
                             </div>

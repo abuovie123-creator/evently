@@ -11,8 +11,7 @@ export function Card({ className, hover = true, ...props }: CardProps) {
     return (
         <div
             className={cn(
-                "rounded-2xl p-6",
-                hover ? "glass-card" : "glass-panel",
+                "p-6 om-card rounded-sm",
                 className
             )}
             {...props}

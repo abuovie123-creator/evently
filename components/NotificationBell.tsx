@@ -147,12 +147,12 @@ export function NotificationBell() {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 rounded-full hover:bg-foreground/5 transition-all group"
+                className="relative p-2 rounded-full hover:bg-charcoal/5 transition-all group"
                 aria-label="Notifications"
             >
-                <Bell size={20} className={`transition-colors ${unreadCount > 0 ? 'text-blue-500' : 'text-foreground/70 group-hover:text-foreground'}`} />
+                <Bell size={20} className={`transition-colors ${unreadCount > 0 ? 'text-gold' : 'text-charcoal/70 group-hover:text-charcoal'}`} />
                 {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-4 h-4 bg-blue-600 text-white text-[10px] font-black flex items-center justify-center rounded-full shadow-lg shadow-blue-600/20 animate-pulse border-2 border-background">
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-charcoal text-cream text-[9px] font-bold flex items-center justify-center rounded-full shadow-sm border border-gold/50">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
@@ -163,14 +163,14 @@ export function NotificationBell() {
                 <>
                     <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
                     <div
-                        className="fixed md:absolute top-20 md:top-full left-4 md:left-auto right-4 md:-right-4 mt-2 md:mt-3 w-auto md:w-80 max-h-[calc(100vh-120px)] md:max-h-[480px] z-[150] glass-panel !bg-background dark:!bg-slate-900 border-foreground/10 shadow-2xl rounded-[2rem] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 origin-top-right"
+                        className="fixed md:absolute top-20 md:top-full left-4 md:left-auto right-4 md:-right-4 mt-2 md:mt-3 w-auto md:w-80 max-h-[calc(100vh-120px)] md:max-h-[480px] z-[150] bg-cream border border-om-border/50 shadow-2xl rounded-none flex flex-col animate-in zoom-in-95 duration-200 origin-top-right"
                     >
-                        <div className="p-4 border-b border-foreground/5 bg-foreground/[0.02] flex items-center justify-between">
-                            <h3 className="text-sm font-black uppercase tracking-widest text-foreground">Notifications</h3>
+                        <div className="p-5 border-b border-om-border/30 bg-surface flex items-center justify-between">
+                            <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-charcoal font-serif">Notifications</h3>
                             {unreadCount > 0 && (
                                 <button
                                     onClick={markAllRead}
-                                    className="text-[10px] font-bold text-blue-500 hover:text-blue-400 transition-colors"
+                                    className="text-[9px] font-bold uppercase tracking-widest text-[#8B7355] hover:text-charcoal transition-colors underline underline-offset-4 decoration-[#8B7355]/30"
                                 >
                                     Mark all as read
                                 </button>
@@ -179,62 +179,62 @@ export function NotificationBell() {
 
                         <div className="flex-1 overflow-y-auto custom-scrollbar">
                             {isLoading ? (
-                                <div className="p-8 text-center">
-                                    <div className="w-6 h-6 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin mx-auto" />
+                                <div className="p-12 text-center">
+                                    <div className="w-6 h-6 border-2 border-gold/20 border-t-gold rounded-full animate-spin mx-auto" />
                                 </div>
                             ) : notifications.length === 0 ? (
-                                <div className="p-12 text-center space-y-3">
-                                    <Bell size={32} className="mx-auto text-foreground/10" />
-                                    <p className="text-xs text-muted-foreground font-medium">All caught up!</p>
+                                <div className="p-16 text-center space-y-4">
+                                    <Bell size={28} className="mx-auto text-charcoal/10" />
+                                    <p className="text-[11px] text-[#6B5E4E] font-serif italic">All remains tranquil in your estate.</p>
                                 </div>
                             ) : (
-                                <div className="divide-y divide-foreground/5">
+                                <div className="divide-y divide-om-border/20">
                                     {notifications.map((n) => (
                                         <div
                                             key={n.id}
-                                            className={`p-4 hover:bg-foreground/[0.02] transition-colors relative group/item ${!n.is_read ? 'bg-blue-500/[0.02]' : ''}`}
+                                            className={`p-5 hover:bg-charcoal/[0.02] transition-colors relative group/item ${!n.is_read ? 'bg-gold/[0.03]' : ''}`}
                                         >
-                                            <div className="flex gap-3">
-                                                <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-xl flex items-center justify-center border border-foreground/5 ${!n.is_read ? 'bg-blue-500/10' : 'bg-foreground/5'}`}>
+                                            <div className="flex gap-4">
+                                                <div className={`mt-1 flex-shrink-0 w-9 h-9 rounded-none flex items-center justify-center border border-om-border/30 ${!n.is_read ? 'bg-gold/10' : 'bg-surface'}`}>
                                                     {getIcon(n.type)}
                                                 </div>
                                                 <div className="flex-1 min-w-0 space-y-1">
                                                     <div className="flex items-start justify-between gap-2">
-                                                        <p className={`text-xs font-bold truncate ${!n.is_read ? 'text-foreground' : 'text-muted-foreground'}`}>{n.title}</p>
-                                                        <span className="text-[9px] text-muted-foreground whitespace-nowrap">{new Date(n.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
+                                                        <p className={`text-[12px] font-serif leading-tight ${!n.is_read ? 'text-charcoal font-bold' : 'text-charcoal/70'}`}>{n.title}</p>
+                                                        <span className="text-[8px] text-[#6B5E4E] uppercase tracking-widest whitespace-nowrap">{new Date(n.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' })}</span>
                                                     </div>
-                                                    <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">{n.message}</p>
+                                                    <p className="text-[11px] text-muted-foreground/80 leading-relaxed font-sans line-clamp-2">{n.message}</p>
                                                     {n.link_url && (
                                                         <a
                                                             href={n.link_url}
                                                             onClick={(e) => {
                                                                 if (!n.is_read) markAsRead(n.id);
                                                             }}
-                                                            className="text-[10px] font-bold text-blue-500 hover:underline block pt-1"
+                                                            className="text-[9px] font-bold uppercase tracking-widest text-forest hover:text-charcoal block pt-2 transition-colors"
                                                         >
-                                                            View Details
+                                                            View Statement
                                                         </a>
                                                     )}
                                                 </div>
                                             </div>
 
                                             {/* Quick Actions */}
-                                            <div className="absolute right-2 top-10 opacity-0 group-hover/item:opacity-100 transition-opacity flex gap-1">
+                                            <div className="absolute right-3 top-10 opacity-0 group-hover/item:opacity-100 transition-opacity flex gap-1.5 focus-within:opacity-100">
                                                 {!n.is_read && (
                                                     <button
                                                         onClick={() => markAsRead(n.id)}
-                                                        className="p-1.5 bg-background border border-foreground/10 rounded-lg text-green-500 hover:bg-green-500/10 transition-colors"
+                                                        className="p-1.5 bg-cream border border-om-border/50 rounded-none text-forest hover:bg-forest hover:text-cream transition-all shadow-sm"
                                                         title="Mark as read"
                                                     >
-                                                        <Check size={12} />
+                                                        <Check size={11} />
                                                     </button>
                                                 )}
                                                 <button
                                                     onClick={() => deleteNotification(n.id)}
-                                                    className="p-1.5 bg-background border border-foreground/10 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
+                                                    className="p-1.5 bg-cream border border-om-border/50 rounded-none text-red-900 hover:bg-red-900 hover:text-cream transition-all shadow-sm"
                                                     title="Delete"
                                                 >
-                                                    <Trash2 size={12} />
+                                                    <Trash2 size={11} />
                                                 </button>
                                             </div>
                                         </div>
@@ -243,9 +243,9 @@ export function NotificationBell() {
                             )}
                         </div>
 
-                        <div className="p-3 border-t border-foreground/5 bg-foreground/[0.01] text-center">
-                            <span className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">
-                                Showing recent activity
+                        <div className="p-4 border-t border-om-border/30 bg-surface/50 text-center">
+                            <span className="text-[8px] text-[#6B5E4E] font-bold uppercase tracking-[0.25em]">
+                                Estate Activity Journal
                             </span>
                         </div>
                     </div>

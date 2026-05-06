@@ -66,55 +66,45 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 pt-20 sm:pt-32">
-            <Card className="max-w-md w-full space-y-8 p-6 sm:p-10" hover={false}>
-                <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-bold text-white">Create Account</h2>
-                    <p className="text-gray-400 text-sm">Join Evently as a client or a professional planner</p>
+        <div className="min-h-screen bg-[#FAF8F3] flex items-center justify-center p-6 pt-20 sm:pt-32">
+            <Card className="max-w-md w-full space-y-8 p-6 sm:p-12" hover={false}>
+                <div className="text-center space-y-3">
+                    <span className="section-label">New Membership</span>
+                    <h2 className="text-4xl md:text-5xl font-serif text-charcoal">Create Account</h2>
+                    <p className="text-muted-foreground text-sm font-light italic">Join the guild as a client or a professional architect</p>
                 </div>
 
-                <div className="flex p-1 bg-white/5 rounded-full">
+                <div className="flex border border-border p-1 bg-white/50">
                     <button
                         onClick={() => setRole("client")}
-                        className={`flex-1 py-2 text-sm font-medium rounded-full transition-all ${role === "client" ? "bg-white text-black" : "text-gray-400 hover:text-white"
+                        className={`flex-1 py-3 text-[10px] uppercase tracking-widest font-bold transition-all ${role === "client" ? "bg-charcoal text-cream shadow-md" : "text-muted-foreground hover:text-charcoal"
                             }`}
                     >
-                        Client
+                        Guest / Client
                     </button>
                     <button
                         onClick={() => setRole("planner")}
-                        className={`flex-1 py-2 text-sm font-medium rounded-full transition-all ${role === "planner" ? "bg-white text-black" : "text-gray-400 hover:text-white"
+                        className={`flex-1 py-3 text-[10px] uppercase tracking-widest font-bold transition-all ${role === "planner" ? "bg-charcoal text-cream shadow-md" : "text-muted-foreground hover:text-charcoal"
                             }`}
                     >
-                        Planner
+                        Master Planner
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300 ml-1">Email</label>
+                        <label className="text-xs font-bold uppercase tracking-widest text-accent ml-1">Email Address</label>
                         <Input
                             type="email"
-                            placeholder="name@example.com"
+                            placeholder="name@heritage.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
                         />
                     </div>
-                    {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs p-3 rounded-lg animate-in fade-in duration-300">
-                            {error}
-                        </div>
-                    )}
-
-                    {success && (
-                        <div className="bg-green-500/10 border border-green-500/20 text-green-500 text-xs p-3 rounded-lg animate-in fade-in duration-300 text-center">
-                            Check your email to verify your account!
-                        </div>
-                    )}
 
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300 ml-1">Password</label>
+                        <label className="text-xs font-bold uppercase tracking-widest text-accent ml-1">Secure Password</label>
                         <div className="relative">
                             <Input
                                 type={showPassword ? "text" : "password"}
@@ -127,22 +117,34 @@ export default function RegisterPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-white transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-charcoal transition-colors"
                             >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
                         </div>
                     </div>
 
-                    <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                        {loading ? "Creating Account..." : role === "planner" ? "Continue to Planner Setup" : "Create Client Account"}
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-600 text-[10px] uppercase tracking-widest font-bold p-4 rounded-sm">
+                            Registry Issue: {error}
+                        </div>
+                    )}
+
+                    {success && (
+                        <div className="bg-green-50 border border-green-200 text-green-700 text-[10px] uppercase tracking-widest font-bold p-4 rounded-sm text-center shadow-sm">
+                            Verification dispatch sent! Check your inbox.
+                        </div>
+                    )}
+
+                    <Button type="submit" className="w-full h-14" size="lg" disabled={loading}>
+                        {loading ? "Registering..." : role === "planner" ? "Continue to Setup" : "Initialize Account"}
                     </Button>
                 </form>
 
-                <p className="text-center text-sm text-gray-400">
-                    Already have an account?{" "}
-                    <Link href="/auth/login" className="text-white hover:underline font-medium">
-                        Log in
+                <p className="text-center text-xs tracking-wide text-muted-foreground pt-4">
+                    Already an associate?{" "}
+                    <Link href="/auth/login" className="text-charcoal hover:underline font-bold uppercase text-[10px] tracking-widest ml-1">
+                        Sign In
                     </Link>
                 </p>
             </Card>

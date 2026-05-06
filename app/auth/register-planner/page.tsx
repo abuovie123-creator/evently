@@ -77,17 +77,18 @@ export default function PlannerRegisterPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 pt-32">
-            <Card className="max-w-2xl w-full space-y-8 p-10" hover={false}>
+        <div className="min-h-screen bg-[#FAF8F3] flex items-center justify-center p-6 pt-32">
+            <Card className="max-w-2xl w-full space-y-8 p-10 sm:p-16" hover={false}>
                 <div className="space-y-4 text-center">
-                    <h2 className="text-3xl font-bold text-white">Planner Profile Setup</h2>
-                    <p className="text-gray-400">Provide basic details. You will verify your account from your dashboard.</p>
+                    <span className="section-label text-[12px]">Guild Application</span>
+                    <h2 className="text-4xl md:text-6xl font-serif text-charcoal">Planner Profile Setup</h2>
+                    <p className="text-muted-foreground font-light italic">Provide your professional credentials to begin your legacy.</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form onSubmit={handleSubmit} className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-300">First Name</label>
+                            <label className="text-xs font-bold uppercase tracking-widest text-accent">Given Name</label>
                             <Input
                                 placeholder="John"
                                 value={formData.firstName}
@@ -96,7 +97,7 @@ export default function PlannerRegisterPage() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-gray-300">Last Name</label>
+                            <label className="text-xs font-bold uppercase tracking-widest text-accent">Surname</label>
                             <Input
                                 placeholder="Doe"
                                 value={formData.lastName}
@@ -106,7 +107,7 @@ export default function PlannerRegisterPage() {
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300">Business Name</label>
+                        <label className="text-xs font-bold uppercase tracking-widest text-accent">House / Business Name</label>
                         <Input
                             placeholder="Events by John"
                             value={formData.businessName}
@@ -115,7 +116,7 @@ export default function PlannerRegisterPage() {
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300">Contact Phone</label>
+                        <label className="text-xs font-bold uppercase tracking-widest text-accent">Contact Cipher (Phone)</label>
                         <Input
                             type="tel"
                             placeholder="+234 ..."
@@ -126,13 +127,13 @@ export default function PlannerRegisterPage() {
                     </div>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs p-3 rounded-lg animate-in fade-in duration-300">
-                            {error}
+                        <div className="bg-red-50 border border-red-200 text-red-600 text-[10px] uppercase tracking-widest font-bold p-5 rounded-sm shadow-sm animate-fade-up">
+                            Protocol Issue: {error}
                         </div>
                     )}
 
-                    <Button type="submit" className="w-full h-12" disabled={loading}>
-                        {loading ? "Entering Dashboard..." : "Go to Dashboard"}
+                    <Button type="submit" className="w-full h-14" size="lg" disabled={loading}>
+                        {loading ? "Establishing Presence..." : "Enter the Dashboard"}
                     </Button>
                 </form>
             </Card>

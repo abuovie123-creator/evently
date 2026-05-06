@@ -1,7 +1,6 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -24,16 +23,33 @@ const config: Config = {
           DEFAULT: "var(--accent)",
           foreground: "var(--accent-foreground)",
         },
+        // Old-money tokens
+        cream: "var(--cream)",
+        charcoal: "var(--charcoal)",
+        gold: {
+          DEFAULT: "var(--gold)",
+          light: "var(--gold-light)",
+        },
+        forest: {
+          DEFAULT: "var(--forest)",
+          mid: "var(--forest-mid)",
+        },
+        "om-border": "var(--border)",
+        "om-surface": "var(--surface)",
+        // Legacy glass tokens
         glass: "rgba(255, 255, 255, 0.1)",
         "glass-border": "rgba(255, 255, 255, 0.2)",
+      },
+      fontFamily: {
+        serif: ["Cormorant Garamond", "Georgia", "serif"],
+        sans: ["DM Sans", "Inter", "sans-serif"],
       },
       backdropBlur: {
         xs: "2px",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
   },

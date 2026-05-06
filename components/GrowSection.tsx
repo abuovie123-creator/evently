@@ -40,45 +40,52 @@ const defaultFeatures = [
 export function GrowSection() {
     const [features, setFeatures] = useState<Feature[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [settings, setSettings] = useState<Record<string, string>>({});
     const supabase = createClient();
 
     useEffect(() => {
-        const fetchFeatures = async () => {
-            const { data } = await supabase
+        const fetchContent = async () => {
+            const { data: fData } = await supabase
                 .from('home_features')
                 .select('*')
                 .order('order_index', { ascending: true });
 
-            if (data && data.length > 0) {
-                // Map the remote items but use local mockups for visual excellence if image_url is placeholder
-                const mapped = data.map((f, i) => ({
-                    ...f,
-                    image_url: f.image_url.includes('unsplash') ? defaultFeatures[i % 3].image_url : f.image_url
-                }));
-                setFeatures(mapped);
+            if (fData && fData.length > 0) {
+                setFeatures(fData);
             } else {
                 setFeatures(defaultFeatures);
             }
+
+            const { data: sData } = await supabase
+                .from('site_settings')
+                .select('key, value');
+            if (sData) {
+                const s: Record<string, string> = {};
+                sData.forEach(item => s[item.key] = item.value);
+                setSettings(s);
+            }
+
             setIsLoading(false);
         };
-        fetchFeatures();
+        fetchContent();
     }, [supabase]);
 
     if (isLoading) return null;
 
     return (
-        <section className="py-24 px-6 bg-foreground/[0.02] border-y border-foreground/5 overflow-hidden">
-            <div className="max-w-7xl mx-auto space-y-24">
-                <div className="text-center space-y-4 max-w-3xl mx-auto">
-                    <h2 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">
-                        Everything You Need to <span className="text-blue-500">Grow</span>
+        <section className="py-20 md:py-32 px-6 bg-[#FAF8F3] border-y border-[#D4C5A9]/30 overflow-hidden">
+            <div className="max-w-7xl mx-auto space-y-20 md:space-y-32">
+                <div className="text-center space-y-4 md:space-y-6 max-w-3xl mx-auto">
+                    <span className="section-label">{settings.grow_section_label || "Philosophy"}</span>
+                    <h2 className="text-3xl md:text-6xl font-serif tracking-tight leading-tight text-[#1C1A16]">
+                        {settings.grow_section_title || "The Digital Estate"}
                     </h2>
-                    <p className="text-xl text-muted-foreground font-light">
-                        The definitive toolkit built specifically for the modern event professional.
+                    <p className="text-base md:text-lg text-[#6B5E4E] font-light leading-relaxed">
+                        {settings.grow_section_subtitle || "We transcend the standard directory; Evently is a curated sanctuary where excellence and talent intersect."}
                     </p>
                 </div>
 
-                <div className="space-y-32">
+                <div className="space-y-24 md:space-y-40">
                     {features.map((feature, i) => {
                         const Icon = (LucideIcons as any)[feature.icon] || LucideIcons.Zap;
                         const isEven = i % 2 === 0;
@@ -86,38 +93,39 @@ export function GrowSection() {
                         return (
                             <div
                                 key={feature.id}
-                                className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-16 lg:gap-24`}
+                                className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} items-center gap-12 md:gap-24`}
                             >
-                                <div className="flex-1 space-y-8 text-center lg:text-left">
-                                    <div className="w-16 h-16 rounded-3xl bg-blue-600/10 flex items-center justify-center text-blue-500 mx-auto lg:mx-0 shadow-inner">
-                                        <Icon size={32} />
+                                <div className="flex-1 space-y-8 md:space-y-10 text-center lg:text-left">
+                                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border border-[#D4C5A9] flex items-center justify-center text-[#8B7355] mx-auto lg:mx-0 bg-[#F5F0E8]">
+                                        <Icon className="w-7 h-7 md:w-8 md:h-8" strokeWidth={1.5} />
                                     </div>
-                                    <div className="space-y-4">
-                                        <h3 className="text-3xl font-black tracking-tight">{feature.title}</h3>
-                                        <p className="text-lg text-muted-foreground font-light leading-relaxed">
-                                            {feature.description}
+                                    <div className="space-y-4 md:space-y-6">
+                                        <h3 className="text-2xl md:text-4xl font-serif text-[#1C1A16]">{feature.title}</h3>
+                                        <p className="text-base md:text-lg text-[#6B5E4E] font-light leading-relaxed italic">
+                                            "{feature.description}"
                                         </p>
                                     </div>
-                                    <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                                        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-foreground/5 border border-foreground/10 text-[10px] font-bold uppercase tracking-widest text-muted-foreground whitespace-nowrap">
-                                            <LucideIcons.CheckCircle2 size={14} className="text-green-500 shrink-0" />
-                                            Advanced UI
+                                    <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
+                                        <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-[#D4C5A9] text-[10px] font-bold uppercase tracking-widest text-[#8B7355] bg-[#F5F0E8]">
+                                            <LucideIcons.ShieldCheck size={14} />
+                                            Authentic Heritage
                                         </div>
-                                        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-foreground/5 border border-foreground/10 text-[10px] font-bold uppercase tracking-widest text-muted-foreground whitespace-nowrap">
-                                            <LucideIcons.CheckCircle2 size={14} className="text-green-500 shrink-0" />
-                                            Cloud Hosted
+                                        <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-[#D4C5A9] text-[10px] font-bold uppercase tracking-widest text-[#8B7355] bg-[#F5F0E8]">
+                                            <LucideIcons.Star size={14} />
+                                            Verified Excellence
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex-1 relative group">
-                                    <div className="absolute inset-0 bg-blue-600/20 blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 -z-10" />
-                                    <Card className="p-2 bg-foreground/5 border-foreground/10 rounded-[3rem] overflow-hidden transform hover:-translate-y-2 transition-all duration-700 shadow-2xl">
+                                <div className="flex-1 relative group w-full px-4 md:px-0">
+                                    <div className="om-card p-2 md:p-3 rounded-[1px] overflow-hidden bg-white shadow-2xl md:rotate-1 group-hover:rotate-0 transition-all duration-700">
                                         <img
                                             src={feature.image_url}
                                             alt={feature.title}
-                                            className="w-full h-auto rounded-[2.5rem] object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 shadow-2xl"
+                                            className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-1000"
                                         />
-                                    </Card>
+                                    </div>
+                                    {/* Ornamental element */}
+                                    <div className="absolute -bottom-6 -right-6 w-32 h-32 border-r border-b border-[#C4A55A]/30 -z-10 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-700" />
                                 </div>
                             </div>
                         );

@@ -127,37 +127,39 @@ export default function ClientSettings() {
     }
 
     return (
-        <main className="space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto p-4 md:p-6 lg:p-8 pt-8">
-            <div className="flex items-center gap-4 border-b border-foreground/10 pb-6">
-                <Link href="/dashboard/client">
-                    <Button variant="glass" className="h-12 w-12 rounded-2xl p-0 flex items-center justify-center border-foreground/10">
-                        <ArrowLeft size={20} className="text-muted-foreground" />
-                    </Button>
-                </Link>
-                <div>
-                    <h1 className="text-3xl font-black tracking-tight">Account Settings</h1>
-                    <p className="text-muted-foreground text-sm">Manage your profile and security parameters</p>
+        <main className="space-y-12 animate-in fade-in duration-700 max-w-5xl mx-auto p-4 md:p-8 lg:p-12 pt-20 md:pt-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-om-border/20 pb-12">
+                <div className="flex items-center gap-8">
+                    <Link href="/dashboard/client">
+                        <button className="h-16 w-16 rounded-none p-0 flex items-center justify-center border border-om-border/30 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-700">
+                            <ArrowLeft size={24} />
+                        </button>
+                    </Link>
+                    <div className="space-y-2">
+                        <h1 className="text-4xl md:text-6xl font-serif italic text-charcoal leading-tight">Account Parameters</h1>
+                        <p className="text-[10px] md:text-[11px] font-sans uppercase tracking-[0.3em] text-[#6B5E4E] opacity-60">Authentication protocols and estate profiles.</p>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* Profile Information Set */}
-                <Card className="p-6 md:p-8 space-y-6 bg-background border-foreground/5 shadow-xl rounded-[2rem]" hover={false}>
-                    <div className="space-y-2">
-                        <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 mb-4">
-                            <User size={24} />
+                <Card className="p-8 md:p-14 space-y-10 bg-surface border border-om-border/30 rounded-none shadow-none" hover={false}>
+                    <div className="space-y-4">
+                        <div className="w-16 h-16 bg-cream flex items-center justify-center text-charcoal border border-om-border/40 mb-6">
+                            <User size={28} />
                         </div>
-                        <h2 className="text-xl font-bold tracking-tight">Public Information</h2>
-                        <p className="text-xs text-muted-foreground">This info will be visible to planners when you request a booking.</p>
+                        <h2 className="text-3xl font-serif italic text-charcoal">Public Profile</h2>
+                        <p className="text-[11px] text-[#6B5E4E] font-sans uppercase tracking-[0.2em] leading-relaxed opacity-60">Identity credentials curated for your consultation with heritage specialists.</p>
                     </div>
 
-                    <form onSubmit={handleProfileSave} className="space-y-5">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground pl-1">Full Name</label>
+                    <form onSubmit={handleProfileSave} className="space-y-8">
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#8B7355] ml-1">Legal Name</label>
                             <div className="relative">
-                                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={16} />
+                                <User className="absolute left-6 top-1/2 -translate-y-1/2 text-charcoal/30" size={16} />
                                 <Input
-                                    className="pl-10 h-12 rounded-xl bg-foreground/[0.02]"
+                                    className="pl-14 h-16 rounded-none bg-transparent border-om-border/40 focus:border-charcoal focus:ring-0 text-charcoal font-serif text-[18px]"
                                     placeholder="Your Full Name"
                                     value={profile.full_name}
                                     onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
@@ -165,12 +167,12 @@ export default function ClientSettings() {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground pl-1">Location / City</label>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#8B7355] ml-1">Current Residency</label>
                             <div className="relative">
-                                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground opacity-50" size={16} />
+                                <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-charcoal/30" size={16} />
                                 <Input
-                                    className="pl-10 h-12 rounded-xl bg-foreground/[0.02]"
+                                    className="pl-14 h-16 rounded-none bg-transparent border-om-border/40 focus:border-charcoal focus:ring-0 text-charcoal font-serif text-[18px]"
                                     placeholder="Lagos, Nigeria"
                                     value={profile.location}
                                     onChange={(e) => setProfile({ ...profile, location: e.target.value })}
@@ -178,47 +180,47 @@ export default function ClientSettings() {
                             </div>
                         </div>
 
-                        <Button type="submit" disabled={isSaving} className="w-full h-12 rounded-xl font-black uppercase tracking-widest text-xs bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-500/10 transition-all mt-4">
-                            {isSaving ? <Loader2 size={16} className="animate-spin" /> : "Save Profile Details"}
+                        <Button type="submit" disabled={isSaving} className="w-full h-16 rounded-none font-bold uppercase tracking-[0.3em] text-[10px] bg-charcoal text-cream hover:bg-black transition-all border border-charcoal shadow-none mt-6">
+                            {isSaving ? <Loader2 size={16} className="animate-spin mx-auto" /> : "Authorize and Commit Changes"}
                         </Button>
                     </form>
                 </Card>
 
                 {/* Security Settings Set */}
-                <Card className="p-6 md:p-8 space-y-6 bg-background border-foreground/5 shadow-xl rounded-[2rem]" hover={false}>
-                    <div className="space-y-2">
-                        <div className="w-12 h-12 rounded-2xl bg-foreground/5 flex items-center justify-center text-foreground/50 mb-4 border border-foreground/10">
-                            <Lock size={24} />
+                <Card className="p-8 md:p-14 space-y-10 bg-surface border border-om-border/30 rounded-none shadow-none" hover={false}>
+                    <div className="space-y-4">
+                        <div className="w-16 h-16 bg-cream flex items-center justify-center text-charcoal border border-om-border/40 mb-6">
+                            <Lock size={28} />
                         </div>
-                        <h2 className="text-xl font-bold tracking-tight">Security Credentials</h2>
-                        <p className="text-xs text-muted-foreground">Keep your account secure by updating your password periodically.</p>
+                        <h2 className="text-3xl font-serif italic text-charcoal">Access Credentials</h2>
+                        <p className="text-[11px] text-[#6B5E4E] font-sans uppercase tracking-[0.2em] leading-relaxed opacity-60">Rotate security parameters to enhance your private estate account safety.</p>
                     </div>
 
-                    <form onSubmit={handlePasswordChange} className="space-y-5">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground pl-1">New Password</label>
+                    <form onSubmit={handlePasswordChange} className="space-y-8">
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#8B7355] ml-1">New Passcode</label>
                             <Input
                                 type="password"
-                                className="h-12 rounded-xl bg-foreground/[0.02]"
+                                className="h-16 rounded-none bg-transparent border-om-border/40 focus:border-charcoal focus:ring-0 text-charcoal font-serif text-[18px]"
                                 placeholder="••••••••"
                                 value={passwordData.newPassword}
                                 onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground pl-1">Confirm New Password</label>
+                        <div className="space-y-4">
+                            <label className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#8B7355] ml-1">Confirm Passcode</label>
                             <Input
                                 type="password"
-                                className="h-12 rounded-xl bg-foreground/[0.02]"
+                                className="h-16 rounded-none bg-transparent border-om-border/40 focus:border-charcoal focus:ring-0 text-charcoal font-serif text-[18px]"
                                 placeholder="••••••••"
                                 value={passwordData.confirmPassword}
                                 onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                             />
                         </div>
 
-                        <Button type="submit" disabled={isChangingPassword || !passwordData.newPassword} variant="outline" className="w-full h-12 rounded-xl font-black uppercase tracking-widest text-xs border-foreground/10 shadow-lg mt-4">
-                            {isChangingPassword ? <Loader2 size={16} className="animate-spin" /> : "Update Password"}
+                        <Button type="submit" disabled={isChangingPassword || !passwordData.newPassword} variant="outline" className="w-full h-16 rounded-none font-bold uppercase tracking-[0.3em] text-[10px] border-charcoal text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-500 mt-6">
+                            {isChangingPassword ? <Loader2 size={16} className="animate-spin mx-auto" /> : "Rotate Access Credentials"}
                         </Button>
                     </form>
                 </Card>

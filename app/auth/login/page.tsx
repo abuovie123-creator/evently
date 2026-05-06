@@ -147,16 +147,17 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 pt-20 sm:pt-32">
-            <Card className="max-w-md w-full space-y-8 p-6 sm:p-10" hover={false}>
-                <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-bold text-white">Welcome Back</h2>
-                    <p className="text-gray-400 text-sm">Enter your credentials to access your account</p>
+        <div className="min-h-screen bg-[#FAF8F3] flex items-center justify-center p-6 pt-20 sm:pt-32">
+            <Card className="max-w-md w-full space-y-8 p-6 sm:p-12" hover={false}>
+                <div className="text-center space-y-3">
+                    <span className="section-label">Access Protocol</span>
+                    <h2 className="text-4xl md:text-5xl font-serif text-charcoal">Welcome Back</h2>
+                    <p className="text-muted-foreground text-sm font-light italic">Enter your credentials to access your heritage dashboard</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300 ml-1">Email</label>
+                        <label className="text-xs font-bold uppercase tracking-widest text-accent ml-1">Email Address</label>
                         <Input
                             type="email"
                             placeholder="name@example.com"
@@ -167,9 +168,9 @@ export default function LoginPage() {
                     </div>
                     <div className="space-y-2">
                         <div className="flex justify-between items-center ml-1">
-                            <label className="text-sm font-medium text-gray-300">Password</label>
-                            <Link href="/auth/forgot-password" title="Forgot password?" className="text-xs text-gray-500 hover:text-white transition-colors">
-                                Forgot password?
+                            <label className="text-xs font-bold uppercase tracking-widest text-accent">Password</label>
+                            <Link href="/auth/forgot-password" title="Forgot password?" className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-charcoal transition-colors">
+                                Recovery
                             </Link>
                         </div>
                         <div className="relative">
@@ -184,28 +185,28 @@ export default function LoginPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-500 hover:text-white transition-colors"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-charcoal transition-colors"
                             >
-                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
                         </div>
                     </div>
 
                     {error && (
-                        <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-xs p-3 rounded-lg animate-in fade-in duration-300">
-                            {error}
+                        <div className="bg-red-50 border border-red-200 text-red-600 text-[10px] uppercase tracking-widest font-bold p-4 rounded-sm animate-in fade-in duration-300 shadow-sm">
+                            Protocol Error: {error}
                         </div>
                     )}
 
-                    <Button type="submit" className="w-full" size="lg" disabled={loading}>
-                        {loading ? "Signing In..." : "Sign In"}
+                    <Button type="submit" className="w-full h-14" size="lg" disabled={loading}>
+                        {loading ? "Authenticating..." : "Sign In"}
                     </Button>
                 </form>
 
-                <p className="text-center text-sm text-gray-400">
+                <p className="text-center text-xs tracking-wide text-muted-foreground pt-4">
                     Don&apos;t have an account?{" "}
-                    <Link href="/auth/register" className="text-white hover:underline font-medium">
-                        Create account
+                    <Link href="/auth/register" className="text-charcoal hover:underline font-bold uppercase text-[10px] tracking-widest ml-1">
+                        Register
                     </Link>
                 </p>
             </Card>
