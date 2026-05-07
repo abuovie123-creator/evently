@@ -128,16 +128,16 @@ export default function ClientSettings() {
 
     return (
         <main className="space-y-12 animate-in fade-in duration-700 max-w-5xl mx-auto p-4 md:p-8 lg:p-12 pt-20 md:pt-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-om-border/20 pb-12">
-                <div className="flex items-center gap-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-om-border/20 pb-16">
+                <div className="flex items-center gap-10">
                     <Link href="/dashboard/client">
-                        <button className="h-16 w-16 rounded-none p-0 flex items-center justify-center border border-om-border/30 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-700">
-                            <ArrowLeft size={24} />
+                        <button className="h-16 w-16 rounded-none p-0 flex items-center justify-center border border-om-border/30 text-charcoal hover:bg-charcoal hover:text-cream transition-all duration-700 bg-surface">
+                            <ArrowLeft size={20} />
                         </button>
                     </Link>
-                    <div className="space-y-2">
-                        <h1 className="text-4xl md:text-6xl font-serif italic text-charcoal leading-tight">Account Parameters</h1>
-                        <p className="text-[10px] md:text-[11px] font-sans uppercase tracking-[0.3em] text-[#6B5E4E] opacity-60">Authentication protocols and estate profiles.</p>
+                    <div className="space-y-3">
+                        <h1 className="text-5xl md:text-7xl font-serif italic text-charcoal leading-none">Security & Profile</h1>
+                        <p className="text-[10px] md:text-[11px] font-sans uppercase tracking-[0.4em] text-[#6B5E4E] opacity-60">Authentication protocols and estate credentials.</p>
                     </div>
                 </div>
             </div>

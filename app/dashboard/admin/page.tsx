@@ -219,6 +219,27 @@ export default function AdminDashboard() {
         }
     }, [showToast]);
 
+    const uploadImage = async (file: File, bucket: string = 'site-assets') => {
+        const supabase = createClient();
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+        const filePath = fileName;
+
+        const { error: uploadError } = await supabase.storage
+            .from(bucket)
+            .upload(filePath, file);
+
+        if (uploadError) {
+            throw uploadError;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+            .from(bucket)
+            .getPublicUrl(filePath);
+
+        return publicUrl;
+    };
+
     useEffect(() => {
         const fetchDashboardData = async () => {
             const supabase = createClient();
@@ -908,12 +929,41 @@ export default function AdminDashboard() {
                         <div className="space-y-6">
                             <div className="space-y-4">
                                 <label className="text-sm font-bold uppercase tracking-widest text-gray-500 font-mono">Platform Logo</label>
-                                <div className="aspect-video glass-panel rounded-2xl flex flex-col items-center justify-center p-8 border-dashed border-white/20 hover:border-white/40 cursor-pointer transition-all group">
-                                    <div className="w-16 h-16 bg-foreground/5 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <Upload size={24} className="text-gray-400" />
-                                    </div>
-                                    <p className="text-sm font-bold text-white">Upload New Logo</p>
-                                    <p className="text-xs text-gray-500 mt-1">Recommended size: 512x512 PNG</p>
+                                <div
+                                    className="aspect-video glass-panel rounded-2xl flex flex-col items-center justify-center p-8 border-dashed border-white/20 hover:border-white/40 cursor-pointer transition-all group relative overflow-hidden"
+                                    onClick={() => document.getElementById('logo-upload')?.click()}
+                                >
+                                    {branding.logoUrl ? (
+                                        <img src={branding.logoUrl} className="absolute inset-0 w-full h-full object-contain p-4" alt="Logo Preview" />
+                                    ) : (
+                                        <>
+                                            <div className="w-16 h-16 bg-foreground/5 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                                <Upload size={24} className="text-gray-400" />
+                                            </div>
+                                            <p className="text-sm font-bold text-white">Upload New Logo</p>
+                                            <p className="text-xs text-gray-500 mt-1">Recommended size: 512x512 PNG</p>
+                                        </>
+                                    )}
+                                    <input
+                                        id="logo-upload"
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={async (e) => {
+                                            const file = e.target.files?.[0];
+                                            if (!file) return;
+                                            try {
+                                                setIsSaving(true);
+                                                const url = await uploadImage(file);
+                                                setBranding({ ...branding, logoUrl: url });
+                                                showToast("Logo uploaded. Click save to persist.", "success");
+                                            } catch (err) {
+                                                logError("Upload failed", err);
+                                            } finally {
+                                                setIsSaving(false);
+                                            }
+                                        }}
+                                    />
                                 </div>
                             </div>
 
@@ -1946,18 +1996,47 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Hero Background Image URL</label>
-                                    <div className="flex gap-2">
-                                        <Input
-                                            value={homepageSettings.hero_bg_url}
-                                            onChange={e => setHomepageSettings({ ...homepageSettings, hero_bg_url: e.target.value })}
-                                            className="flex-1 h-12 bg-foreground/5 border-foreground/10 focus:border-blue-500/50 rounded-xl"
-                                        />
-                                        <div className="w-12 h-12 rounded-xl border border-foreground/10 overflow-hidden shrink-0">
-                                            <img src={homepageSettings.hero_bg_url} className="w-full h-full object-cover" />
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground ml-1">Hero Background Image</label>
+                                    <div
+                                        className="w-full h-64 rounded-xl border-2 border-dashed border-foreground/10 flex flex-col items-center justify-center cursor-pointer hover:bg-foreground/[0.02] transition-all relative overflow-hidden group"
+                                        onClick={() => document.getElementById('hero-upload')?.click()}
+                                    >
+                                        {homepageSettings.hero_bg_url ? (
+                                            <img src={homepageSettings.hero_bg_url} className="absolute inset-0 w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="flex flex-col items-center text-muted-foreground">
+                                                <Upload size={32} strokeWidth={1} />
+                                                <p className="text-[10px] font-bold uppercase mt-2">Click to Upload Hero Image</p>
+                                            </div>
+                                        )}
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <div className="text-white text-[10px] font-bold uppercase tracking-widest bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+                                                Change Image
+                                            </div>
                                         </div>
                                     </div>
+                                    <input
+                                        id="hero-upload"
+                                        type="file"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={async (e) => {
+                                            const file = e.target.files?.[0];
+                                            if (!file) return;
+                                            try {
+                                                setIsSaving(true);
+                                                const url = await uploadImage(file);
+                                                setHomepageSettings({ ...homepageSettings, hero_bg_url: url });
+                                                showToast("Hero image uploaded. Click save to persist.", "success");
+                                            } catch (err) {
+                                                logError("Upload failed", err);
+                                            } finally {
+                                                setIsSaving(false);
+                                            }
+                                        }}
+                                    />
+                                    <p className="text-[10px] text-muted-foreground italic">Current: {homepageSettings.hero_bg_url}</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

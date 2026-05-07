@@ -132,11 +132,11 @@ export default function PricingPage() {
                 <div className="inline-flex items-center gap-3 px-6 py-2 rounded-none bg-charcoal/5 border border-om-border/30 text-charcoal text-[10px] font-bold uppercase tracking-[0.3em] mb-4">
                     The Heritage Collections
                 </div>
-                <h1 className="text-5xl md:text-8xl font-serif italic text-charcoal tracking-tight leading-[0.9]">
-                    Curated Tier Selection
+                <h1 className="text-6xl md:text-9xl font-serif italic text-charcoal tracking-tighter leading-none mb-8">
+                    The Heritage Collections
                 </h1>
-                <p className="text-[#6B5E4E] text-[11px] md:text-xs font-sans uppercase tracking-[0.25em] max-w-2xl mx-auto opacity-70 italic leading-relaxed">
-                    Select the architectural foundation for your estate management. Each tier is meticulously curated to elevate your heritage planning operations.
+                <p className="text-[#6B5E4E] text-xs md:text-sm font-sans uppercase tracking-[0.5em] max-w-3xl mx-auto opacity-60 leading-loose">
+                    Curated architectural foundations for your estate management. Each tier is meticulously tailored to elevate your heritage planning operations.
                 </p>
 
                 {/* Heritage Billing Toggle */}
@@ -199,12 +199,15 @@ export default function PricingPage() {
                                 hover={false}
                             >
                                 {/* Tier Header */}
-                                <div className="space-y-6 mb-12">
-                                    <div className="w-16 h-16 bg-cream border border-om-border/30 flex items-center justify-center">
-                                        <Icon size={28} className="text-charcoal" />
+                                <div className="space-y-8 mb-16">
+                                    <div className="w-20 h-20 bg-cream border border-om-border/30 flex items-center justify-center">
+                                        <Icon size={32} className="text-charcoal" />
                                     </div>
-                                    <h3 className="text-3xl font-serif italic text-charcoal leading-tight">{tier.name} Suite</h3>
-                                    <p className="text-[11px] text-[#6B5E4E] uppercase tracking-widest leading-relaxed opacity-60 italic">{tier.description}</p>
+                                    <div className="space-y-2">
+                                        <h3 className="text-4xl font-serif italic text-charcoal leading-none">{tier.name}</h3>
+                                        <p className="text-[10px] text-[#6B5E4E] uppercase tracking-[0.3em] leading-relaxed opacity-50 italic">Collection Tier</p>
+                                    </div>
+                                    <p className="text-[12px] text-[#6B5E4E] leading-relaxed opacity-70 font-sans tracking-wide">{tier.description}</p>
                                 </div>
 
                                 {/* Price */}

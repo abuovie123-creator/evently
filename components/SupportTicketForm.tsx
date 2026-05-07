@@ -126,16 +126,16 @@ export function SupportTicketForm() {
                     </div>
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-6">
                     <Button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full h-16 bg-charcoal hover:bg-black text-cream font-bold uppercase tracking-[0.3em] text-[10px] rounded-none transition-all border border-charcoal shadow-none"
+                        className="w-full h-16 bg-charcoal hover:bg-forest text-cream font-bold uppercase tracking-[0.4em] text-[10px] rounded-none transition-all duration-700 border border-charcoal shadow-none"
                     >
                         {isSubmitting ? (
-                            <div className="w-5 h-5 border-2 border-cream/20 border-t-cream rounded-full animate-spin" />
+                            <div className="w-5 h-5 border-2 border-cream/20 border-t-cream rounded-full animate-spin mx-auto" />
                         ) : (
-                            "Dispatch Inquiry"
+                            "Protocol Dispatch"
                         )}
                     </Button>
                 </div>

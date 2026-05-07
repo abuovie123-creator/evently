@@ -35,11 +35,11 @@ export function DashboardFooter() {
                     </p>
                 </div>
 
-                <nav className="flex gap-8 text-[9px] font-bold uppercase tracking-[0.2em] text-[#6B5E4E]">
+                <nav className="flex gap-10 text-[9px] font-bold uppercase tracking-[0.4em] text-[#6B5E4E]/60">
                     <Link href="/planners" className="hover:text-charcoal transition-colors">Discovery</Link>
-                    <Link href="/events" className="hover:text-charcoal transition-colors">Gallery</Link>
-                    <Link href="/faq" className="hover:text-charcoal transition-colors">Queries</Link>
-                    <Link href="/privacy" className="hover:text-charcoal transition-colors">Legal</Link>
+                    <Link href="/events" className="hover:text-charcoal transition-colors">Portfolios</Link>
+                    <Link href="/faq" className="hover:text-charcoal transition-colors">Concierge</Link>
+                    <Link href="/privacy" className="hover:text-charcoal transition-colors">Privacy</Link>
                 </nav>
             </div>
         </footer>

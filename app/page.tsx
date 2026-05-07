@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, FormEvent } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -49,26 +49,43 @@ export default function Home() {
 
     useEffect(() => {
         const fetchData = async () => {
-            // Fetch top 5 planners for carousel
+            // Fetch top 5 planners for carousel (join with planners table for verification status)
             const { data: planners } = await supabase
                 .from('profiles')
-                .select('id, full_name, username, category, avatar_url, rating')
+                .select(`
+                    id, 
+                    full_name, 
+                    username, 
+                    category, 
+                    avatar_url, 
+                    rating,
+                    planners!inner (is_verified)
+                `)
                 .eq('role', 'planner')
                 .order('rating', { ascending: false })
                 .limit(5);
 
             if (planners) {
-                setFeaturedPlanners(planners.map(p => ({
+                const mappedPlanners = planners.map(p => ({
                     id: p.id,
                     full_name: p.full_name || "Expert Planner",
                     username: p.username || p.id,
                     category: p.category || "Event Specialist",
                     avatar_url: p.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.id}`,
-                    rating: p.rating || 5.0
-                })));
+                    rating: p.rating || 5.0,
+                    is_verified: (p as any).planners?.is_verified || false
+                }));
+
+                // Sort by verified first, then rating
+                mappedPlanners.sort((a, b) => {
+                    if (a.is_verified === b.is_verified) return b.rating - a.rating;
+                    return a.is_verified ? -1 : 1;
+                });
+
+                setFeaturedPlanners(mappedPlanners);
             }
 
-            // Fetch top 3 recent events
+            // Fetch top 10 recent events for infinite carousel
             const { data: events } = await supabase
                 .from('events')
                 .select(`
@@ -79,7 +96,7 @@ export default function Home() {
                     album_media (media_url)
                 `)
                 .order('created_at', { ascending: false })
-                .limit(3);
+                .limit(10);
 
             if (events) {
                 setRecentEvents(events.map((e: any) => ({
@@ -133,7 +150,7 @@ export default function Home() {
         return () => clearInterval(interval);
     }, [featuredPlanners]);
 
-    const handleSearch = (e: React.FormEvent) => {
+    const handleSearch = (e: FormEvent) => {
         e.preventDefault();
         const params = new URLSearchParams();
         if (searchLocation) params.set("location", searchLocation);
@@ -141,8 +158,51 @@ export default function Home() {
         router.push(`/planners?${params.toString()}`);
     };
 
-    const nextCarousel = () => setCarouselIndex((prev) => (prev + 1) % featuredPlanners.length);
-    const prevCarousel = () => setCarouselIndex((prev) => (prev - 1 + featuredPlanners.length) % featuredPlanners.length);
+    const carouselRef = useRef<HTMLDivElement>(null);
+    const portfolioRef = useRef<HTMLDivElement>(null);
+
+    // Infinite scroll for portfolio
+    useEffect(() => {
+        const container = portfolioRef.current;
+        if (!container) return;
+
+        let scrollPos = 0;
+        const scroll = () => {
+            scrollPos += 1;
+            if (scrollPos >= container.scrollWidth / 2) scrollPos = 0;
+            container.scrollLeft = scrollPos;
+        };
+
+        const interval = setInterval(scroll, 30);
+        return () => clearInterval(interval);
+    }, [recentEvents]);
+
+    const scrollCarousel = (direction: 'next' | 'prev') => {
+        if (!carouselRef.current) return;
+        const container = carouselRef.current;
+        const scrollAmount = container.clientWidth;
+
+        if (direction === 'next') {
+            if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 10) {
+                container.scrollTo({ left: 0, behavior: 'smooth' });
+                setCarouselIndex(0);
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                setCarouselIndex((prev) => (prev + 1) % featuredPlanners.length);
+            }
+        } else {
+            if (container.scrollLeft <= 10) {
+                container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+                setCarouselIndex(featuredPlanners.length - 1);
+            } else {
+                container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                setCarouselIndex((prev) => (prev - 1 + featuredPlanners.length) % featuredPlanners.length);
+            }
+        }
+    };
+
+    const nextCarousel = () => scrollCarousel('next');
+    const prevCarousel = () => scrollCarousel('prev');
 
     return (
         <main className="min-h-screen bg-[#FAF8F3] text-[#1C1A16] relative">
@@ -208,37 +268,42 @@ export default function Home() {
                         </div>
                     </div>
 
-                    <div className="relative overflow-hidden">
-                        <div
-                            className="carousel-track gap-4 md:gap-8"
-                            style={{ transform: `translateX(-${carouselIndex * (100 / featuredPlanners.length)}%)` }}
-                        >
+                    <div
+                        className="relative overflow-hidden scrollbar-hide"
+                        ref={carouselRef}
+                        style={{ overflowX: 'auto', scrollSnapType: 'x mandatory', msOverflowStyle: 'none', scrollbarWidth: 'none' }}
+                    >
+                        <div className="flex gap-4 md:gap-8 pb-8 px-1">
                             {featuredPlanners.map((planner) => (
                                 <Link
                                     key={planner.id}
                                     href={`/planner/${planner.username}`}
-                                    className="min-w-[90%] sm:min-w-[45%] md:min-w-[30%] group"
+                                    className="min-w-[46%] sm:min-w-[45%] md:min-w-[30%] group flex-shrink-0"
+                                    style={{ scrollSnapAlign: 'start' }}
                                 >
-                                    <div className="space-y-4 md:space-y-6">
+                                    <div className="space-y-3 md:space-y-6">
                                         <div className="aspect-[3/4] relative overflow-hidden bg-[#F5F0E8] border border-[#D4C5A9]/30">
                                             <img
                                                 src={planner.avatar_url}
                                                 alt={planner.full_name}
                                                 className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
                                             />
+                                            {planner.is_verified && (
+                                                <div className="absolute top-2 right-2 bg-[#1A2E1A] text-[#FAF8F3] text-[6px] md:text-[8px] font-bold uppercase tracking-widest px-2 py-1 flex items-center gap-1 border border-[#C4A55A]/30">
+                                                    <Star size={6} className="fill-[#C4A55A] text-[#C4A55A]" />
+                                                    Verified
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="space-y-2 text-center md:text-left">
+                                        <div className="space-y-1 md:space-y-2 text-center md:text-left">
                                             <div className="flex items-center justify-center md:justify-start gap-1 text-[#C4A55A] mb-1">
                                                 {[...Array(5)].map((_, i) => (
-                                                    <Star key={i} size={10} className={i < Math.floor(planner.rating) ? "fill-[#C4A55A]" : ""} />
+                                                    <Star key={i} size={8} className={i < Math.floor(planner.rating) ? "fill-[#C4A55A]" : ""} />
                                                 ))}
-                                                <span className="text-[10px] font-bold ml-1 text-[#1C1A16]">{planner.rating.toFixed(1)}</span>
+                                                <span className="text-[8px] font-bold ml-1 text-[#1C1A16]">{planner.rating.toFixed(1)}</span>
                                             </div>
-                                            <h3 className="text-2xl font-serif text-[#1C1A16] leading-tight">{planner.full_name}</h3>
-                                            <p className="section-label text-[9px] text-[#6B5E4E]">{planner.category}</p>
-                                            <div className="pt-4 flex items-center justify-center md:justify-start gap-2 text-[10px] font-bold uppercase tracking-widest text-[#8B7355] opacity-0 group-hover:opacity-100 transition-opacity">
-                                                View Profile <ArrowRight size={12} />
-                                            </div>
+                                            <h3 className="text-sm md:text-2xl font-serif text-[#1C1A16] leading-tight truncate px-1">{planner.full_name}</h3>
+                                            <p className="section-label text-[7px] md:text-[9px] text-[#6B5E4E]">{planner.category}</p>
                                         </div>
                                     </div>
                                 </Link>
@@ -250,51 +315,81 @@ export default function Home() {
 
             <GrowSection />
 
-            {/* Notable Heritage Moments Section */}
-            <section className="py-20 md:py-32 px-6 md:px-10 bg-[#FAF8F3] border-t border-[#D4C5A9]/20">
-                <div className="max-w-7xl mx-auto space-y-12 md:space-y-20">
+            {/* Notable Heritage Moments Section (Infinite Carousel) */}
+            <section className="py-20 md:py-32 bg-[#FAF8F3] border-t border-[#D4C5A9]/20 overflow-hidden">
+                <div className="max-w-7xl mx-auto px-6 md:px-10 mb-12 md:mb-16">
                     <div className="text-center md:text-left space-y-4">
-                        <span className="section-label">{settings.portfolio_label || "Portfolio"}</span>
+                        <span className="section-label">{settings.portfolio_label || "Events"}</span>
                         <h2 className="text-3xl md:text-6xl font-serif text-[#1C1A16]">{settings.portfolio_title || "Notable Heritage Moments"}</h2>
+                    </div>
+                </div>
+
+                <div className="relative flex overflow-hidden">
+                    <div className="animate-marquee flex gap-4 md:gap-8 hover:pause">
+                        {[...recentEvents, ...recentEvents].map((event, index) => (
+                            <Link
+                                key={`${event.id}-${index}`}
+                                href={`/events/${event.slug}`}
+                                className="w-[300px] md:w-[450px] aspect-[4/3] group relative overflow-hidden border border-[#D4C5A9]/30 bg-white flex-shrink-0"
+                            >
+                                <img
+                                    src={event.image}
+                                    alt={event.title}
+                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700" />
+                                <div className="absolute bottom-6 left-6 text-white text-left">
+                                    <span className="text-[8px] uppercase tracking-[0.2em] font-bold mb-1 block opacity-70">{event.category}</span>
+                                    <h4 className="text-lg md:text-xl font-serif">{event.title}</h4>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Curated Discovery Section (Grid Style) */}
+            <section className="py-24 md:py-40 px-6 md:px-10 bg-[#FAF8F3] border-t border-[#D4C5A9]/10">
+                <div className="max-w-7xl mx-auto space-y-16 md:space-y-24">
+                    <div className="text-center space-y-4">
+                        <span className="section-label">Discovery</span>
+                        <h2 className="text-3xl md:text-6xl font-serif text-[#1C1A16]">The Architectural of Elegance</h2>
+                        <p className="text-[#6B5E4E] font-light max-w-2xl mx-auto italic">
+                            "A curated look at the nuances of premier event planning and heritage-level execution."
+                        </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-8 h-auto md:h-[800px]">
                         <div className="md:col-span-8 group relative overflow-hidden h-[400px] md:h-full">
-                            <Link href={recentEvents[0] ? `/events/${recentEvents[0].slug}` : "#"}>
-                                <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
-                                    <img
-                                        src={recentEvents[0]?.image || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=1200"}
-                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
-                                        alt="Main Event"
-                                    />
-                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700" />
-                                    <div className="absolute bottom-6 md:bottom-10 left-6 md:left-10 text-white text-left">
-                                        <span className="text-[8px] md:text-[10px] uppercase tracking-[0.2em] font-bold mb-2 block">{recentEvents[0]?.category}</span>
-                                        <h3 className="text-2xl md:text-3xl font-serif">{recentEvents[0]?.title}</h3>
-                                    </div>
-                                </div>
-                            </Link>
+                            <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
+                                <img
+                                    src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200"
+                                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                                    alt="Discovery 1"
+                                />
+                                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-700" />
+                            </div>
                         </div>
 
                         <div className="md:col-span-4 flex flex-col gap-8">
-                            {[recentEvents[1], recentEvents[2]].map((event, i) => (
-                                <div key={i} className="flex-1 group relative overflow-hidden h-[300px] md:h-auto">
-                                    <Link href={event ? `/events/${event.slug}` : "#"}>
-                                        <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
-                                            <img
-                                                src={event?.image || (i === 0 ? "https://images.unsplash.com/photo-1544928147-79a2dbc1f389?w=800" : "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800")}
-                                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
-                                                alt="Side Event"
-                                            />
-                                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700" />
-                                            <div className="absolute bottom-6 left-6 text-white text-left">
-                                                <span className="text-[8px] uppercase tracking-[0.2em] font-bold mb-1 block">{event?.category}</span>
-                                                <h4 className="text-lg md:text-xl font-serif">{event?.title}</h4>
-                                            </div>
-                                        </div>
-                                    </Link>
+                            <div className="flex-1 group relative overflow-hidden h-[300px] md:h-auto">
+                                <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
+                                    <img
+                                        src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800"
+                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                                        alt="Discovery 2"
+                                    />
                                 </div>
-                            ))}
+                            </div>
+                            <div className="flex-1 group relative overflow-hidden h-[300px] md:h-auto">
+                                <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
+                                    <img
+                                        src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800"
+                                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                                        alt="Discovery 3"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -117,11 +117,11 @@ export function GrowSection() {
                                     </div>
                                 </div>
                                 <div className="flex-1 relative group w-full px-4 md:px-0">
-                                    <div className="om-card p-2 md:p-3 rounded-[1px] overflow-hidden bg-white shadow-2xl md:rotate-1 group-hover:rotate-0 transition-all duration-700">
+                                    <div className="om-card p-2 md:p-3 rounded-[1px] overflow-hidden bg-white shadow-2xl md:rotate-1 group-hover:rotate-0 transition-all duration-700 aspect-video">
                                         <img
                                             src={feature.image_url}
                                             alt={feature.title}
-                                            className="w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                                            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
                                         />
                                     </div>
                                     {/* Ornamental element */}

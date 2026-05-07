@@ -63,6 +63,26 @@ export default function ContentManager() {
     const { showToast } = useToast();
     const supabase = createClient();
 
+    const uploadImage = async (file: File, bucket: string = 'site-assets') => {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+        const filePath = fileName;
+
+        const { error: uploadError } = await supabase.storage
+            .from(bucket)
+            .upload(filePath, file);
+
+        if (uploadError) {
+            throw uploadError;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+            .from(bucket)
+            .getPublicUrl(filePath);
+
+        return publicUrl;
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
@@ -327,16 +347,44 @@ export default function ContentManager() {
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Screenshot URL</label>
-                                            <Input
-                                                value={feature.image_url}
-                                                onChange={(e) => {
-                                                    const next = [...features];
-                                                    next[index].image_url = e.target.value;
-                                                    setFeatures(next);
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Screenshot Image</label>
+                                            <div
+                                                className="w-full h-32 rounded-xl border border-dashed border-foreground/10 flex flex-col items-center justify-center cursor-pointer hover:bg-foreground/[0.02] transition-all relative overflow-hidden group"
+                                                onClick={() => document.getElementById(`feature-upload-${index}`)?.click()}
+                                            >
+                                                {feature.image_url ? (
+                                                    <img src={feature.image_url} className="absolute inset-0 w-full h-full object-cover" />
+                                                ) : (
+                                                    <Layout className="text-muted-foreground/30" size={24} />
+                                                )}
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <p className="text-white text-[8px] font-bold uppercase tracking-widest">Change</p>
+                                                </div>
+                                            </div>
+                                            <input
+                                                id={`feature-upload-${index}`}
+                                                type="file"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={async (e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (!file) return;
+                                                    try {
+                                                        setIsSaving(true);
+                                                        const url = await uploadImage(file);
+                                                        const next = [...features];
+                                                        next[index].image_url = url;
+                                                        setFeatures(next);
+                                                        showToast("Feature image uploaded. Click save to persist.", "success");
+                                                    } catch (err) {
+                                                        console.error("Upload failed", err);
+                                                        showToast("Upload failed", "error");
+                                                    } finally {
+                                                        setIsSaving(false);
+                                                    }
                                                 }}
-                                                className="h-12 rounded-2xl"
                                             />
+                                            <p className="text-[8px] text-muted-foreground truncate italic">Current: {feature.image_url}</p>
                                         </div>
                                     </div>
                                 </div>
