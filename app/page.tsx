@@ -363,7 +363,7 @@ export default function Home() {
                         <div className="md:col-span-8 group relative overflow-hidden h-[400px] md:h-full">
                             <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
                                 <img
-                                    src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200"
+                                    src={settings.discovery_img_1 || "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200"}
                                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
                                     alt="Discovery 1"
                                 />
@@ -375,7 +375,7 @@ export default function Home() {
                             <div className="flex-1 group relative overflow-hidden h-[300px] md:h-auto">
                                 <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
                                     <img
-                                        src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800"
+                                        src={settings.discovery_img_2 || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800"}
                                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
                                         alt="Discovery 2"
                                     />
@@ -384,7 +384,7 @@ export default function Home() {
                             <div className="flex-1 group relative overflow-hidden h-[300px] md:h-auto">
                                 <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
                                     <img
-                                        src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800"
+                                        src={settings.discovery_img_3 || "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800"}
                                         className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
                                         alt="Discovery 3"
                                     />

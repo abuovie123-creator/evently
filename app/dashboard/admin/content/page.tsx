@@ -13,7 +13,9 @@ import {
     CheckCircle2,
     Settings,
     ChevronDown,
-    ChevronUp
+    ChevronUp,
+    ImageIcon,
+    Upload
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -200,13 +202,19 @@ export default function ContentManager() {
                         onClick={() => setActiveTab("features")}
                         className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "features" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground'}`}
                     >
-                        Growth
+                        Philosophy
                     </button>
                     <button
                         onClick={() => setActiveTab("reasons")}
                         className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "reasons" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         Why Us
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("photos")}
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "photos" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground'}`}
+                    >
+                        Photos
                     </button>
                     <button
                         onClick={() => setActiveTab("settings")}
@@ -291,78 +299,333 @@ export default function ContentManager() {
                     </div>
                 </div>
             ) : activeTab === "features" ? (
-                <div className="space-y-6">
+                <div className="space-y-8">
                     <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-bold">Everything You Need to Grow</h2>
+                        <h2 className="text-xl font-bold">Philosophy Section</h2>
                         <div className="flex gap-3">
                             <Button onClick={() => setFeatures([...features, { title: "", description: "", icon: "Layout", image_url: "", order_index: features.length }])} variant="outline" className="rounded-xl font-bold flex items-center gap-2">
-                                <Plus size={16} /> Add Feature
+                                <Plus size={16} /> Add Item
                             </Button>
-                            <Button onClick={handleSaveFeatures} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center gap-2">
-                                <Save size={16} /> {isSaving ? "Saving..." : "Save Features"}
+                            <Button onClick={async () => {
+                                await handleSaveFeatures();
+                                await handleSaveSettings();
+                            }} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center gap-2">
+                                <Save size={16} /> {isSaving ? "Saving..." : "Save Philosophy"}
                             </Button>
                         </div>
                     </div>
+
+                    <Card className="p-6 border-foreground/5 space-y-6" hover={false}>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Section Label</label>
+                                <Input
+                                    value={settings.find(s => s.key === 'grow_section_label')?.value || ""}
+                                    onChange={(e) => {
+                                        const key = 'grow_section_label';
+                                        const val = e.target.value;
+                                        const existing = settings.find(s => s.key === key);
+                                        if (existing) {
+                                            handleSettingChange(key, val);
+                                        } else {
+                                            setSettings(prev => [...prev, { key, value: val, description: "Philosophy Section Label" }]);
+                                        }
+                                    }}
+                                    placeholder="e.g. Philosophy"
+                                    className="h-10 rounded-xl"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Section Title</label>
+                                <Input
+                                    value={settings.find(s => s.key === 'grow_section_title')?.value || ""}
+                                    onChange={(e) => {
+                                        const key = 'grow_section_title';
+                                        const val = e.target.value;
+                                        const existing = settings.find(s => s.key === key);
+                                        if (existing) {
+                                            handleSettingChange(key, val);
+                                        } else {
+                                            setSettings(prev => [...prev, { key, value: val, description: "Philosophy Section Title" }]);
+                                        }
+                                    }}
+                                    placeholder="e.g. The Digital Estate"
+                                    className="h-10 rounded-xl"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Section Subtitle</label>
+                                <Input
+                                    value={settings.find(s => s.key === 'grow_section_subtitle')?.value || ""}
+                                    onChange={(e) => {
+                                        const key = 'grow_section_subtitle';
+                                        const val = e.target.value;
+                                        const existing = settings.find(s => s.key === key);
+                                        if (existing) {
+                                            handleSettingChange(key, val);
+                                        } else {
+                                            setSettings(prev => [...prev, { key, value: val, description: "Philosophy Section Subtitle" }]);
+                                        }
+                                    }}
+                                    placeholder="Brief description..."
+                                    className="h-10 rounded-xl"
+                                />
+                            </div>
+                        </div>
+                    </Card>
+
                     <div className="space-y-4">
-                        {features.map((feature, index) => (
-                            <Card key={index} className="p-6 border-foreground/5" hover={false}>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title</label>
-                                            <Input
-                                                value={feature.title}
-                                                onChange={(e) => {
-                                                    const next = [...features];
-                                                    next[index].title = e.target.value;
-                                                    setFeatures(next);
-                                                }}
-                                                className="h-12 rounded-2xl"
-                                            />
+                        <div className="flex items-center gap-3 p-4 bg-foreground/5 rounded-2xl border border-foreground/10">
+                            <Info size={16} className="text-blue-500" />
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Individual Philosophy Items</p>
+                        </div>
+                        <div className="space-y-4">
+                            {features.map((feature, index) => (
+                                <Card key={index} className="p-6 border-foreground/5" hover={false}>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title</label>
+                                                <Input
+                                                    value={feature.title}
+                                                    onChange={(e) => {
+                                                        const next = [...features];
+                                                        next[index].title = e.target.value;
+                                                        setFeatures(next);
+                                                    }}
+                                                    className="h-12 rounded-2xl"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Description</label>
+                                                <textarea
+                                                    value={feature.description}
+                                                    onChange={(e) => {
+                                                        const next = [...features];
+                                                        next[index].description = e.target.value;
+                                                        setFeatures(next);
+                                                    }}
+                                                    className="w-full h-24 p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5 outline-none text-sm resize-none"
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Description</label>
-                                            <textarea
-                                                value={feature.description}
-                                                onChange={(e) => {
-                                                    const next = [...features];
-                                                    next[index].description = e.target.value;
-                                                    setFeatures(next);
-                                                }}
-                                                className="w-full h-24 p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5 outline-none text-sm resize-none"
-                                            />
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Icon (Lucide Name)</label>
+                                                <Input
+                                                    value={feature.icon}
+                                                    onChange={(e) => {
+                                                        const next = [...features];
+                                                        next[index].icon = e.target.value;
+                                                        setFeatures(next);
+                                                    }}
+                                                    className="h-12 rounded-2xl"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Screenshot Image</label>
+                                                <div
+                                                    className="w-full h-32 rounded-xl border border-dashed border-foreground/10 flex flex-col items-center justify-center cursor-pointer hover:bg-foreground/[0.02] transition-all relative overflow-hidden group"
+                                                    onClick={() => document.getElementById(`feature-upload-${index}`)?.click()}
+                                                >
+                                                    {feature.image_url ? (
+                                                        <img src={feature.image_url} className="absolute inset-0 w-full h-full object-cover" />
+                                                    ) : (
+                                                        <Layout className="text-muted-foreground/30" size={24} />
+                                                    )}
+                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                        <p className="text-white text-[8px] font-bold uppercase tracking-widest">Change</p>
+                                                    </div>
+                                                </div>
+                                                <input
+                                                    id={`feature-upload-${index}`}
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) return;
+                                                        try {
+                                                            setIsSaving(true);
+                                                            const url = await uploadImage(file);
+                                                            const next = [...features];
+                                                            next[index].image_url = url;
+                                                            setFeatures(next);
+                                                            showToast("Feature image uploaded. Click save to persist.", "success");
+                                                        } catch (err) {
+                                                            console.error("Upload failed", err);
+                                                            showToast("Upload failed", "error");
+                                                        } finally {
+                                                            setIsSaving(false);
+                                                        }
+                                                    }}
+                                                />
+                                                <p className="text-[8px] text-muted-foreground truncate italic">Current: {feature.image_url}</p>
+                                            </div>
                                         </div>
                                     </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                    ) : activeTab === "reasons" ? (
+                    <div className="space-y-6">
+                        <div className="flex justify-between items-center">
+                            <h2 className="text-xl font-bold">Why Choose Us</h2>
+                            <div className="flex gap-3">
+                                <Button onClick={() => setReasons([...reasons, { title: "", description: "", icon: "Check", order_index: reasons.length }])} variant="outline" className="rounded-xl font-bold flex items-center gap-2">
+                                    <Plus size={16} /> Add Reason
+                                </Button>
+                                <Button onClick={handleSaveReasons} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center gap-2">
+                                    <Save size={16} /> {isSaving ? "Saving..." : "Save Reasons"}
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {reasons.map((reason, index) => (
+                                <Card key={index} className="p-6 border-foreground/5" hover={false}>
                                     <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Icon (Lucide Name)</label>
-                                            <Input
-                                                value={feature.icon}
-                                                onChange={(e) => {
-                                                    const next = [...features];
-                                                    next[index].icon = e.target.value;
-                                                    setFeatures(next);
-                                                }}
-                                                className="h-12 rounded-2xl"
-                                            />
+                                        <Input
+                                            value={reason.title}
+                                            onChange={(e) => {
+                                                const next = [...reasons];
+                                                next[index].title = e.target.value;
+                                                setReasons(next);
+                                            }}
+                                            placeholder="Reason Title"
+                                            className="h-12 rounded-2xl font-bold"
+                                        />
+                                        <textarea
+                                            value={reason.description}
+                                            onChange={(e) => {
+                                                const next = [...reasons];
+                                                next[index].description = e.target.value;
+                                                setReasons(next);
+                                            }}
+                                            placeholder="Reason Description"
+                                            className="w-full h-20 p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5 outline-none text-sm resize-none"
+                                        />
+                                        <Input
+                                            value={reason.icon}
+                                            onChange={(e) => {
+                                                const next = [...reasons];
+                                                next[index].icon = e.target.value;
+                                                setReasons(next);
+                                            }}
+                                            placeholder="Icon Name"
+                                            className="h-10 rounded-xl"
+                                        />
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+                    ) : activeTab === "photos" ? (
+                    <div className="space-y-8 max-w-4xl">
+                        <div className="flex justify-between items-center">
+                            <div>
+                                <h2 className="text-xl font-bold flex items-center gap-2">
+                                    <ImageIcon size={20} className="text-blue-500" />
+                                    Landing Page Photos
+                                </h2>
+                                <p className="text-sm text-muted-foreground mt-1">Upload images that appear on the public homepage.</p>
+                            </div>
+                            <Button
+                                onClick={handleSaveSettings}
+                                disabled={isSaving}
+                                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center gap-2"
+                            >
+                                <Save size={16} /> {isSaving ? "Saving..." : "Save Photos"}
+                            </Button>
+                        </div>
+
+                        {/* Hero Background */}
+                        <Card className="p-6 border-foreground/5" hover={false}>
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Hero Background</p>
+                                    <p className="text-xs text-muted-foreground/70">The full-screen image behind the homepage headline and search bar.</p>
+                                </div>
+                                <div
+                                    className="w-full h-52 rounded-xl border border-dashed border-foreground/10 flex flex-col items-center justify-center cursor-pointer hover:bg-foreground/[0.02] transition-all relative overflow-hidden group"
+                                    onClick={() => document.getElementById('hero-bg-upload')?.click()}
+                                >
+                                    {settings.find(s => s.key === 'hero_bg_url')?.value ? (
+                                        <img
+                                            src={settings.find(s => s.key === 'hero_bg_url')?.value}
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                            alt="Hero preview"
+                                        />
+                                    ) : (
+                                        <div className="flex flex-col items-center gap-2 text-muted-foreground/40">
+                                            <Upload size={28} />
+                                            <p className="text-[10px] font-bold uppercase tracking-widest">Click to upload</p>
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Screenshot Image</label>
+                                    )}
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <p className="text-white text-[10px] font-bold uppercase tracking-widest">Change Photo</p>
+                                    </div>
+                                </div>
+                                <input
+                                    id="hero-bg-upload"
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        try {
+                                            setIsSaving(true);
+                                            const url = await uploadImage(file);
+                                            handleSettingChange('hero_bg_url', url);
+                                            showToast("Hero image uploaded. Click Save Photos to persist.", "success");
+                                        } catch { showToast("Upload failed", "error"); }
+                                        finally { setIsSaving(false); }
+                                    }}
+                                />
+                                <p className="text-[10px] text-muted-foreground/50 italic truncate">
+                                    Current: {settings.find(s => s.key === 'hero_bg_url')?.value || 'Default (Unsplash)'}
+                                </p>
+                            </div>
+                        </Card>
+
+                        {/* Discovery Grid */}
+                        <Card className="p-6 border-foreground/5" hover={false}>
+                            <div className="space-y-6">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Discovery Grid Photos</p>
+                                    <p className="text-xs text-muted-foreground/70">Three images in the "Architectural of Elegance" grid section. Photo 1 is large (left), Photos 2 &amp; 3 are stacked (right).</p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {[
+                                        { key: 'discovery_img_1', label: 'Photo 1 — Large (Left)', id: 'disc-1-upload' },
+                                        { key: 'discovery_img_2', label: 'Photo 2 — Top Right', id: 'disc-2-upload' },
+                                        { key: 'discovery_img_3', label: 'Photo 3 — Bottom Right', id: 'disc-3-upload' },
+                                    ].map(({ key, label, id }) => (
+                                        <div key={key} className="space-y-3">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</p>
                                             <div
-                                                className="w-full h-32 rounded-xl border border-dashed border-foreground/10 flex flex-col items-center justify-center cursor-pointer hover:bg-foreground/[0.02] transition-all relative overflow-hidden group"
-                                                onClick={() => document.getElementById(`feature-upload-${index}`)?.click()}
+                                                className="w-full h-40 rounded-xl border border-dashed border-foreground/10 flex flex-col items-center justify-center cursor-pointer hover:bg-foreground/[0.02] transition-all relative overflow-hidden group"
+                                                onClick={() => document.getElementById(id)?.click()}
                                             >
-                                                {feature.image_url ? (
-                                                    <img src={feature.image_url} className="absolute inset-0 w-full h-full object-cover" />
+                                                {settings.find(s => s.key === key)?.value ? (
+                                                    <img
+                                                        src={settings.find(s => s.key === key)?.value}
+                                                        className="absolute inset-0 w-full h-full object-cover"
+                                                        alt={label}
+                                                    />
                                                 ) : (
-                                                    <Layout className="text-muted-foreground/30" size={24} />
+                                                    <div className="flex flex-col items-center gap-2 text-muted-foreground/40">
+                                                        <Upload size={20} />
+                                                        <p className="text-[9px] font-bold uppercase tracking-widest">Upload</p>
+                                                    </div>
                                                 )}
                                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <p className="text-white text-[8px] font-bold uppercase tracking-widest">Change</p>
+                                                    <p className="text-white text-[9px] font-bold uppercase tracking-widest">Change</p>
                                                 </div>
                                             </div>
                                             <input
-                                                id={`feature-upload-${index}`}
+                                                id={id}
                                                 type="file"
                                                 className="hidden"
                                                 accept="image/*"
@@ -372,117 +635,72 @@ export default function ContentManager() {
                                                     try {
                                                         setIsSaving(true);
                                                         const url = await uploadImage(file);
-                                                        const next = [...features];
-                                                        next[index].image_url = url;
-                                                        setFeatures(next);
-                                                        showToast("Feature image uploaded. Click save to persist.", "success");
-                                                    } catch (err) {
-                                                        console.error("Upload failed", err);
-                                                        showToast("Upload failed", "error");
-                                                    } finally {
-                                                        setIsSaving(false);
-                                                    }
+                                                        const existingKey = settings.find(s => s.key === key);
+                                                        if (existingKey) {
+                                                            handleSettingChange(key, url);
+                                                        } else {
+                                                            setSettings(prev => [...prev, { key, value: url, description: label }]);
+                                                        }
+                                                        showToast(`${label} uploaded. Click Save Photos to persist.`, "success");
+                                                    } catch { showToast("Upload failed", "error"); }
+                                                    finally { setIsSaving(false); }
                                                 }}
                                             />
-                                            <p className="text-[8px] text-muted-foreground truncate italic">Current: {feature.image_url}</p>
+                                            <p className="text-[9px] text-muted-foreground/50 italic truncate">
+                                                {settings.find(s => s.key === key)?.value ? 'Custom image set' : 'Default (Unsplash)'}
+                                            </p>
                                         </div>
-                                    </div>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            ) : activeTab === "reasons" ? (
-                <div className="space-y-6">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-bold">Why Choose Us</h2>
-                        <div className="flex gap-3">
-                            <Button onClick={() => setReasons([...reasons, { title: "", description: "", icon: "Check", order_index: reasons.length }])} variant="outline" className="rounded-xl font-bold flex items-center gap-2">
-                                <Plus size={16} /> Add Reason
-                            </Button>
-                            <Button onClick={handleSaveReasons} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center gap-2">
-                                <Save size={16} /> {isSaving ? "Saving..." : "Save Reasons"}
-                            </Button>
-                        </div>
-                    </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {reasons.map((reason, index) => (
-                            <Card key={index} className="p-6 border-foreground/5" hover={false}>
-                                <div className="space-y-4">
-                                    <Input
-                                        value={reason.title}
-                                        onChange={(e) => {
-                                            const next = [...reasons];
-                                            next[index].title = e.target.value;
-                                            setReasons(next);
-                                        }}
-                                        placeholder="Reason Title"
-                                        className="h-12 rounded-2xl font-bold"
-                                    />
-                                    <textarea
-                                        value={reason.description}
-                                        onChange={(e) => {
-                                            const next = [...reasons];
-                                            next[index].description = e.target.value;
-                                            setReasons(next);
-                                        }}
-                                        placeholder="Reason Description"
-                                        className="w-full h-20 p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5 outline-none text-sm resize-none"
-                                    />
-                                    <Input
-                                        value={reason.icon}
-                                        onChange={(e) => {
-                                            const next = [...reasons];
-                                            next[index].icon = e.target.value;
-                                            setReasons(next);
-                                        }}
-                                        placeholder="Icon Name"
-                                        className="h-10 rounded-xl"
-                                    />
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            ) : (
-                <div className="space-y-6 max-w-2xl">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-bold flex items-center gap-2">
-                            <Settings size={20} className="text-blue-500" />
-                            Footer Configuration
-                        </h2>
-                        <Button onClick={handleSaveSettings} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center gap-2">
-                            <Save size={16} /> {isSaving ? "Saving..." : "Save Settings"}
-                        </Button>
-                    </div>
-
-                    <Card className="p-8 space-y-8" hover={false}>
-                        {settings.map((setting) => (
-                            <div key={setting.key} className="space-y-2">
-                                <div className="flex justify-between items-center pl-1">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{setting.description}</label>
-                                    <span className="text-[9px] font-bold text-blue-500/50 font-mono uppercase">{setting.key}</span>
-                                </div>
-                                <div className="relative">
-                                    <LinkIcon size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
-                                    <Input
-                                        value={setting.value}
-                                        onChange={(e) => handleSettingChange(setting.key, e.target.value)}
-                                        className="h-12 pl-10 rounded-2xl bg-foreground/[0.01] border-foreground/5 focus:border-blue-500/50"
-                                    />
+                                    ))}
                                 </div>
                             </div>
-                        ))}
+                        </Card>
 
-                        <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl flex gap-3 mt-4">
-                            <Info size={16} className="text-amber-500 flex-shrink-0" />
+                        <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl flex gap-3">
+                            <Info size={16} className="text-amber-500 flex-shrink-0 mt-0.5" />
                             <p className="text-[10px] text-amber-600/80 leading-relaxed font-bold uppercase tracking-wider">
-                                Changes to footer links will reflect site-wide for all users across public and private dashboards.
+                                Images are uploaded to Supabase storage. Always click "Save Photos" after uploading to apply changes to the live site.
                             </p>
                         </div>
-                    </Card>
-                </div>
+                    </div>
+                    ) : (
+                    <div className="space-y-6 max-w-2xl">
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Settings size={20} className="text-blue-500" />
+                                Footer Configuration
+                            </h2>
+                            <Button onClick={handleSaveSettings} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold flex items-center gap-2">
+                                <Save size={16} /> {isSaving ? "Saving..." : "Save Settings"}
+                            </Button>
+                        </div>
+
+                        <Card className="p-8 space-y-8" hover={false}>
+                            {settings.map((setting) => (
+                                <div key={setting.key} className="space-y-2">
+                                    <div className="flex justify-between items-center pl-1">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{setting.description}</label>
+                                        <span className="text-[9px] font-bold text-blue-500/50 font-mono uppercase">{setting.key}</span>
+                                    </div>
+                                    <div className="relative">
+                                        <LinkIcon size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                                        <Input
+                                            value={setting.value}
+                                            onChange={(e) => handleSettingChange(setting.key, e.target.value)}
+                                            className="h-12 pl-10 rounded-2xl bg-foreground/[0.01] border-foreground/5 focus:border-blue-500/50"
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+
+                            <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl flex gap-3 mt-4">
+                                <Info size={16} className="text-amber-500 flex-shrink-0" />
+                                <p className="text-[10px] text-amber-600/80 leading-relaxed font-bold uppercase tracking-wider">
+                                    Changes to footer links will reflect site-wide for all users across public and private dashboards.
+                                </p>
+                            </div>
+                        </Card>
+                    </div>
             )}
-        </div>
-    );
+                </div>
+            );
 }
