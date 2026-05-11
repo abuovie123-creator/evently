@@ -34,7 +34,8 @@ import {
     Plus,
     Shield,
     Bell,
-    Info
+    Info,
+    Star
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
@@ -427,6 +428,7 @@ export default function AdminDashboard() {
         handleHashChange();
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router, showToast, logError]);
 
     const saveSettings = async (type: 'branding' | 'features' | 'gateways' | 'plans' | 'kyc') => {
@@ -2003,7 +2005,7 @@ export default function AdminDashboard() {
                                         onClick={() => document.getElementById('hero-upload')?.click()}
                                     >
                                         {homepageSettings.hero_bg_url ? (
-                                            <img src={homepageSettings.hero_bg_url} className="absolute inset-0 w-full h-full object-cover" />
+                                            <img src={homepageSettings.hero_bg_url} alt="Hero background preview" className="absolute inset-0 w-full h-full object-cover" />
                                         ) : (
                                             <div className="flex flex-col items-center text-muted-foreground">
                                                 <Upload size={32} strokeWidth={1} />
