@@ -22,9 +22,15 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
 
     // Prefetch for snappier transitions
     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const urlParams = new URLSearchParams(window.location.search);
+            setRedirectUrl(urlParams.get('redirect'));
+        }
+
         router.prefetch("/auth/register-planner");
         router.prefetch("/dashboard/client");
         router.prefetch("/dashboard/planner");
@@ -57,11 +63,14 @@ export default function RegisterPage() {
 
         if (role === "planner") {
             showToast("Account created! Let's set up your profile.");
-            router.push("/auth/register-planner");
+            router.push(`/auth/register-planner${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`);
         } else {
             showToast("Account created successfully!");
             setSuccess(true);
             setLoading(false);
+            if (redirectUrl) {
+                router.push(redirectUrl);
+            }
         }
     };
 
@@ -143,7 +152,7 @@ export default function RegisterPage() {
 
                 <p className="text-center text-xs tracking-wide text-muted-foreground pt-4">
                     Already an associate?{" "}
-                    <Link href="/auth/login" className="text-charcoal hover:underline font-bold uppercase text-[10px] tracking-widest ml-1">
+                    <Link href={`/auth/login${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`} className="text-charcoal hover:underline font-bold uppercase text-[10px] tracking-widest ml-1">
                         Sign In
                     </Link>
                 </p>

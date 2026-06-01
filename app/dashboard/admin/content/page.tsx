@@ -75,6 +75,7 @@ export default function ContentManager() {
             .upload(filePath, file);
 
         if (uploadError) {
+            console.error("Supabase storage error:", uploadError);
             throw uploadError;
         }
 
@@ -429,7 +430,7 @@ export default function ContentManager() {
                                                     onClick={() => document.getElementById(`feature-upload-${index}`)?.click()}
                                                 >
                                                     {feature.image_url ? (
-                                                        <img src={feature.image_url} className="absolute inset-0 w-full h-full object-cover" />
+                                                        <img src={feature.image_url} className="absolute inset-0 w-full h-full object-cover" alt="Feature screenshot" />
                                                     ) : (
                                                         <Layout className="text-muted-foreground/30" size={24} />
                                                     )}
@@ -452,9 +453,9 @@ export default function ContentManager() {
                                                             next[index].image_url = url;
                                                             setFeatures(next);
                                                             showToast("Feature image uploaded. Click save to persist.", "success");
-                                                        } catch (err) {
+                                                        } catch (err: any) {
                                                             console.error("Upload failed", err);
-                                                            showToast("Upload failed", "error");
+                                                            showToast(`Upload failed: ${err.message || "Unknown error"}`, "error");
                                                         } finally {
                                                             setIsSaving(false);
                                                         }
@@ -643,8 +644,12 @@ export default function ContentManager() {
                                                         setSettings(prev => [...prev, { key, value: url, description: label }]);
                                                     }
                                                     showToast(`${label} uploaded. Click Save Photos to persist.`, "success");
-                                                } catch { showToast("Upload failed", "error"); }
-                                                finally { setIsSaving(false); }
+                                                } catch (err: any) {
+                                                    console.error("Upload failed", err);
+                                                    showToast(`Upload failed: ${err.message || "Unknown error"}`, "error");
+                                                } finally {
+                                                    setIsSaving(false);
+                                                }
                                             }}
                                         />
                                         <p className="text-[9px] text-muted-foreground/50 italic truncate">

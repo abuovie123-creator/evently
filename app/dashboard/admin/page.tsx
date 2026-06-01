@@ -231,6 +231,7 @@ export default function AdminDashboard() {
             .upload(filePath, file);
 
         if (uploadError) {
+            console.error("Supabase storage error:", uploadError);
             throw uploadError;
         }
 

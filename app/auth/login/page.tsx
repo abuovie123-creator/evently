@@ -22,6 +22,7 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
+    const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
 
     // Initial check: if already logged in, redirect away from login page
     useEffect(() => {
@@ -30,12 +31,20 @@ export default function LoginPage() {
             const { data: { session } } = await supabase.auth.getSession();
             const user = session?.user;
 
+            let currentRedirect = null;
+            if (typeof window !== 'undefined') {
+                const urlParams = new URLSearchParams(window.location.search);
+                currentRedirect = urlParams.get('redirect');
+                setRedirectUrl(currentRedirect);
+            }
+
             if (user) {
                 setIsRedirecting(true);
                 // Use metadata if available for instant routing
                 const role = user.user_metadata?.role;
                 if (role) {
-                    if (role === 'admin') router.push("/dashboard/admin");
+                    if (currentRedirect) router.push(currentRedirect);
+                    else if (role === 'admin') router.push("/dashboard/admin");
                     else if (role === 'planner') router.push("/dashboard/planner");
                     else router.push("/dashboard/client");
                     return;
@@ -48,7 +57,8 @@ export default function LoginPage() {
                     .single();
 
                 const finalRole = profile?.role || 'client';
-                if (finalRole === 'admin') router.push("/dashboard/admin");
+                if (currentRedirect) router.push(currentRedirect);
+                else if (finalRole === 'admin') router.push("/dashboard/admin");
                 else if (finalRole === 'planner') router.push("/dashboard/planner");
                 else router.push("/dashboard/client");
             }
@@ -85,10 +95,11 @@ export default function LoginPage() {
             setIsRedirecting(true);
             router.refresh();
 
-            if (metadataRole === 'admin') router.push("/dashboard/admin");
+            if (redirectUrl) router.push(redirectUrl);
+            else if (metadataRole === 'admin') router.push("/dashboard/admin");
             else if (metadataRole === 'planner') {
                 const { data: planner } = await supabase.from('planners').select('id').eq('id', data.user.id).single();
-                if (!planner) router.push("/auth/register-planner");
+                if (!planner) router.push(`/auth/register-planner${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`);
                 else router.push("/dashboard/planner");
             } else router.push("/dashboard/client");
             return;
@@ -122,7 +133,9 @@ export default function LoginPage() {
             router.refresh();
         }
 
-        if (profile?.role === 'admin') {
+        if (redirectUrl) {
+            router.push(redirectUrl);
+        } else if (profile?.role === 'admin') {
             router.push("/dashboard/admin");
         } else if (profile?.role === 'planner') {
             // Check if planner record exists
@@ -133,7 +146,7 @@ export default function LoginPage() {
                 .single();
 
             if (!planner) {
-                router.push("/auth/register-planner");
+                router.push(`/auth/register-planner${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`);
             } else {
                 router.push("/dashboard/planner");
             }
@@ -205,7 +218,7 @@ export default function LoginPage() {
 
                 <p className="text-center text-xs tracking-wide text-muted-foreground pt-4">
                     Don&apos;t have an account?{" "}
-                    <Link href="/auth/register" className="text-charcoal hover:underline font-bold uppercase text-[10px] tracking-widest ml-1">
+                    <Link href={`/auth/register${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`} className="text-charcoal hover:underline font-bold uppercase text-[10px] tracking-widest ml-1">
                         Register
                     </Link>
                 </p>

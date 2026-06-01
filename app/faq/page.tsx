@@ -1,164 +1,134 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { ChevronDown, Search, MessageSquare } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { Footer } from "@/components/Footer";
-import { Plus, Minus } from "lucide-react";
 
-const faqs = [
-    {
-        category: "Getting Started",
-        items: [
-            {
-                q: "What is Evently Heritage?",
-                a: "Evently Heritage is an exclusive platform connecting discerning clients with the world's finest event planners. We curate relationships built on trust, discretion, and an unwavering commitment to excellence.",
-            },
-            {
-                q: "How do I create an account?",
-                a: "You may register as a client or apply to join as a professional event planner. Simply navigate to our registration page and follow the guided onboarding process. Client accounts are approved instantly, while planner applications are reviewed within 3–5 business days.",
-            },
-            {
-                q: "Is Evently Heritage available worldwide?",
-                a: "Yes. Our network spans across North America, Europe, the Middle East, and Asia-Pacific. All transactions are conducted in USD with support for major international payment methods.",
-            },
-        ],
-    },
-    {
-        category: "For Clients",
-        items: [
-            {
-                q: "How do I find and hire a planner?",
-                a: "Browse our curated roster of planners at evently.com/planners. Each profile reflects the planner's specialisation, portfolio, and availability. You may submit an enquiry directly through their profile.",
-            },
-            {
-                q: "What is included in my client membership?",
-                a: "Client membership grants access to our full roster of vetted planners, priority booking windows, concierge support, and secure in-platform messaging. Premium tiers unlock additional features such as dedicated account management.",
-            },
-            {
-                q: "How are payments handled?",
-                a: "All payments are processed securely through our platform. Funds are held in escrow until project milestones are met, ensuring your investment is protected at every stage.",
-            },
-        ],
-    },
-    {
-        category: "For Planners",
-        items: [
-            {
-                q: "How do I join as a planner?",
-                a: "Complete our planner application at evently.com/auth/register-planner. Our curation team reviews each submission to ensure alignment with our standards of excellence. Approved planners receive a fully-featured profile and access to client enquiries.",
-            },
-            {
-                q: "What are the platform fees?",
-                a: "Evently Heritage charges a modest service fee on each completed booking. Detailed fee structures are outlined within our membership tiers on the Pricing page.",
-            },
-            {
-                q: "How and when do I receive payouts?",
-                a: "Payouts are processed automatically upon milestone completion. Funds are transferred to your registered bank account within 3–5 business days. You may review your payout history and configure your banking details from the Planner Dashboard.",
-            },
-        ],
-    },
-    {
-        category: "Trust & Privacy",
-        items: [
-            {
-                q: "How is my personal information protected?",
-                a: "We take privacy with the utmost seriousness. Your data is encrypted at rest and in transit, never sold to third parties, and handled in accordance with our Privacy Policy and applicable data protection regulations.",
-            },
-            {
-                q: "How do I report an issue or dispute?",
-                a: "Should any dispute arise, please contact our concierge team at concierge@evently.com or via the Support section of your dashboard. We aim to resolve all matters discreetly and equitably within 48 hours.",
-            },
-        ],
-    },
-];
-
-function AccordionItem({ q, a }: { q: string; a: string }) {
-    const [open, setOpen] = useState(false);
-    return (
-        <div className="border-b border-[#1C1C1C]/10 last:border-0">
-            <button
-                onClick={() => setOpen(!open)}
-                className="w-full flex items-start justify-between gap-6 py-6 text-left group"
-            >
-                <span className="text-sm font-light text-[#1C1C1C] group-hover:text-[#1A2E1A] transition-colors leading-relaxed">
-                    {q}
-                </span>
-                <span className="flex-shrink-0 mt-0.5 text-[#C4A55A]">
-                    {open ? <Minus size={16} /> : <Plus size={16} />}
-                </span>
-            </button>
-            <div
-                className={`overflow-hidden transition-all duration-500 ${open ? "max-h-96 opacity-100 pb-6" : "max-h-0 opacity-0"
-                    }`}
-            >
-                <p className="text-sm font-light text-[#1C1C1C]/60 leading-relaxed pr-8">
-                    {a}
-                </p>
-            </div>
-        </div>
-    );
+interface FAQItem {
+    id: string;
+    question: string;
+    answer: string;
+    category?: string;
 }
 
 export default function FAQPage() {
+    const [faqs, setFaqs] = useState<FAQItem[]>([]);
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [search, setSearch] = useState("");
+    const supabase = createClient();
+
+    useEffect(() => {
+        const fetchFaqs = async () => {
+            const { data, error } = await supabase
+                .from('faqs')
+                .select('*')
+                .eq('is_published', true)
+                .order('order_index', { ascending: true });
+
+            if (!error && data) {
+                setFaqs(data);
+            }
+            setIsLoading(false);
+        };
+        fetchFaqs();
+    }, [supabase]);
+
+    const filteredFaqs = faqs.filter(faq =>
+        faq.question.toLowerCase().includes(search.toLowerCase()) ||
+        faq.answer.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
-        <div className="min-h-screen bg-[#FAF8F3] text-[#1C1C1C]">
-            {/* Hero */}
-            <section className="bg-[#1A2E1A] py-28 px-6 text-center relative overflow-hidden">
-                <div
-                    className="absolute inset-0 opacity-5 pointer-events-none"
-                    style={{
-                        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 80px, #C4A55A 80px, #C4A55A 81px),
-              repeating-linear-gradient(90deg, transparent, transparent 80px, #C4A55A 80px, #C4A55A 81px)`,
-                    }}
-                />
-                <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-[#C4A55A] mb-6">
-                    Evently Heritage
-                </p>
-                <h1 className="font-serif text-4xl md:text-6xl font-semibold tracking-wide text-[#FAF8F3]">
-                    Frequently Asked Questions
-                </h1>
-                <div className="w-16 h-px bg-[#C4A55A] mx-auto mt-8" />
-                <p className="mt-8 text-sm font-light text-[#FAF8F3]/70 max-w-xl mx-auto leading-relaxed">
-                    Answers to the questions we are most frequently asked. Should you
-                    require further assistance, our concierge team is available to help.
-                </p>
-            </section>
+        <main className="min-h-screen bg-[#FAF8F3] text-[#1C1A16]">
+            {/* Hero Section */}
+            <section className="relative pt-48 pb-24 px-6 bg-[#1A2E1A] overflow-hidden">
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/linen.png')]" />
+                </div>
 
-            {/* FAQ Content */}
-            <section className="max-w-3xl mx-auto px-6 py-24 space-y-16">
-                {faqs.map(({ category, items }) => (
-                    <div key={category}>
-                        <div className="flex items-center gap-4 mb-8">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C4A55A]">
-                                {category}
-                            </p>
-                            <div className="flex-1 h-px bg-[#1C1C1C]/10" />
-                        </div>
-                        <div>
-                            {items.map((item) => (
-                                <AccordionItem key={item.q} q={item.q} a={item.a} />
-                            ))}
-                        </div>
+                <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
+                    <span className="section-label text-[#C4A55A]">Assistance</span>
+                    <h1 className="text-5xl md:text-7xl font-serif italic text-[#FAF8F3] leading-tight animate-fade-up">
+                        Inquiries & <br /> Insights.
+                    </h1>
+                    <div className="w-full max-w-xl mx-auto mt-12 relative group">
+                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-[#C4A55A]" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Find answers to your questions..."
+                            className="w-full pl-16 pr-8 py-5 bg-white border border-[#D4C5A9]/20 text-sm focus:outline-none focus:border-[#C4A55A] transition-all"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
                     </div>
-                ))}
+                </div>
             </section>
 
-            {/* CTA */}
-            <section className="bg-[#1A2E1A]/5 border-t border-[#1C1C1C]/10 py-20 px-6 text-center">
-                <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C4A55A] mb-4">
-                    Still have questions?
-                </p>
-                <h3 className="font-serif text-2xl font-semibold text-[#1A2E1A] mb-6">
-                    Our Concierge Team is Here
-                </h3>
-                <a
-                    href="/contact"
-                    className="inline-flex items-center gap-3 bg-[#1A2E1A] text-[#FAF8F3] px-8 py-4 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-[#C4A55A] transition-colors duration-300"
-                >
-                    Contact Us
-                </a>
-            </section>
+            <div className="max-w-4xl mx-auto px-6 py-24 space-y-12">
+                {isLoading ? (
+                    <div className="space-y-6">
+                        {[1, 2, 3, 4, 5].map(i => (
+                            <div key={i} className="h-24 bg-[#1C1A16]/5 animate-pulse" />
+                        ))}
+                    </div>
+                ) : filteredFaqs.length === 0 ? (
+                    <div className="text-center py-20 border border-dashed border-[#D4C5A9]/40">
+                        <p className="text-[#6B5E4E] italic font-light">No matching inquiries found.</p>
+                        <Button variant="outline" className="mt-6" onClick={() => setSearch("")}>Show all questions</Button>
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        {filteredFaqs.map((faq, i) => (
+                            <Card
+                                key={faq.id}
+                                className={`p-0 overflow-hidden border-[#D4C5A9]/30 transition-all duration-700 bg-white ${openIndex === i ? 'ring-1 ring-[#C4A55A]/20 shadow-xl' : 'hover:border-[#C4A55A]'}`}
+                                hover={false}
+                            >
+                                <button
+                                    onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                                    className="w-full p-8 text-left flex items-center justify-between group"
+                                >
+                                    <span className={`text-xl font-serif transition-colors ${openIndex === i ? 'text-[#8B7355]' : 'text-[#1C1A16] group-hover:text-[#8B7355]'}`}>
+                                        {faq.question}
+                                    </span>
+                                    <ChevronDown
+                                        size={20}
+                                        className={`text-[#8B7355] transition-transform duration-500 ${openIndex === i ? 'rotate-180' : ''}`}
+                                    />
+                                </button>
+                                <div className={`overflow-hidden transition-all duration-700 ease-in-out ${openIndex === i ? 'max-h-[500px] opacity-100 px-8 pb-8' : 'max-h-0 opacity-0'}`}>
+                                    <p className="text-[#6B5E4E] text-base leading-relaxed border-t border-[#D4C5A9]/20 pt-8 font-light italic">
+                                        {faq.answer}
+                                    </p>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+
+                {/* Support CTA */}
+                <div className="mt-32 p-12 border border-[#D4C5A9]/30 bg-[#F5F0E8] text-center space-y-8 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <MessageSquare size={80} className="text-[#1A2E1A]" />
+                    </div>
+                    <div className="space-y-4">
+                        <h3 className="text-3xl font-serif text-[#1C1A16]">Need further assistance?</h3>
+                        <p className="text-[#6B5E4E] font-light max-w-xl mx-auto italic">
+                            Our dedicated support team is available to assist you with any bespoke requirements or technical inquiries.
+                        </p>
+                    </div>
+                    <Link href="/contact" className="inline-block">
+                        <Button variant="primary" size="lg" className="h-16 px-12">Contact Support</Button>
+                    </Link>
+                </div>
+            </div>
 
             <Footer />
-        </div>
+        </main>
     );
 }

@@ -251,7 +251,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
         const { data: { session } } = await supabase.auth.getSession();
 
         if (!session) {
-            showToast("Please login to send a booking request", "error");
+            router.push(`/auth/login?redirect=${encodeURIComponent(`/planner/${username}?book=true`)}`);
             return;
         }
 
@@ -467,14 +467,14 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
 
             {showBookingModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-background/80 backdrop-blur-md" onClick={() => !isSubmitting && setShowBookingModal(false)} />
-                    <Card className="relative w-full max-w-lg p-8 space-y-8 animate-in zoom-in-95 duration-300 border-foreground/10" hover={false}>
+                    <div className="absolute inset-0 bg-charcoal/80 backdrop-blur-md" onClick={() => !isSubmitting && setShowBookingModal(false)} />
+                    <Card className="relative w-full max-w-lg p-8 space-y-8 animate-in zoom-in-95 duration-300 om-card" hover={false}>
                         <div className="flex justify-between items-start">
                             <div className="space-y-1">
-                                <h3 className="text-2xl font-black">Inquire with {planner.name}</h3>
-                                <p className="text-gray-400 text-sm">Tell them about your next big event.</p>
+                                <h3 className="text-3xl font-serif text-charcoal">Inquire with {planner.name}</h3>
+                                <p className="text-charcoal/60 text-sm font-sans-body">Tell them about your next big event.</p>
                             </div>
-                            <button onClick={() => setShowBookingModal(false)} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-gray-400">
+                            <button onClick={() => setShowBookingModal(false)} className="p-2 hover:bg-charcoal/5 rounded-xl transition-colors text-charcoal/50 hover:text-charcoal">
                                 <X size={20} />
                             </button>
                         </div>
@@ -482,24 +482,25 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                         <form onSubmit={handleBookingSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Event Type</label>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-charcoal/60">Event Type</label>
                                     <select
-                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none appearance-none"
+                                        className="w-full bg-white border border-om-border rounded-sm px-4 py-3 text-sm text-charcoal font-sans-body focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 appearance-none transition-all"
                                         value={bookingData.eventType}
                                         onChange={(e) => setBookingData({ ...bookingData, eventType: e.target.value })}
                                         required
                                     >
-                                        <option value="Wedding" className="bg-background">Wedding</option>
-                                        <option value="Corporate" className="bg-background">Corporate</option>
-                                        <option value="Birthday" className="bg-background">Birthday</option>
-                                        <option value="Concert" className="bg-background">Concert</option>
-                                        <option value="Other" className="bg-background">Other</option>
+                                        <option value="Wedding" className="bg-white text-charcoal">Wedding</option>
+                                        <option value="Corporate" className="bg-white text-charcoal">Corporate</option>
+                                        <option value="Birthday" className="bg-white text-charcoal">Birthday</option>
+                                        <option value="Concert" className="bg-white text-charcoal">Concert</option>
+                                        <option value="Other" className="bg-white text-charcoal">Other</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Event Date</label>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-charcoal/60">Event Date</label>
                                     <Input
                                         type="date"
+                                        className="bg-white text-charcoal border-om-border focus:border-gold font-sans-body w-full"
                                         value={bookingData.eventDate}
                                         onChange={(e) => {
                                             const val = e.target.value;
@@ -517,33 +518,32 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Your Message</label>
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-charcoal/60">Your Message</label>
                                 <Textarea
                                     placeholder="Briefly describe your event needs..."
                                     value={bookingData.message}
                                     onChange={(e) => setBookingData({ ...bookingData, message: e.target.value })}
-                                    className="min-h-[120px]"
+                                    className="min-h-[120px] bg-white text-charcoal border-om-border focus:border-gold font-sans-body"
                                     required
                                 />
                             </div>
 
-                            <div className="flex gap-4 pt-4 border-t border-white/5">
-                                <Button
-                                    variant="outline"
-                                    className="flex-1"
+                            <div className="flex gap-4 pt-6 border-t border-om-border/50">
+                                <button
+                                    className="om-btn-outline flex-1 w-full disabled:opacity-50 disabled:cursor-not-allowed"
                                     type="button"
                                     onClick={() => setShowBookingModal(false)}
                                     disabled={isSubmitting}
                                 >
                                     Cancel
-                                </Button>
-                                <Button
-                                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                                </button>
+                                <button
+                                    className="om-btn-primary flex-1 w-full disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-sans-body"
                                     type="submit"
                                     disabled={isSubmitting}
                                 >
                                     {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : "Send Inquiry"}
-                                </Button>
+                                </button>
                             </div>
                         </form>
                     </Card>

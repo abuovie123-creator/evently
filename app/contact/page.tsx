@@ -1,210 +1,160 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
+import { Mail, Phone, MapPin, Clock, MessageSquare, Send } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
-import { ArrowRight, Mail, Phone, MapPin } from "lucide-react";
 
 export default function ContactPage() {
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-    });
-    const [submitted, setSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleChange = (
-        e: React.ChangeEvent<
-            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-    ) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true);
+        setIsSubmitting(true);
+        // Simulate form submission
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setIsSubmitting(false);
+        alert("Thank you. Our concierge will be in touch shortly.");
     };
 
     return (
-        <div className="min-h-screen bg-[#FAF8F3] text-[#1C1C1C]">
-            {/* Hero */}
-            <section className="bg-[#1A2E1A] py-28 px-6 text-center relative overflow-hidden">
-                <div className="absolute inset-0 opacity-5 pointer-events-none"
-                    style={{
-                        backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 80px, #C4A55A 80px, #C4A55A 81px),
-              repeating-linear-gradient(90deg, transparent, transparent 80px, #C4A55A 80px, #C4A55A 81px)`,
-                    }}
-                />
-                <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-[#C4A55A] mb-6">
-                    Evently Heritage
-                </p>
-                <h1 className="font-serif text-4xl md:text-6xl font-semibold tracking-wide text-[#FAF8F3]">
-                    Contact Us
-                </h1>
-                <div className="w-16 h-px bg-[#C4A55A] mx-auto mt-8" />
-                <p className="mt-8 text-sm font-light text-[#FAF8F3]/70 max-w-xl mx-auto leading-relaxed">
-                    Our curators are at your service. Reach out and we shall respond with
-                    the discretion and care your enquiry deserves.
-                </p>
-            </section>
-
-            {/* Contact Section */}
-            <section className="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-20">
-                {/* Info */}
-                <div className="space-y-12">
-                    <div>
-                        <h2 className="font-serif text-3xl font-semibold text-[#1A2E1A] mb-4">
-                            Get in Touch
-                        </h2>
-                        <p className="text-sm font-light text-[#1C1C1C]/60 leading-relaxed max-w-sm">
-                            Whether you are seeking to join our planner network, require
-                            assistance with an existing account, or simply wish to enquire
-                            about our services, we are here.
-                        </p>
-                    </div>
-
-                    <div className="space-y-8">
-                        {[
-                            {
-                                icon: Mail,
-                                label: "Email",
-                                value: "concierge@evently.com",
-                                href: "mailto:concierge@evently.com",
-                            },
-                            {
-                                icon: Phone,
-                                label: "Telephone",
-                                value: "+1 (800) 383 5689",
-                                href: "tel:+18003835689",
-                            },
-                            {
-                                icon: MapPin,
-                                label: "Address",
-                                value: "10 Heritage Lane, New York, NY 10001",
-                                href: "#",
-                            },
-                        ].map(({ icon: Icon, label, value, href }) => (
-                            <div key={label} className="flex items-start gap-5">
-                                <div className="w-10 h-10 border border-[#C4A55A]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <Icon size={16} className="text-[#C4A55A]" />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1C1C1C]/40 mb-1">
-                                        {label}
-                                    </p>
-                                    <a
-                                        href={href}
-                                        className="text-sm font-light text-[#1C1C1C] hover:text-[#1A2E1A] transition-colors"
-                                    >
-                                        {value}
-                                    </a>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="border-t border-[#1C1C1C]/10 pt-8">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1C1C1C]/40 mb-2">
-                            Office Hours
-                        </p>
-                        <p className="text-sm font-light text-[#1C1C1C]/70">
-                            Monday – Friday, 9:00 AM – 6:00 PM EST
-                        </p>
-                    </div>
+        <main className="min-h-screen bg-[#FAF8F3] text-[#1C1A16]">
+            {/* Hero Section */}
+            <section className="relative pt-48 pb-24 px-6 bg-[#1A2E1A] overflow-hidden">
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/linen.png')]" />
                 </div>
 
-                {/* Form */}
-                <div>
-                    {submitted ? (
-                        <div className="flex flex-col items-start justify-center h-full space-y-6 py-12">
-                            <div className="w-12 h-px bg-[#C4A55A]" />
-                            <h3 className="font-serif text-2xl font-semibold text-[#1A2E1A]">
-                                Message Received
-                            </h3>
-                            <p className="text-sm font-light text-[#1C1C1C]/60 leading-relaxed max-w-xs">
-                                Thank you for your enquiry. A member of our team will respond
-                                within one business day.
+                <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
+                    <span className="section-label text-[#C4A55A]">Concierge</span>
+                    <h1 className="text-5xl md:text-7xl font-serif italic text-[#FAF8F3] leading-tight animate-fade-up">
+                        Get in Touch.
+                    </h1>
+                    <p className="text-xl text-[#FAF8F3]/70 max-w-2xl mx-auto leading-relaxed font-light italic mt-8 animate-fade-up">
+                        Our team is dedicated to providing a bespoke experience for the world's most discerning event architects and guests.
+                    </p>
+                </div>
+            </section>
+
+            <div className="max-w-7xl mx-auto px-6 py-24 lg:py-32">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+                    {/* Contact Info */}
+                    <div className="lg:col-span-5 space-y-12">
+                        <div className="space-y-6">
+                            <h2 className="text-3xl md:text-4xl font-serif text-[#1C1A16]">The Estate Office</h2>
+                            <p className="text-[#6B5E4E] font-light leading-relaxed">
+                                Experience a new era of event planning. Reach out for partnership inquiries, support, or to learn more about our heritage.
                             </p>
-                            <button
-                                onClick={() => setSubmitted(false)}
-                                className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#C4A55A] hover:text-[#1A2E1A] transition-colors"
-                            >
-                                Send Another Message
-                            </button>
                         </div>
-                    ) : (
-                        <form onSubmit={handleSubmit} className="space-y-8">
+
+                        <div className="space-y-8">
                             {[
-                                { label: "Full Name", name: "name", type: "text" },
-                                { label: "Email Address", name: "email", type: "email" },
-                            ].map(({ label, name, type }) => (
-                                <div key={name} className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1C1C1C]/50">
-                                        {label}
-                                    </label>
-                                    <input
-                                        required
-                                        type={type}
-                                        name={name}
-                                        value={formData[name as keyof typeof formData]}
-                                        onChange={handleChange}
-                                        className="w-full bg-transparent border-b border-[#1C1C1C]/20 py-3 text-sm font-light focus:outline-none focus:border-[#C4A55A] transition-colors"
-                                    />
+                                { icon: Mail, label: "Correspondence", value: "concierge@evently.heritage", sub: "Replies within 24 hours" },
+                                { icon: Phone, label: "Priority Line", value: "+234 (0) 800 HERITAGE", sub: "Available 9am - 6pm WAT" },
+                                { icon: MapPin, label: "Headquarters", value: "Victoria Island, Lagos", sub: "Federal Republic of Nigeria" },
+                                { icon: Clock, label: "Business Hours", value: "Monday – Friday", sub: "9:00 AM – 6:00 PM" }
+                            ].map((item, i) => (
+                                <div key={i} className="flex items-start gap-6 group">
+                                    <div className="w-12 h-12 rounded-full border border-[#D4C5A9]/30 flex items-center justify-center text-[#8B7355] bg-white group-hover:bg-[#1A2E1A] group-hover:text-white transition-all duration-500">
+                                        <item.icon size={20} strokeWidth={1.5} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="section-label opacity-40">{item.label}</p>
+                                        <p className="text-lg font-serif text-[#1C1A16]">{item.value}</p>
+                                        <p className="text-xs text-[#6B5E4E] opacity-60 italic">{item.sub}</p>
+                                    </div>
                                 </div>
                             ))}
+                        </div>
 
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1C1C1C]/50">
-                                    Subject
-                                </label>
-                                <select
-                                    name="subject"
-                                    value={formData.subject}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full bg-transparent border-b border-[#1C1C1C]/20 py-3 text-sm font-light focus:outline-none focus:border-[#C4A55A] transition-colors appearance-none cursor-pointer"
+                        <div className="pt-12 border-t border-[#D4C5A9]/30">
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C4A55A] mb-4">Virtual Visit</h4>
+                            <div className="aspect-video w-full border border-[#D4C5A9]/30 grayscale overflow-hidden">
+                                <img
+                                    src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800"
+                                    alt="Office Interior"
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Contact Form */}
+                    <div className="lg:col-span-7">
+                        <Card className="p-8 md:p-12 border-[#D4C5A9]/30 bg-white" hover={false}>
+                            <form onSubmit={handleSubmit} className="space-y-8">
+                                <div className="space-y-4">
+                                    <h3 className="text-2xl font-serif text-[#1C1A16]">Inquiry Protocol</h3>
+                                    <p className="text-sm text-[#6B5E4E] font-light">Complete the fields below to initiate your formal inquiry.</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-2">
+                                        <label className="section-label opacity-60">Full Name</label>
+                                        <Input
+                                            required
+                                            placeholder="Enter your name"
+                                            className="h-14 rounded-none border-[#D4C5A9]/20 bg-[#FAF8F3] focus:border-[#C4A55A] transition-all"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="section-label opacity-60">Email Address</label>
+                                        <Input
+                                            required
+                                            type="email"
+                                            placeholder="your@email.com"
+                                            className="h-14 rounded-none border-[#D4C5A9]/20 bg-[#FAF8F3] focus:border-[#C4A55A] transition-all"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="section-label opacity-60">Subject</label>
+                                    <Input
+                                        required
+                                        placeholder="Reason for inquiry"
+                                        className="h-14 rounded-none border-[#D4C5A9]/20 bg-[#FAF8F3] focus:border-[#C4A55A] transition-all"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="section-label opacity-60">Message</label>
+                                    <textarea
+                                        required
+                                        rows={6}
+                                        placeholder="How may we assist you?"
+                                        className="w-full p-4 rounded-none border border-[#D4C5A9]/20 bg-[#FAF8F3] focus:border-[#C4A55A] focus:outline-none transition-all text-sm min-h-[150px]"
+                                    />
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full h-16 rounded-none bg-[#1A2E1A] hover:bg-[#2C3A2E] text-white flex items-center gap-3 transition-all duration-300"
                                 >
-                                    <option value="">Select a subject</option>
-                                    <option value="account">Account Enquiry</option>
-                                    <option value="planner">Planner Membership</option>
-                                    <option value="billing">Billing & Payments</option>
-                                    <option value="partnership">Partnership</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
+                                    {isSubmitting ? (
+                                        "Transmitting..."
+                                    ) : (
+                                        <>
+                                            <Send size={16} />
+                                            Submit Inquiry
+                                        </>
+                                    )}
+                                </Button>
 
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1C1C1C]/50">
-                                    Message
-                                </label>
-                                <textarea
-                                    name="message"
-                                    value={formData.message}
-                                    onChange={handleChange}
-                                    required
-                                    rows={5}
-                                    className="w-full bg-transparent border-b border-[#1C1C1C]/20 py-3 text-sm font-light focus:outline-none focus:border-[#C4A55A] transition-colors resize-none"
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="group flex items-center gap-3 bg-[#1A2E1A] text-[#FAF8F3] px-8 py-4 text-[10px] font-bold uppercase tracking-[0.25em] hover:bg-[#C4A55A] transition-colors duration-300"
-                            >
-                                Send Message
-                                <ArrowRight
-                                    size={14}
-                                    className="group-hover:translate-x-1 transition-transform duration-300"
-                                />
-                            </button>
-                        </form>
-                    )}
+                                <p className="text-[10px] text-center text-[#6B5E4E] opacity-40 font-bold uppercase tracking-widest leading-relaxed">
+                                    By submitting this form, you acknowledge our privacy protocol and terms of engagement.
+                                </p>
+                            </form>
+                        </Card>
+                    </div>
                 </div>
-            </section>
+            </div>
 
             <Footer />
-        </div>
+        </main>
     );
 }
