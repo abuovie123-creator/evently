@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronDown, Search, MessageSquare } from "lucide-react";
+import { ChevronDown, MessageSquare } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -19,7 +19,7 @@ export default function FAQPage() {
     const [faqs, setFaqs] = useState<FAQItem[]>([]);
     const [openIndex, setOpenIndex] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [search, setSearch] = useState("");
+
     const supabase = createClient();
 
     useEffect(() => {
@@ -38,10 +38,7 @@ export default function FAQPage() {
         fetchFaqs();
     }, [supabase]);
 
-    const filteredFaqs = faqs.filter(faq =>
-        faq.question.toLowerCase().includes(search.toLowerCase()) ||
-        faq.answer.toLowerCase().includes(search.toLowerCase())
-    );
+
 
     return (
         <main className="min-h-screen bg-[#FAF8F3] text-[#1C1A16]">
@@ -52,20 +49,10 @@ export default function FAQPage() {
                 </div>
 
                 <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
-                    <span className="section-label text-[#C4A55A]">Assistance</span>
+                    <span className="section-label text-[#C4A55A]">FAQs</span>
                     <h1 className="text-5xl md:text-7xl font-serif italic text-[#FAF8F3] leading-tight animate-fade-up">
-                        Inquiries & <br /> Insights.
+                        Frequently Asked <br /> Questions.
                     </h1>
-                    <div className="w-full max-w-xl mx-auto mt-12 relative group">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-[#C4A55A]" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Find answers to your questions..."
-                            className="w-full pl-16 pr-8 py-5 bg-white border border-[#D4C5A9]/20 text-sm focus:outline-none focus:border-[#C4A55A] transition-all"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
                 </div>
             </section>
 
@@ -76,14 +63,13 @@ export default function FAQPage() {
                             <div key={i} className="h-24 bg-[#1C1A16]/5 animate-pulse" />
                         ))}
                     </div>
-                ) : filteredFaqs.length === 0 ? (
+                ) : faqs.length === 0 ? (
                     <div className="text-center py-20 border border-dashed border-[#D4C5A9]/40">
-                        <p className="text-[#6B5E4E] italic font-light">No matching inquiries found.</p>
-                        <Button variant="outline" className="mt-6" onClick={() => setSearch("")}>Show all questions</Button>
+                        <p className="text-[#6B5E4E] italic font-light">No FAQs available yet.</p>
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        {filteredFaqs.map((faq, i) => (
+                        {faqs.map((faq, i) => (
                             <Card
                                 key={faq.id}
                                 className={`p-0 overflow-hidden border-[#D4C5A9]/30 transition-all duration-700 bg-white ${openIndex === i ? 'ring-1 ring-[#C4A55A]/20 shadow-xl' : 'hover:border-[#C4A55A]'}`}

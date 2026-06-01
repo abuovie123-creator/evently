@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
-import { Mail, Phone, MapPin, Clock, MessageSquare, Send } from "lucide-react";
+import { Mail, Phone, MessageSquare, Send } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 
@@ -29,7 +29,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
-                    <span className="section-label text-[#C4A55A]">Concierge</span>
+                    <span className="section-label text-[#C4A55A]">Contact Us</span>
                     <h1 className="text-5xl md:text-7xl font-serif italic text-[#FAF8F3] leading-tight animate-fade-up">
                         Get in Touch.
                     </h1>
@@ -53,9 +53,7 @@ export default function ContactPage() {
                         <div className="space-y-8">
                             {[
                                 { icon: Mail, label: "Correspondence", value: "concierge@evently.heritage", sub: "Replies within 24 hours" },
-                                { icon: Phone, label: "Priority Line", value: "+234 (0) 800 HERITAGE", sub: "Available 9am - 6pm WAT" },
-                                { icon: MapPin, label: "Headquarters", value: "Victoria Island, Lagos", sub: "Federal Republic of Nigeria" },
-                                { icon: Clock, label: "Business Hours", value: "Monday – Friday", sub: "9:00 AM – 6:00 PM" }
+                                { icon: Phone, label: "Priority Line", value: "+234 (0) 800 HERITAGE", sub: "Available 9am - 6pm WAT" }
                             ].map((item, i) => (
                                 <div key={i} className="flex items-start gap-6 group">
                                     <div className="w-12 h-12 rounded-full border border-[#D4C5A9]/30 flex items-center justify-center text-[#8B7355] bg-white group-hover:bg-[#1A2E1A] group-hover:text-white transition-all duration-500">
@@ -70,16 +68,7 @@ export default function ContactPage() {
                             ))}
                         </div>
 
-                        <div className="pt-12 border-t border-[#D4C5A9]/30">
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#C4A55A] mb-4">Virtual Visit</h4>
-                            <div className="aspect-video w-full border border-[#D4C5A9]/30 grayscale overflow-hidden">
-                                <img
-                                    src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=800"
-                                    alt="Office Interior"
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-1000"
-                                />
-                            </div>
-                        </div>
+
                     </div>
 
                     {/* Contact Form */}

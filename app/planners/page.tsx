@@ -111,9 +111,9 @@ export default function PlannersPage() {
 
             {/* Header section */}
             <div className="pt-32 md:pt-40 px-6 max-w-7xl mx-auto space-y-6 md:space-y-10">
-                <div className="space-y-4 text-center md:text-left">
+                <div className="space-y-4 text-left">
                     <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif text-[#1C1A16] leading-tight max-w-4xl tracking-tight">Find Your Expert</h1>
-                    <p className="text-[#6B5E4E] text-base md:text-lg max-w-2xl font-light leading-relaxed mx-auto md:mx-0">
+                    <p className="text-[#6B5E4E] text-base md:text-lg max-w-2xl font-light leading-relaxed">
                         Connect with the most creative event professionals to bring your vision to life.
                     </p>
                 </div>
@@ -272,7 +272,7 @@ export default function PlannersPage() {
                                 <X size={24} />
                             </div>
                             <h3 className="text-2xl font-serif text-[#1C1A16]">
-                                {verifiedOnly ? "No verified planners found" : "No artisans found"}
+                                {verifiedOnly ? "No Verified Planners Found" : "No Planners Found"}
                             </h3>
                             <p className="text-[#6B5E4E] font-light max-w-md mx-auto text-sm">
                                 Refine your directory filters or adjust your search to discover premier professionals.
@@ -371,7 +371,7 @@ export default function PlannersPage() {
                             <button className="om-btn-primary px-12 py-4 h-14 w-full md:w-auto shadow-xl shadow-[#1C1A16]/5 border-none">Create Your Portfolio</button>
                         </Link>
                         <Link href="/about">
-                            <button className="om-btn-outline px-12 py-4 h-14 w-full md:w-auto">How it works</button>
+                            <button className="om-btn-outline px-12 py-4 h-14 w-full md:w-auto border-2 border-[#1C1A16] text-[#1C1A16] hover:bg-[#1C1A16] hover:text-[#FAF8F3] transition-colors">How it works</button>
                         </Link>
                     </div>
                 </div>
