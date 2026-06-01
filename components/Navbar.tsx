@@ -165,7 +165,7 @@ export function Navbar() {
                             <div className="flex items-center gap-4">
                                 <Link href={dashboardLink}>
                                     <button
-                                        className="flex items-center gap-2 text-[10px] uppercase tracking-widest transition-all duration-200 px-4 py-2 border border-[#D4C5A9] text-[#1C1A16] font-bold"
+                                        className="flex items-center gap-2 text-[10px] uppercase tracking-widest transition-all duration-200 px-4 py-2 border border-[#D4C5A9] text-[#1C1A16] font-bold rounded-xl"
                                         style={{
                                             fontFamily: "var(--font-dm-sans), sans-serif",
                                         }}
@@ -195,7 +195,7 @@ export function Navbar() {
                                 </Link>
                                 <Link href="/auth/register">
                                     <button
-                                        className="text-[10px] uppercase tracking-widest transition-all duration-200 px-6 py-2.5 bg-[#1C1A16] text-[#FAF8F3] border border-[#1C1A16] font-bold"
+                                        className="text-[10px] uppercase tracking-widest transition-all duration-200 px-6 py-2.5 bg-[#1C1A16] text-[#FAF8F3] border border-[#1C1A16] font-bold rounded-xl"
                                         style={{
                                             fontFamily: "var(--font-dm-sans), sans-serif",
                                             letterSpacing: '0.14em',
@@ -290,7 +290,7 @@ export function Navbar() {
                                 <>
                                     <Link href={dashboardLink} onClick={() => setIsOpen(false)} className="block w-full">
                                         <button
-                                            className="w-full py-3 text-xs uppercase tracking-widest"
+                                            className="w-full py-3 text-xs uppercase tracking-widest rounded-xl"
                                             style={{
                                                 border: '1px solid var(--border)',
                                                 color: 'var(--charcoal)',
@@ -312,7 +312,7 @@ export function Navbar() {
                                 <>
                                     <Link href="/auth/login" onClick={() => setIsOpen(false)} className="block w-full">
                                         <button
-                                            className="w-full py-3 text-xs uppercase tracking-widest"
+                                            className="w-full py-3 text-xs uppercase tracking-widest rounded-xl"
                                             style={{
                                                 border: '1px solid var(--border)',
                                                 color: 'var(--charcoal)',

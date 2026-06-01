@@ -468,23 +468,23 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
             {showBookingModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-charcoal/80 backdrop-blur-md" onClick={() => !isSubmitting && setShowBookingModal(false)} />
-                    <Card className="relative w-full max-w-lg p-8 space-y-8 animate-in zoom-in-95 duration-300 om-card" hover={false}>
+                    <Card className="relative w-full max-w-lg p-5 sm:p-8 space-y-6 sm:space-y-8 animate-in zoom-in-95 duration-300 om-card" hover={false}>
                         <div className="flex justify-between items-start">
                             <div className="space-y-1">
-                                <h3 className="text-3xl font-serif text-charcoal">Inquire with {planner.name}</h3>
-                                <p className="text-charcoal/60 text-sm font-sans-body">Tell them about your next big event.</p>
+                                <h3 className="text-2xl sm:text-3xl font-serif text-charcoal">Inquire with {planner.name}</h3>
+                                <p className="text-charcoal/60 text-xs sm:text-sm font-sans-body">Tell them about your next big event.</p>
                             </div>
-                            <button onClick={() => setShowBookingModal(false)} className="p-2 hover:bg-charcoal/5 rounded-xl transition-colors text-charcoal/50 hover:text-charcoal">
+                            <button onClick={() => setShowBookingModal(false)} className="p-2 hover:bg-charcoal/5 rounded-xl transition-colors text-charcoal/50 hover:text-charcoal shrink-0">
                                 <X size={20} />
                             </button>
                         </div>
 
                         <form onSubmit={handleBookingSubmit} className="space-y-6">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-2">
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <div className="space-y-2 flex-1">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-charcoal/60">Event Type</label>
                                     <select
-                                        className="w-full bg-white border border-om-border rounded-sm px-4 py-3 text-sm text-charcoal font-sans-body focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 appearance-none transition-all"
+                                        className="w-full h-12 bg-white border border-om-border rounded-sm px-4 text-sm text-charcoal font-sans-body focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/20 appearance-none transition-all"
                                         value={bookingData.eventType}
                                         onChange={(e) => setBookingData({ ...bookingData, eventType: e.target.value })}
                                         required
@@ -496,11 +496,11 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                                         <option value="Other" className="bg-white text-charcoal">Other</option>
                                     </select>
                                 </div>
-                                <div className="space-y-2">
+                                <div className="space-y-2 flex-1 w-full">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-charcoal/60">Event Date</label>
                                     <Input
                                         type="date"
-                                        className="bg-white text-charcoal border-om-border focus:border-gold font-sans-body w-full"
+                                        className="bg-white h-12 block w-full text-charcoal border-om-border focus:border-gold font-sans-body px-4"
                                         value={bookingData.eventDate}
                                         onChange={(e) => {
                                             const val = e.target.value;
@@ -530,7 +530,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
 
                             <div className="flex gap-4 pt-6 border-t border-om-border/50">
                                 <button
-                                    className="om-btn-outline flex-1 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="om-btn-outline flex-1 w-full disabled:opacity-50 disabled:cursor-not-allowed !text-charcoal"
                                     type="button"
                                     onClick={() => setShowBookingModal(false)}
                                     disabled={isSubmitting}

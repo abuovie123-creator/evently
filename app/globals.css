@@ -116,6 +116,7 @@ body {
   text-transform: uppercase;
   padding: 14px 36px;
   border: 1px solid var(--charcoal);
+  border-radius: 0.75rem;
   transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
   cursor: pointer;
 }
@@ -135,6 +136,7 @@ body {
   text-transform: uppercase;
   padding: 13px 36px;
   border: 1px solid var(--gold);
+  border-radius: 0.75rem;
   transition: background 0.25s ease, color 0.25s ease;
   cursor: pointer;
 }
@@ -162,6 +164,7 @@ body {
   cursor: pointer;
   transition: all 0.25s ease;
   color: var(--charcoal);
+  border-radius: 0.75rem;
   flex-shrink: 0;
 }
 
