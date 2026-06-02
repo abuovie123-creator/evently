@@ -197,20 +197,10 @@ export function DashboardSidebar() {
         ],
         client: [
             { label: "Overview", href: "/dashboard/client", icon: LayoutDashboard },
-            {
-                label: "Events",
-                icon: Calendar,
-                subItems: [
-                    { label: "Upcoming Events", href: "/dashboard/client#bookings" },
-                    { label: "Booking History", href: "/dashboard/client#history" },
-                    { label: "Find Planners", href: "/planners" },
-                    { label: "Featured Events", href: "/events" }
-                ]
-            },
+            { label: "Events", href: "/dashboard/client#bookings", icon: Calendar },
             { label: "Favorites", href: "/dashboard/client#saved", icon: Star },
             { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
             { label: "Settings", href: "/dashboard/client/settings", icon: Settings },
-            { label: "Pricing", href: "/pricing", icon: CreditCard },
         ]
     };
 
@@ -218,11 +208,11 @@ export function DashboardSidebar() {
 
     const SidebarContent = () => (
         <div className="flex flex-col h-full bg-cream border-r border-om-border/40 py-10 transition-colors duration-700 overflow-hidden">
-            <div className="px-8 mb-10 flex items-center justify-between">
-                <Link href="/" className="text-2xl font-serif text-charcoal tracking-widest uppercase">
-                    EVENTLY<span className="text-gold">.</span>
-                </Link>
-                <NotificationBell />
+            <div className="px-8 mb-10 flex flex-col items-start space-y-1">
+                <span className="text-2xl font-serif text-charcoal tracking-widest uppercase">
+                    The Estate
+                </span>
+                <span className="section-label opacity-60 text-[8px]">Concierge Active</span>
             </div>
 
             {role === 'admin' && (
@@ -337,85 +327,148 @@ export function DashboardSidebar() {
                     </div>
                 )}
 
-                {role !== 'admin' && (
-                    <div className="pt-8 mt-8 border-t border-om-border/30 space-y-2">
-                        <p className="px-4 text-[9px] font-bold text-[#8B7355]/40 uppercase tracking-[0.3em] mb-4 italic">Estate Resources</p>
-                        {externalLinks.map((link, idx) => (
-                            <a
-                                key={link.id}
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center justify-between px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5 transition-all duration-300 group"
-                                style={{ animationDelay: `${(currentNav.length + idx) * 50}ms` }}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="p-2 rounded-none bg-charcoal/5 group-hover:bg-charcoal/10 transition-colors">
-                                        <ExternalLink size={16} className="group-hover:text-gold transition-colors" />
+                {role === 'client' && (
+                    <div className="pt-8 mt-8 border-t border-om-border/10 space-y-1">
+                        <Link
+                            href="/dashboard/client/archived"
+                            className="flex items-center gap-4 px-4 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest text-[#6B5E4E]/60 hover:text-charcoal transition-all group"
+                        >
+                            <History size={14} className="group-hover:text-gold transition-colors" />
+                            <span>Archived</span>
+                        </Link>
+                        <Link
+                            href="/dashboard/client/support"
+                            className="flex items-center gap-4 px-4 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest text-[#6B5E4E]/60 hover:text-charcoal transition-all group"
+                        >
+                            <LifeBuoy size={14} className="group-hover:text-gold transition-colors" />
+                            <span>Help</span>
+                        </Link>
+
+                        {externalLinks.length > 0 && (
+                            <div className="pt-6 px-4">
+                                <a
+                                    href={externalLinks[0].url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block p-4 border border-om-border/30 bg-surface/50 group hover:border-gold transition-all duration-500"
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="p-2 border border-om-border/20 bg-cream group-hover:border-gold transition-colors">
+                                            <ExternalLink size={14} className="text-charcoal/40 group-hover:text-gold" />
+                                        </div>
+                                        <ChevronRight size={14} className="text-charcoal/20 group-hover:text-gold group-hover:translate-x-1 transition-all" />
                                     </div>
-                                    <span>{link.label}</span>
-                                </div>
-                                <ExternalLink size={12} className="opacity-0 group-hover:opacity-40 transition-opacity" />
-                            </a>
-                        ))}
-                        {role === 'client' && (
-                            <Link
-                                href="/dashboard/client/support"
-                                onClick={() => setIsMobileOpen(false)}
-                                className={`flex items-center justify-between px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${pathname === '/dashboard/client/support' ? 'bg-charcoal text-cream font-black' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className={`p-2 rounded-none transition-colors ${pathname === '/dashboard/client/support' ? 'bg-transparent' : 'bg-charcoal/5 group-hover:bg-charcoal/10'}`}>
-                                        <LifeBuoy size={16} className={pathname === '/dashboard/client/support' ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
-                                    </div>
-                                    <span>Concierge Help</span>
-                                </div>
-                            </Link>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-charcoal">{externalLinks[0].label}</p>
+                                    <p className="text-[8px] text-[#6B5E4E] opacity-60 font-serif italic mt-1">Direct Estate Access</p>
+                                </a>
+                            </div>
                         )}
                     </div>
                 )}
             </nav>
 
-            <div className="mt-auto pt-8 border-t border-om-border/30 px-6 space-y-4">
-                <div className="flex items-center justify-between px-2">
-                    <ThemeToggle />
-                </div>
-                <div className="flex items-center gap-4 p-3 bg-surface border border-om-border/20 shadow-sm">
-                    <div className="w-12 h-12 rounded-none bg-charcoal flex items-center justify-center text-gold font-serif text-lg border border-gold/30">
-                        {user?.email?.[0].toUpperCase() || "U"}
+            {role !== 'client' && (
+                <div className="mt-auto pt-8 border-t border-om-border/30 px-6 space-y-4">
+                    <div className="flex items-center justify-between px-2">
+                        <ThemeToggle />
                     </div>
-                    <div className="overflow-hidden">
-                        <p className="text-[11px] font-black uppercase tracking-widest truncate text-charcoal">{fullName || "ESTATE AGENT"}</p>
-                        <p className="text-[10px] text-[#6B5E4E] truncate font-sans italic opacity-70">{user?.email}</p>
+                    <div className="flex items-center gap-4 p-3 bg-surface border border-om-border/20 shadow-sm">
+                        <div className="w-12 h-12 rounded-none bg-charcoal flex items-center justify-center text-gold font-serif text-lg border border-gold/30">
+                            {user?.email?.[0].toUpperCase() || "U"}
+                        </div>
+                        <div className="overflow-hidden">
+                            <p className="text-[11px] font-black uppercase tracking-widest truncate text-charcoal">{fullName || "ESTATE AGENT"}</p>
+                            <p className="text-[10px] text-[#6B5E4E] truncate font-sans italic opacity-70">{user?.email}</p>
+                        </div>
                     </div>
+                    <button
+                        onClick={handleSignOut}
+                        className="w-full flex items-center justify-center gap-3 px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-red-900/60 hover:text-red-900 hover:bg-red-900/5 border border-transparent hover:border-red-900/10 transition-all font-serif italic"
+                    >
+                        <LogOut size={14} />
+                        Depart Estate
+                    </button>
                 </div>
-                <button
-                    onClick={handleSignOut}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-red-900/60 hover:text-red-900 hover:bg-red-900/5 border border-transparent hover:border-red-900/10 transition-all font-serif italic"
-                >
-                    <LogOut size={14} />
-                    Depart Estate
-                </button>
-            </div>
+            )}
         </div>
     );
+
+    function UserDropdown({ name, avatar, onLogout }: { name: string, avatar: string | null, onLogout: () => void }) {
+        const [isOpen, setIsOpen] = useState(false);
+
+        return (
+            <div className="relative">
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex items-center gap-3 px-4 py-2 bg-surface border border-om-border/30 shadow-sm group active:scale-95 transition-all duration-300"
+                >
+                    <div className="w-6 h-6 rounded-none overflow-hidden border border-om-border/30 group-hover:border-gold transition-colors">
+                        {avatar ? (
+                            <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-charcoal text-gold italic font-serif text-[10px]">
+                                {name[0]}
+                            </div>
+                        )}
+                    </div>
+                    <div className="text-left">
+                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-charcoal leading-none">{name.split(' ')[0]}</p>
+                    </div>
+                    <ChevronDown size={12} className={`text-charcoal/30 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {isOpen && (
+                    <div className="absolute right-0 mt-3 w-48 bg-cream border border-om-border/40 shadow-2xl z-[100] animate-in fade-in slide-in-from-top-4 duration-500">
+                        <div className="p-1 space-y-1">
+                            <Link
+                                href="/dashboard/client/settings"
+                                className="flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                <User size={12} className="text-gold" />
+                                My Profile
+                            </Link>
+                            <button
+                                onClick={() => {
+                                    setIsOpen(false);
+                                    onLogout();
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-red-900/60 hover:bg-red-900/5 transition-colors text-left"
+                            >
+                                <LogOut size={12} />
+                                Depart Estate
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
 
     return (
         <>
             {/* Mobile Top Bar */}
-            <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-cream border-b border-om-border/30 px-6 flex items-center justify-between z-50">
+            <div className="md:hidden fixed top-0 left-0 right-0 h-20 bg-cream border-b border-om-border/10 px-6 flex items-center justify-between z-50">
+                <button
+                    onClick={() => setIsMobileOpen(true)}
+                    className="p-2 text-charcoal hover:bg-charcoal/5 transition-colors"
+                >
+                    <Menu size={24} />
+                </button>
+
                 <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => setIsMobileOpen(true)}
-                        className="p-2 text-charcoal hover:bg-charcoal/5 transition-colors"
-                    >
-                        <Menu size={24} />
-                    </button>
-                    <Link href="/" className="text-xl font-serif text-charcoal tracking-widest uppercase">
-                        EVENTLY<span className="text-gold">.</span>
-                    </Link>
+                    {role === 'client' ? (
+                        <UserDropdown
+                            name={fullName || "Estate Client"}
+                            avatar={user?.user_metadata?.avatar_url || null}
+                            onLogout={handleSignOut}
+                        />
+                    ) : (
+                        <div className="w-10 h-10 rounded-none border border-om-border/20 flex items-center justify-center bg-surface">
+                            <User size={20} className="text-gold/60" />
+                        </div>
+                    )}
                 </div>
-                <NotificationBell />
             </div>
 
             <aside className="hidden md:block fixed top-0 left-0 bottom-0 w-72 z-40 transform-gpu transition-transform duration-700 ease-out">

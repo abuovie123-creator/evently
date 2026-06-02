@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { X, ExternalLink, Bell, Info } from "lucide-react";
+import { X, ExternalLink, Bell } from "lucide-react";
 import { Button } from "./ui/Button";
 import { createClient } from "@/lib/supabase/client";
 
@@ -59,7 +59,7 @@ export function AnnouncementPopup() {
             />
 
             <div className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[110] max-w-lg w-[94%] sm:w-full transition-all duration-700 transform ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'}`}>
-                <div className="om-card bg-[#F5F0E8] p-5 md:p-10 shadow-2xl border-[#D4C5A9] relative overflow-hidden group rounded-sm">
+                <div className="om-card bg-surface p-5 md:p-10 shadow-2xl border border-border relative overflow-hidden group rounded-xl">
 
                     <button
                         onClick={handleClose}
@@ -69,12 +69,17 @@ export function AnnouncementPopup() {
                     </button>
 
                     <div className="flex flex-col items-center text-center space-y-6 relative z-10">
-                        <div className="w-16 h-16 rounded-sm bg-[#1A2E1A]/10 flex items-center justify-center text-[#1A2E1A] shadow-lg">
-                            <Bell size={28} className="animate-bounce" />
+                        <div className="w-20 h-20 rounded-full bg-forest-mid/5 border border-border flex items-center justify-center text-accent shadow-sm relative">
+                            <div className="absolute inset-0 rounded-full border border-gold/20 animate-spin-slow" />
+                            <Bell size={32} className="relative z-10" />
                         </div>
 
-                        <div className="space-y-3">
-                            <span className="section-label">Institutional Notice</span>
+                        <div className="space-y-4 w-full">
+                            <div className="flex flex-col items-center">
+                                <span className="section-label mb-2">Institutional Notice</span>
+                                <div className="gold-divider mb-4" />
+                            </div>
+
                             <h3 className="text-3xl md:text-4xl font-serif text-charcoal leading-tight">
                                 {announcement.title}
                             </h3>
@@ -84,12 +89,13 @@ export function AnnouncementPopup() {
                         </div>
 
                         {announcement.image_url && (
-                            <div className="w-full rounded-sm overflow-hidden border border-border shadow-xl">
+                            <div className="w-full rounded-lg overflow-hidden border border-gold/30 shadow-xl relative group-hover:border-gold transition-colors duration-500">
                                 <img
                                     src={announcement.image_url}
                                     alt={announcement.title}
-                                    className="w-full h-48 md:h-64 object-cover grayscale hover:grayscale-0 transition-all duration-700 hover:scale-105"
+                                    className="w-full h-48 md:h-60 object-cover grayscale brightness-[0.9] hover:grayscale-0 hover:brightness-100 transition-all duration-1000 hover:scale-105"
                                 />
+                                <div className="absolute inset-0 pointer-events-none border-[12px] border-surface/20" />
                             </div>
                         )}
 
@@ -101,15 +107,15 @@ export function AnnouncementPopup() {
                                     rel="noopener noreferrer"
                                     className="w-full sm:flex-1"
                                 >
-                                    <Button className="w-full bg-charcoal hover:bg-forest text-cream h-12 rounded-sm text-[10px] tracking-widest font-bold uppercase transition-all">
-                                        Explore Details <ExternalLink size={14} />
+                                    <Button className="w-full h-12 text-[11px] tracking-[0.2em]">
+                                        Explore Details <ExternalLink size={14} className="ml-2" />
                                     </Button>
                                 </a>
                             )}
                             <Button
                                 variant="outline"
                                 onClick={handleClose}
-                                className={`h-12 rounded-sm text-[10px] tracking-widest font-bold uppercase ${announcement.link_url ? "w-full sm:w-32" : "w-full"}`}
+                                className={`h-12 text-[11px] tracking-[0.2em] ${announcement.link_url ? "w-full sm:w-40" : "w-full"}`}
                             >
                                 Dismiss
                             </Button>

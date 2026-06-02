@@ -7,9 +7,62 @@ import { useToast } from "@/components/ui/Toast";
 
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState, useCallback } from "react";
-import { Calendar, MessageCircle, AlertCircle, Star, CheckCircle2, Bookmark, User } from "lucide-react";
+import { Calendar, MessageCircle, AlertCircle, Star, CheckCircle2, Bookmark, User, LogOut, ChevronDown, Bell } from "lucide-react";
 import { BookingCountdown } from "@/components/BookingCountdown";
 import { NotificationBell } from "@/components/NotificationBell";
+
+function UserDropdown({ name, avatar, onLogout }: { name: string, email: string, avatar: string | null, onLogout: () => void }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="relative">
+            <button 
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center gap-4 px-6 py-2.5 bg-surface border border-om-border/30 hover:border-gold transition-all duration-500 group"
+            >
+                <div className="w-8 h-8 rounded-none overflow-hidden border border-om-border/30 group-hover:border-gold transition-colors">
+                    {avatar ? (
+                        <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-charcoal text-gold">
+                            <User size={14} />
+                        </div>
+                    )}
+                </div>
+                <div className="text-left hidden lg:block">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-charcoal leading-none mb-1">{name || "Estate Client"}</p>
+                    <p className="text-[8px] font-bold text-accent/60 uppercase tracking-widest leading-none">Concierge</p>
+                </div>
+                <ChevronDown size={14} className={`text-charcoal/30 group-hover:text-gold transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-cream border border-om-border/40 shadow-2xl z-[100] animate-in slide-in-from-top-2 duration-300">
+                    <div className="p-2 space-y-1">
+                        <Link 
+                            href="/dashboard/client/settings" 
+                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            <User size={14} className="text-gold" />
+                            My Profile
+                        </Link>
+                        <button 
+                            onClick={() => {
+                                setIsOpen(false);
+                                onLogout();
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-red-900/60 hover:bg-red-900/5 transition-colors text-left"
+                        >
+                            <LogOut size={14} />
+                            Depart Estate
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default function ClientDashboard() {
     const { showToast } = useToast();
@@ -139,25 +192,27 @@ export default function ClientDashboard() {
     );
     return (
         <div className="space-y-12 animate-in fade-in duration-500">
-            {/* Top Navigation Bar - Hidden on Mobile (provided by sidebar top-bar) */}
+            {/* Top Navigation Bar - Hidden on Mobile */}
             <div className="hidden md:flex flex-row justify-between items-center pb-12 w-full border-b border-om-border/20">
-                <div className="text-2xl font-serif text-charcoal tracking-widest uppercase">
+                <Link href="/" className="text-2xl font-serif text-charcoal tracking-widest uppercase">
                     EVENTLY<span className="text-gold">.</span>
-                </div>
+                </Link>
                 <nav className="flex gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-[#6B5E4E]">
                     <Link href="/portfolio" className="hover:text-charcoal transition-colors">Portfolio</Link>
-                    <Link href="/planners" className="hover:text-charcoal transition-colors">Browse Planners</Link>
-                    <Link href="/events" className="hover:text-charcoal transition-colors">Event Gallery</Link>
+                    <Link href="/planners" className="hover:text-charcoal transition-colors">Collections</Link>
+                    <Link href="/events" className="hover:text-charcoal transition-colors">Inspiration</Link>
                 </nav>
-                <div className="flex gap-6 items-center text-charcoal">
-                    <button className="hover:text-gold transition-colors"><Bookmark size={18} /></button>
-                    <Link href="/dashboard/client/settings" className="w-8 h-8 rounded-none border border-om-border/40 overflow-hidden flex items-center justify-center text-charcoal hover:border-gold transition-colors bg-cream">
-                        {avatarUrl ? (
-                            <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                        ) : (
-                            <User size={16} />
-                        )}
-                    </Link>
+                <div className="flex gap-6 items-center">
+                    <UserDropdown 
+                        name={profileName} 
+                        email={avatarUrl || ""} 
+                        avatar={avatarUrl} 
+                        onLogout={async () => {
+                            const supabase = createClient();
+                            await supabase.auth.signOut();
+                            window.location.href = "/";
+                        }} 
+                    />
                 </div>
             </div>
 
@@ -177,7 +232,7 @@ export default function ClientDashboard() {
                         <Link href="/planners" className="text-[10px] font-bold uppercase tracking-widest text-[#6B5E4E] hover:text-charcoal border-b border-transparent hover:border-charcoal transition-all">View All Collections</Link>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+                    <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-8 pt-2">
                         {savedPlanners.length === 0 ? (
                             <div className="text-center py-16 bg-surface/50 rounded-none border border-om-border/30 col-span-1 md:col-span-2">
                                 <Star className="mx-auto text-muted-foreground/30 mb-4" size={32} />
