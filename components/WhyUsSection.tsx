@@ -2,7 +2,31 @@
 
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import * as LucideIcons from "lucide-react";
+import {
+    Shield,
+    Zap,
+    Check,
+    Award,
+    Clock,
+    Heart,
+    Star,
+    Users,
+    Globe,
+    type LucideIcon
+} from "lucide-react";
+
+// Map for dynamic icon lookup
+const ICON_MAP: Record<string, LucideIcon> = {
+    Shield,
+    Zap,
+    Check,
+    Award,
+    Clock,
+    Heart,
+    Star,
+    Users,
+    Globe
+};
 
 interface Reason {
     id: string;
@@ -56,7 +80,7 @@ export function WhyUsSection() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12">
                     {reasons.map((reason) => {
-                        const Icon = (LucideIcons as any)[reason.icon] || LucideIcons.Check;
+                        const Icon = ICON_MAP[reason.icon] || Check;
 
                         return (
                             <div

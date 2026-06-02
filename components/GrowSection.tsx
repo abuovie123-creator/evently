@@ -2,8 +2,26 @@
 
 import React, { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import * as LucideIcons from "lucide-react";
+import {
+    Layout,
+    Image,
+    MessageSquare,
+    Zap,
+    ShieldCheck,
+    Star,
+    type LucideIcon
+} from "lucide-react";
 import { Card } from "./ui/Card";
+
+// Map for dynamic icon lookup
+const ICON_MAP: Record<string, LucideIcon> = {
+    Layout,
+    Image,
+    MessageSquare,
+    Zap,
+    ShieldCheck,
+    Star
+};
 
 interface Feature {
     id: string;
@@ -87,7 +105,7 @@ export function GrowSection() {
 
                 <div className="space-y-24 md:space-y-40">
                     {features.map((feature, i) => {
-                        const Icon = (LucideIcons as any)[feature.icon] || LucideIcons.Zap;
+                        const Icon = ICON_MAP[feature.icon] || Zap;
                         const isEven = i % 2 === 0;
 
                         return (
@@ -107,11 +125,11 @@ export function GrowSection() {
                                     </div>
                                     <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                                         <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-[#D4C5A9] text-[10px] font-bold uppercase tracking-widest text-[#8B7355] bg-[#F5F0E8]">
-                                            <LucideIcons.ShieldCheck size={14} />
+                                            <ShieldCheck size={14} />
                                             Authentic Heritage
                                         </div>
                                         <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full border border-[#D4C5A9] text-[10px] font-bold uppercase tracking-widest text-[#8B7355] bg-[#F5F0E8]">
-                                            <LucideIcons.Star size={14} />
+                                            <Star size={14} />
                                             Verified Excellence
                                         </div>
                                     </div>
@@ -124,7 +142,6 @@ export function GrowSection() {
                                             className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
                                         />
                                     </div>
-                                    {/* Ornamental element */}
                                     <div className="absolute -bottom-6 -right-6 w-32 h-32 border-r border-b border-[#C4A55A]/30 -z-10 group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-700" />
                                 </div>
                             </div>

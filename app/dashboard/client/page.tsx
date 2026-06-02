@@ -7,16 +7,22 @@ import { useToast } from "@/components/ui/Toast";
 
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState, useCallback } from "react";
-import { Calendar, MessageCircle, AlertCircle, Star, CheckCircle2, Bookmark, User, LogOut, ChevronDown, Bell } from "lucide-react";
+import { Calendar, Star, User, LogOut, ChevronDown } from "lucide-react";
 import { BookingCountdown } from "@/components/BookingCountdown";
 import { NotificationBell } from "@/components/NotificationBell";
 
-function UserDropdown({ name, avatar, onLogout }: { name: string, email: string, avatar: string | null, onLogout: () => void }) {
+interface UserDropdownProps {
+    name: string;
+    avatar: string | null;
+    onLogout: () => void;
+}
+
+function UserDropdown({ name, avatar, onLogout }: UserDropdownProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
         <div className="relative">
-            <button 
+            <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="flex items-center gap-4 px-6 py-2.5 bg-surface border border-om-border/30 hover:border-gold transition-all duration-500 group"
             >
@@ -39,15 +45,15 @@ function UserDropdown({ name, avatar, onLogout }: { name: string, email: string,
             {isOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-cream border border-om-border/40 shadow-2xl z-[100] animate-in slide-in-from-top-2 duration-300">
                     <div className="p-2 space-y-1">
-                        <Link 
-                            href="/dashboard/client/settings" 
+                        <Link
+                            href="/dashboard/client/settings"
                             className="flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors"
                             onClick={() => setIsOpen(false)}
                         >
                             <User size={14} className="text-gold" />
                             My Profile
                         </Link>
-                        <button 
+                        <button
                             onClick={() => {
                                 setIsOpen(false);
                                 onLogout();
@@ -71,7 +77,6 @@ export default function ClientDashboard() {
     const [profileName, setProfileName] = useState("");
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
     const [savedPlanners, setSavedPlanners] = useState<any[]>([]);
-    const [activeTab, setActiveTab] = useState<"bookings" | "saved">("bookings");
 
     // Review State
     const [reviewingBookingId, setReviewingBookingId] = useState<string | null>(null);
@@ -151,7 +156,7 @@ export default function ClientDashboard() {
                 throw error;
             }
             showToast("Review submitted successfully!", "success");
-            // Optimistically update the exact booking to show 'Reviewed Event' state immediately
+
             setBookings(prev => prev.map(b =>
                 b.id === bookingId
                     ? { ...b, reviews: [{ rating, comment, id: "temp-optimistic-id" }] }
@@ -190,6 +195,7 @@ export default function ClientDashboard() {
             <div className="w-10 h-10 border-2 border-charcoal/5 border-t-gold rounded-none animate-spin" />
         </div>
     );
+
     return (
         <div className="space-y-12 animate-in fade-in duration-500">
             {/* Top Navigation Bar - Hidden on Mobile */}
@@ -203,20 +209,19 @@ export default function ClientDashboard() {
                     <Link href="/events" className="hover:text-charcoal transition-colors">Inspiration</Link>
                 </nav>
                 <div className="flex gap-6 items-center">
-                    <UserDropdown 
-                        name={profileName} 
-                        email={avatarUrl || ""} 
-                        avatar={avatarUrl} 
+                    <UserDropdown
+                        name={profileName}
+                        avatar={avatarUrl}
                         onLogout={async () => {
                             const supabase = createClient();
                             await supabase.auth.signOut();
                             window.location.href = "/";
-                        }} 
+                        }}
                     />
                 </div>
             </div>
 
-            {/* Header Section - Well aligned to the left */}
+            {/* Header Section */}
             <div className="space-y-4 pt-8 md:pt-2">
                 <h1 className="text-4xl md:text-6xl font-serif italic text-charcoal leading-tight">Welcome back, {profileName.split(' ')[0] || "Client"}.</h1>
                 <p className="text-[11px] font-sans uppercase tracking-[0.15em] text-muted-foreground max-w-2xl opacity-70">

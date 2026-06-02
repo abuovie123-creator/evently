@@ -48,6 +48,285 @@ interface NavItem {
     subItems?: SubItem[];
 }
 
+interface UserDropdownProps {
+    name: string;
+    avatar: string | null;
+    onLogout: () => void;
+}
+
+function UserDropdown({ name, avatar, onLogout }: UserDropdownProps) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center gap-3 px-4 py-2 bg-surface border border-om-border/30 shadow-sm group active:scale-95 transition-all duration-300"
+            >
+                <div className="w-6 h-6 rounded-none overflow-hidden border border-om-border/30 group-hover:border-gold transition-colors">
+                    {avatar ? (
+                        <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-charcoal text-gold italic font-serif text-[10px]">
+                            {name[0]}
+                        </div>
+                    )}
+                </div>
+                <div className="text-left">
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-charcoal leading-none">{name.split(' ')[0]}</p>
+                </div>
+                <ChevronDown size={12} className={`text-charcoal/30 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isOpen && (
+                <div className="absolute right-0 mt-3 w-48 bg-cream border border-om-border/40 shadow-2xl z-[100] animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="p-1 space-y-1">
+                        <Link
+                            href="/dashboard/client/settings"
+                            className="flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            <User size={12} className="text-gold" />
+                            My Profile
+                        </Link>
+                        <button
+                            onClick={() => {
+                                setIsOpen(false);
+                                onLogout();
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-red-900/60 hover:bg-red-900/5 transition-colors text-left"
+                        >
+                            <LogOut size={12} />
+                            Depart Estate
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+interface SidebarContentProps {
+    role: string | null;
+    pathname: string;
+    navGroups: any;
+    currentNav: NavItem[];
+    menuSearch: string;
+    setMenuSearch: (val: string) => void;
+    toggleSubMenu: (label: string) => void;
+    openSubMenus: Record<string, boolean>;
+    setIsMobileOpen: (val: boolean) => void;
+    unreadCount: number;
+    externalLinks: any[];
+    handleSignOut: () => void;
+    fullName: string | null;
+    user: any;
+}
+
+function SidebarContent({
+    role,
+    pathname,
+    navGroups,
+    currentNav,
+    menuSearch,
+    setMenuSearch,
+    toggleSubMenu,
+    openSubMenus,
+    setIsMobileOpen,
+    unreadCount,
+    externalLinks,
+    handleSignOut,
+    fullName,
+    user
+}: SidebarContentProps) {
+    return (
+        <div className="flex flex-col h-full bg-cream border-r border-om-border/40 py-10 transition-colors duration-700 overflow-hidden">
+            <div className="px-8 mb-10 flex flex-col items-start space-y-1">
+                <span className="text-2xl font-serif text-charcoal tracking-widest uppercase">
+                    The Estate
+                </span>
+                <span className="section-label opacity-60 text-[8px]">Concierge Active</span>
+            </div>
+
+            {role === 'admin' && (
+                <div className="px-8 mb-8">
+                    <div className="relative group">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/30 group-focus-within:text-gold transition-colors" size={14} />
+                        <input
+                            type="text"
+                            placeholder="Search parameters..."
+                            className="w-full bg-charcoal/5 border border-om-border/30 rounded-none py-3 pl-10 pr-4 text-[11px] font-sans uppercase tracking-widest focus:ring-1 focus:ring-gold/50 outline-none transition-all placeholder:text-charcoal/30"
+                            value={menuSearch}
+                            onChange={(e) => setMenuSearch(e.target.value)}
+                        />
+                    </div>
+                </div>
+            )}
+
+            <nav className="flex-1 overflow-y-auto scrollbar-hide px-6 space-y-8">
+                {role === 'admin' ? (
+                    navGroups.admin.map((group: any, groupIdx: number) => {
+                        const filteredItems = group.items.filter((item: any) =>
+                            item.label.toLowerCase().includes(menuSearch.toLowerCase())
+                        );
+
+                        if (filteredItems.length === 0) return null;
+
+                        return (
+                            <div key={group.category} className="space-y-3 animate-in fade-in slide-in-from-left-4 duration-500" style={{ animationDelay: `${groupIdx * 50}ms` }}>
+                                <h3 className="px-4 text-[9px] font-bold text-[#8B7355]/60 uppercase tracking-[0.3em] mb-4">
+                                    {group.category}
+                                </h3>
+                                <div className="space-y-1">
+                                    {filteredItems.map((item: any) => {
+                                        const isActive = pathname === item.href;
+                                        return (
+                                            <Link
+                                                key={item.label}
+                                                href={item.href}
+                                                className={`flex items-center gap-4 px-4 py-3 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream shadow-xl' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
+                                            >
+                                                <item.icon size={16} className={isActive ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
+                                                <span>{item.label}</span>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div className="space-y-2">
+                        {currentNav.map((item: NavItem, index: number) => {
+                            const hasSubItems = item.subItems && item.subItems.length > 0;
+                            const isActive = pathname === item.href;
+                            const isSubActive = item.subItems?.some((sub: SubItem) => pathname === sub.href);
+                            const isOpen = openSubMenus[item.label] || isSubActive;
+
+                            return (
+                                <div
+                                    key={item.label}
+                                    className="space-y-1 animate-in fade-in slide-in-from-left-4 duration-500"
+                                    style={{ animationDelay: `${index * 50}ms` }}
+                                >
+                                    {hasSubItems ? (
+                                        <button
+                                            onClick={() => toggleSubMenu(item.label)}
+                                            className={`w-full flex items-center justify-between px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isOpen ? 'bg-charcoal/5 text-charcoal' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <item.icon size={16} className={isOpen ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
+                                                <span>{item.label}</span>
+                                            </div>
+                                            {isOpen ? <ChevronDown size={14} className="text-charcoal/40" /> : <ChevronRight size={14} className="text-charcoal/40" />}
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            href={item.href || "#"}
+                                            onClick={() => setIsMobileOpen(false)}
+                                            className={`flex items-center gap-4 px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream font-black' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
+                                        >
+                                            <div className={`p-2 rounded-none transition-colors ${isActive ? 'bg-transparent' : 'bg-charcoal/5 group-hover:bg-charcoal/10'}`}>
+                                                <item.icon size={16} className={isActive ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
+                                            </div>
+                                            <div className="flex-1 flex items-center justify-between">
+                                                <span>{item.label}</span>
+                                                {item.label === "Messages" && unreadCount > 0 && (
+                                                    <span className="bg-charcoal text-cream text-[9px] font-black px-2 py-0.5 rounded-full border border-gold/30">
+                                                        {unreadCount}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </Link>
+                                    )}
+
+                                    {hasSubItems && isOpen && (
+                                        <div className="ml-16 space-y-1 animate-in slide-in-from-top-2 duration-300">
+                                            {item.subItems?.map((sub: SubItem) => (
+                                                <Link
+                                                    key={sub.label}
+                                                    href={sub.href}
+                                                    onClick={() => setIsMobileOpen(false)}
+                                                    className={`block py-3 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors relative before:absolute before:left-[-20px] before:top-1/2 before:w-1 before:h-1 before:rounded-full before:-translate-y-1/2 before:transition-all ${pathname === sub.href ? 'text-forest font-black before:bg-forest' : 'text-[#6B5E4E] hover:text-charcoal before:bg-charcoal/10 hover:before:bg-gold/60'}`}
+                                                >
+                                                    {sub.label}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {role === 'client' && (
+                    <div className="pt-8 mt-8 border-t border-om-border/10 space-y-1">
+                        <Link
+                            href="#"
+                            className="flex items-center gap-4 px-4 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest text-[#6B5E4E]/60 hover:text-charcoal transition-all group"
+                        >
+                            <History size={14} className="group-hover:text-gold transition-colors" />
+                            <span>Archived</span>
+                        </Link>
+                        <Link
+                            href="/dashboard/client/support"
+                            className="flex items-center gap-4 px-4 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest text-[#6B5E4E]/60 hover:text-charcoal transition-all group"
+                        >
+                            <LifeBuoy size={14} className="group-hover:text-gold transition-colors" />
+                            <span>Help</span>
+                        </Link>
+
+                        {externalLinks.length > 0 && (
+                            <div className="pt-6 px-4">
+                                <a
+                                    href={externalLinks[0].url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block p-4 border border-om-border/30 bg-surface/50 group hover:border-gold transition-all duration-500"
+                                >
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="p-2 border border-om-border/20 bg-cream group-hover:border-gold transition-colors">
+                                            <ExternalLink size={14} className="text-charcoal/40 group-hover:text-gold" />
+                                        </div>
+                                        <ChevronRight size={14} className="text-charcoal/20 group-hover:text-gold group-hover:translate-x-1 transition-all" />
+                                    </div>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-charcoal">{externalLinks[0].label}</p>
+                                    <p className="text-[8px] text-[#6B5E4E] opacity-60 font-serif italic mt-1">Direct Estate Access</p>
+                                </a>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </nav>
+
+            {role !== 'client' && (
+                <div className="mt-auto pt-8 border-t border-om-border/30 px-6 space-y-4">
+                    <div className="flex items-center justify-between px-2">
+                        <ThemeToggle />
+                    </div>
+                    <div className="flex items-center gap-4 p-3 bg-surface border border-om-border/20 shadow-sm">
+                        <div className="w-12 h-12 rounded-none bg-charcoal flex items-center justify-center text-gold font-serif text-lg border border-gold/30">
+                            {user?.email?.[0].toUpperCase() || "U"}
+                        </div>
+                        <div className="overflow-hidden">
+                            <p className="text-[11px] font-black uppercase tracking-widest truncate text-charcoal">{fullName || "ESTATE AGENT"}</p>
+                            <p className="text-[10px] text-[#6B5E4E] truncate font-sans italic opacity-70">{user?.email}</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={handleSignOut}
+                        className="w-full flex items-center justify-center gap-3 px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-red-900/60 hover:text-red-900 hover:bg-red-900/5 border border-transparent hover:border-red-900/10 transition-all font-serif italic"
+                    >
+                        <LogOut size={14} />
+                        Depart Estate
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+}
+
 export function DashboardSidebar() {
     const pathname = usePathname();
     const router = useRouter();
@@ -206,244 +485,22 @@ export function DashboardSidebar() {
 
     const currentNav = role ? navGroups[role as keyof typeof navGroups] : [];
 
-    const SidebarContent = () => (
-        <div className="flex flex-col h-full bg-cream border-r border-om-border/40 py-10 transition-colors duration-700 overflow-hidden">
-            <div className="px-8 mb-10 flex flex-col items-start space-y-1">
-                <span className="text-2xl font-serif text-charcoal tracking-widest uppercase">
-                    The Estate
-                </span>
-                <span className="section-label opacity-60 text-[8px]">Concierge Active</span>
-            </div>
-
-            {role === 'admin' && (
-                <div className="px-8 mb-8">
-                    <div className="relative group">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/30 group-focus-within:text-gold transition-colors" size={14} />
-                        <input
-                            type="text"
-                            placeholder="Search parameters..."
-                            className="w-full bg-charcoal/5 border border-om-border/30 rounded-none py-3 pl-10 pr-4 text-[11px] font-sans uppercase tracking-widest focus:ring-1 focus:ring-gold/50 outline-none transition-all placeholder:text-charcoal/30"
-                            value={menuSearch}
-                            onChange={(e) => setMenuSearch(e.target.value)}
-                        />
-                    </div>
-                </div>
-            )}
-
-            <nav className="flex-1 overflow-y-auto scrollbar-hide px-6 space-y-8">
-                {role === 'admin' ? (
-                    navGroups.admin.map((group: any, groupIdx: number) => {
-                        const filteredItems = group.items.filter((item: any) =>
-                            item.label.toLowerCase().includes(menuSearch.toLowerCase())
-                        );
-
-                        if (filteredItems.length === 0) return null;
-
-                        return (
-                            <div key={group.category} className="space-y-3 animate-in fade-in slide-in-from-left-4 duration-500" style={{ animationDelay: `${groupIdx * 50}ms` }}>
-                                <h3 className="px-4 text-[9px] font-bold text-[#8B7355]/60 uppercase tracking-[0.3em] mb-4">
-                                    {group.category}
-                                </h3>
-                                <div className="space-y-1">
-                                    {filteredItems.map((item: any) => {
-                                        const isActive = pathname === item.href;
-                                        return (
-                                            <Link
-                                                key={item.label}
-                                                href={item.href}
-                                                className={`flex items-center gap-4 px-4 py-3 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream shadow-xl' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
-                                            >
-                                                <item.icon size={16} className={isActive ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
-                                                <span>{item.label}</span>
-                                            </Link>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        );
-                    })
-                ) : (
-                    <div className="space-y-2">
-                        {currentNav.map((item: NavItem, index: number) => {
-                            const hasSubItems = item.subItems && item.subItems.length > 0;
-                            const isActive = pathname === item.href;
-                            const isSubActive = item.subItems?.some((sub: SubItem) => pathname === sub.href);
-                            const isOpen = openSubMenus[item.label] || isSubActive;
-
-                            return (
-                                <div
-                                    key={item.label}
-                                    className="space-y-1 animate-in fade-in slide-in-from-left-4 duration-500"
-                                    style={{ animationDelay: `${index * 50}ms` }}
-                                >
-                                    {hasSubItems ? (
-                                        <button
-                                            onClick={() => toggleSubMenu(item.label)}
-                                            className={`w-full flex items-center justify-between px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isOpen ? 'bg-charcoal/5 text-charcoal' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <item.icon size={16} className={isOpen ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
-                                                <span>{item.label}</span>
-                                            </div>
-                                            {isOpen ? <ChevronDown size={14} className="text-charcoal/40" /> : <ChevronRight size={14} className="text-charcoal/40" />}
-                                        </button>
-                                    ) : (
-                                        <Link
-                                            href={item.href || "#"}
-                                            onClick={() => setIsMobileOpen(false)}
-                                            className={`flex items-center gap-4 px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream font-black' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
-                                        >
-                                            <div className={`p-2 rounded-none transition-colors ${isActive ? 'bg-transparent' : 'bg-charcoal/5 group-hover:bg-charcoal/10'}`}>
-                                                <item.icon size={16} className={isActive ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
-                                            </div>
-                                            <div className="flex-1 flex items-center justify-between">
-                                                <span>{item.label}</span>
-                                                {item.label === "Messages" && unreadCount > 0 && (
-                                                    <span className="bg-charcoal text-cream text-[9px] font-black px-2 py-0.5 rounded-full border border-gold/30">
-                                                        {unreadCount}
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </Link>
-                                    )}
-
-                                    {hasSubItems && isOpen && (
-                                        <div className="ml-16 space-y-1 animate-in slide-in-from-top-2 duration-300">
-                                            {item.subItems?.map((sub: SubItem) => (
-                                                <Link
-                                                    key={sub.label}
-                                                    href={sub.href}
-                                                    onClick={() => setIsMobileOpen(false)}
-                                                    className={`block py-3 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors relative before:absolute before:left-[-20px] before:top-1/2 before:w-1 before:h-1 before:rounded-full before:-translate-y-1/2 before:transition-all ${pathname === sub.href ? 'text-forest font-black before:bg-forest' : 'text-[#6B5E4E] hover:text-charcoal before:bg-charcoal/10 hover:before:bg-gold/60'}`}
-                                                >
-                                                    {sub.label}
-                                                </Link>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
-
-                {role === 'client' && (
-                    <div className="pt-8 mt-8 border-t border-om-border/10 space-y-1">
-                        <Link
-                            href="/dashboard/client/archived"
-                            className="flex items-center gap-4 px-4 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest text-[#6B5E4E]/60 hover:text-charcoal transition-all group"
-                        >
-                            <History size={14} className="group-hover:text-gold transition-colors" />
-                            <span>Archived</span>
-                        </Link>
-                        <Link
-                            href="/dashboard/client/support"
-                            className="flex items-center gap-4 px-4 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest text-[#6B5E4E]/60 hover:text-charcoal transition-all group"
-                        >
-                            <LifeBuoy size={14} className="group-hover:text-gold transition-colors" />
-                            <span>Help</span>
-                        </Link>
-
-                        {externalLinks.length > 0 && (
-                            <div className="pt-6 px-4">
-                                <a
-                                    href={externalLinks[0].url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block p-4 border border-om-border/30 bg-surface/50 group hover:border-gold transition-all duration-500"
-                                >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div className="p-2 border border-om-border/20 bg-cream group-hover:border-gold transition-colors">
-                                            <ExternalLink size={14} className="text-charcoal/40 group-hover:text-gold" />
-                                        </div>
-                                        <ChevronRight size={14} className="text-charcoal/20 group-hover:text-gold group-hover:translate-x-1 transition-all" />
-                                    </div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-charcoal">{externalLinks[0].label}</p>
-                                    <p className="text-[8px] text-[#6B5E4E] opacity-60 font-serif italic mt-1">Direct Estate Access</p>
-                                </a>
-                            </div>
-                        )}
-                    </div>
-                )}
-            </nav>
-
-            {role !== 'client' && (
-                <div className="mt-auto pt-8 border-t border-om-border/30 px-6 space-y-4">
-                    <div className="flex items-center justify-between px-2">
-                        <ThemeToggle />
-                    </div>
-                    <div className="flex items-center gap-4 p-3 bg-surface border border-om-border/20 shadow-sm">
-                        <div className="w-12 h-12 rounded-none bg-charcoal flex items-center justify-center text-gold font-serif text-lg border border-gold/30">
-                            {user?.email?.[0].toUpperCase() || "U"}
-                        </div>
-                        <div className="overflow-hidden">
-                            <p className="text-[11px] font-black uppercase tracking-widest truncate text-charcoal">{fullName || "ESTATE AGENT"}</p>
-                            <p className="text-[10px] text-[#6B5E4E] truncate font-sans italic opacity-70">{user?.email}</p>
-                        </div>
-                    </div>
-                    <button
-                        onClick={handleSignOut}
-                        className="w-full flex items-center justify-center gap-3 px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-red-900/60 hover:text-red-900 hover:bg-red-900/5 border border-transparent hover:border-red-900/10 transition-all font-serif italic"
-                    >
-                        <LogOut size={14} />
-                        Depart Estate
-                    </button>
-                </div>
-            )}
-        </div>
-    );
-
-    function UserDropdown({ name, avatar, onLogout }: { name: string, avatar: string | null, onLogout: () => void }) {
-        const [isOpen, setIsOpen] = useState(false);
-
-        return (
-            <div className="relative">
-                <button
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="flex items-center gap-3 px-4 py-2 bg-surface border border-om-border/30 shadow-sm group active:scale-95 transition-all duration-300"
-                >
-                    <div className="w-6 h-6 rounded-none overflow-hidden border border-om-border/30 group-hover:border-gold transition-colors">
-                        {avatar ? (
-                            <img src={avatar} alt={name} className="w-full h-full object-cover" />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-charcoal text-gold italic font-serif text-[10px]">
-                                {name[0]}
-                            </div>
-                        )}
-                    </div>
-                    <div className="text-left">
-                        <p className="text-[9px] font-black uppercase tracking-[0.2em] text-charcoal leading-none">{name.split(' ')[0]}</p>
-                    </div>
-                    <ChevronDown size={12} className={`text-charcoal/30 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isOpen && (
-                    <div className="absolute right-0 mt-3 w-48 bg-cream border border-om-border/40 shadow-2xl z-[100] animate-in fade-in slide-in-from-top-4 duration-500">
-                        <div className="p-1 space-y-1">
-                            <Link
-                                href="/dashboard/client/settings"
-                                className="flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                <User size={12} className="text-gold" />
-                                My Profile
-                            </Link>
-                            <button
-                                onClick={() => {
-                                    setIsOpen(false);
-                                    onLogout();
-                                }}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-red-900/60 hover:bg-red-900/5 transition-colors text-left"
-                            >
-                                <LogOut size={12} />
-                                Depart Estate
-                            </button>
-                        </div>
-                    </div>
-                )}
-            </div>
-        );
-    }
+    const commonProps = {
+        role,
+        pathname,
+        navGroups,
+        currentNav,
+        menuSearch,
+        setMenuSearch,
+        toggleSubMenu,
+        openSubMenus,
+        setIsMobileOpen,
+        unreadCount,
+        externalLinks,
+        handleSignOut,
+        fullName,
+        user
+    };
 
     return (
         <>
@@ -472,13 +529,13 @@ export function DashboardSidebar() {
             </div>
 
             <aside className="hidden md:block fixed top-0 left-0 bottom-0 w-72 z-40 transform-gpu transition-transform duration-700 ease-out">
-                <SidebarContent />
+                <SidebarContent {...commonProps} />
             </aside>
 
             <div className={`md:hidden fixed inset-0 z-[60] transition-opacity duration-500 ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                 <div className="absolute inset-0 bg-charcoal/40" onClick={() => setIsMobileOpen(false)} />
                 <div className={`absolute top-0 left-0 bottom-0 w-80 transform transition-transform duration-700 cubic-bezier(0.16, 1, 0.3, 1) ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <SidebarContent />
+                    <SidebarContent {...commonProps} />
                 </div>
                 <button
                     onClick={() => setIsMobileOpen(false)}
