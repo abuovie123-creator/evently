@@ -1,8 +1,7 @@
-"use client";
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { Home, ArrowLeft } from 'lucide-react';
+import { Home } from 'lucide-react';
+import { GoBackButton } from '@/components/GoBackButton';
 
 export default function NotFound() {
     return (
@@ -25,12 +24,7 @@ export default function NotFound() {
                             <Home size={18} /> Back to Home
                         </Button>
                     </Link>
-                    <button
-                        onClick={() => window.history.back()}
-                        className="flex-1 h-14 rounded-2xl border border-white/10 text-white font-bold hover:bg-white/5 transition-all flex items-center justify-center gap-2"
-                    >
-                        <ArrowLeft size={18} /> Go Back
-                    </button>
+                    <GoBackButton />
                 </div>
             </div>
 
