@@ -76,24 +76,23 @@ export default function RegisterPage() {
 
     return (
         <div className="min-h-screen bg-[#FAF8F3] flex items-center justify-center p-6 pt-20 sm:pt-32">
-            <Card className="max-w-md w-full space-y-8 p-6 sm:p-12" hover={false}>
+            <Card className="max-w-md w-full space-y-8 p-6 sm:p-12 rounded-3xl" hover={false}>
                 <div className="text-center space-y-3">
-                    <span className="section-label">New Membership</span>
                     <h2 className="text-4xl md:text-5xl font-serif text-charcoal">Create Account</h2>
-                    <p className="text-muted-foreground text-sm font-light italic">Join the guild as a client or a professional architect</p>
+                    <p className="text-muted-foreground text-sm font-light italic">Sign up to get started!</p>
                 </div>
 
-                <div className="flex border border-border p-1 bg-white/50">
+                <div className="flex border border-border p-1 bg-white/50 rounded-full">
                     <button
                         onClick={() => setRole("client")}
-                        className={`flex-1 py-3 text-[10px] uppercase tracking-widest font-bold transition-all ${role === "client" ? "bg-charcoal text-cream shadow-md" : "text-muted-foreground hover:text-charcoal"
+                        className={`flex-1 py-3 text-[10px] uppercase tracking-widest font-bold transition-all rounded-full ${role === "client" ? "bg-charcoal text-cream shadow-md" : "text-muted-foreground hover:text-charcoal"
                             }`}
                     >
                         Guest / Client
                     </button>
                     <button
                         onClick={() => setRole("planner")}
-                        className={`flex-1 py-3 text-[10px] uppercase tracking-widest font-bold transition-all ${role === "planner" ? "bg-charcoal text-cream shadow-md" : "text-muted-foreground hover:text-charcoal"
+                        className={`flex-1 py-3 text-[10px] uppercase tracking-widest font-bold transition-all rounded-full ${role === "planner" ? "bg-charcoal text-cream shadow-md" : "text-muted-foreground hover:text-charcoal"
                             }`}
                     >
                         Master Planner
@@ -113,7 +112,7 @@ export default function RegisterPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-widest text-accent ml-1">Secure Password</label>
+                        <label className="text-xs font-bold uppercase tracking-widest text-accent ml-1">Password</label>
                         <div className="relative">
                             <Input
                                 type={showPassword ? "text" : "password"}
@@ -145,13 +144,13 @@ export default function RegisterPage() {
                         </div>
                     )}
 
-                    <Button type="submit" className="w-full h-14" size="lg" disabled={loading}>
-                        {loading ? "Registering..." : role === "planner" ? "Continue to Setup" : "Initialize Account"}
+                    <Button type="submit" className="w-full h-14 rounded-full" size="lg" disabled={loading}>
+                        {loading ? "Registering..." : role === "planner" ? "Continue to Setup" : "Sign Up"}
                     </Button>
                 </form>
 
                 <p className="text-center text-xs tracking-wide text-muted-foreground pt-4">
-                    Already an associate?{" "}
+                    Already have an account?{" "}
                     <Link href={`/auth/login${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`} className="text-charcoal hover:underline font-bold uppercase text-[10px] tracking-widest ml-1">
                         Sign In
                     </Link>

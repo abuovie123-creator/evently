@@ -28,19 +28,12 @@ export function DashboardFooter() {
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div className="space-y-1 text-center md:text-left">
                     <p className="text-[10px] font-serif tracking-[0.2em] uppercase font-bold text-charcoal">
-                        {settings.site_logo_text || "Evently"} Heritage
+                        {settings.site_logo_text || "Evently"}
                     </p>
                     <p className="text-[9px] font-sans uppercase tracking-widest text-[#6B5E4E]">
                         © {new Date().getFullYear()} All Rights Reserved.
                     </p>
                 </div>
-
-                <nav className="flex gap-10 text-[9px] font-bold uppercase tracking-[0.4em] text-[#6B5E4E]/60">
-                    <Link href="/planners" className="hover:text-charcoal transition-colors">Discovery</Link>
-                    <Link href="/events" className="hover:text-charcoal transition-colors">Portfolios</Link>
-                    <Link href="/faq" className="hover:text-charcoal transition-colors">Concierge</Link>
-                    <Link href="/privacy" className="hover:text-charcoal transition-colors">Privacy</Link>
-                </nav>
             </div>
         </footer>
     );

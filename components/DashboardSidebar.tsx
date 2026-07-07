@@ -140,12 +140,9 @@ function SidebarContent({
     user
 }: SidebarContentProps) {
     return (
-        <div className="flex flex-col h-full bg-cream border-r border-om-border/40 py-10 transition-colors duration-700 overflow-hidden">
-            <div className="px-8 mb-10 flex flex-col items-start space-y-1">
-                <span className="text-2xl font-serif text-charcoal tracking-widest uppercase">
-                    The Estate
-                </span>
-                <span className="section-label opacity-60 text-[8px]">Concierge Active</span>
+        <div className="flex flex-col h-full bg-cream border-r border-om-border/40 py-6 transition-colors duration-700 overflow-hidden">
+            <div className="px-6 mb-8 mt-2 flex items-center justify-center">
+                <span className="text-3xl font-black bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">Evently</span>
             </div>
 
             {role === 'admin' && (
@@ -300,29 +297,7 @@ function SidebarContent({
                 )}
             </nav>
 
-            {role !== 'client' && (
-                <div className="mt-auto pt-8 border-t border-om-border/30 px-6 space-y-4">
-                    <div className="flex items-center justify-between px-2">
-                        <ThemeToggle />
-                    </div>
-                    <div className="flex items-center gap-4 p-3 bg-surface border border-om-border/20 shadow-sm">
-                        <div className="w-12 h-12 rounded-none bg-charcoal flex items-center justify-center text-gold font-serif text-lg border border-gold/30">
-                            {user?.email?.[0].toUpperCase() || "U"}
-                        </div>
-                        <div className="overflow-hidden">
-                            <p className="text-[11px] font-black uppercase tracking-widest truncate text-charcoal">{fullName || "ESTATE AGENT"}</p>
-                            <p className="text-[10px] text-[#6B5E4E] truncate font-sans italic opacity-70">{user?.email}</p>
-                        </div>
-                    </div>
-                    <button
-                        onClick={handleSignOut}
-                        className="w-full flex items-center justify-center gap-3 px-4 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-red-900/60 hover:text-red-900 hover:bg-red-900/5 border border-transparent hover:border-red-900/10 transition-all font-serif italic"
-                    >
-                        <LogOut size={14} />
-                        Depart Estate
-                    </button>
-                </div>
-            )}
+            {/* Bottom section removed per request to simplify sidebar */}
         </div>
     );
 }
@@ -528,7 +503,7 @@ export function DashboardSidebar() {
                 </div>
             </div>
 
-            <aside className="hidden md:block fixed top-0 left-0 bottom-0 w-72 z-40 transform-gpu transition-transform duration-700 ease-out">
+            <aside className="hidden md:block fixed top-0 left-0 bottom-0 w-64 z-40 transform-gpu transition-transform duration-700 ease-out">
                 <SidebarContent {...commonProps} />
             </aside>
 

@@ -56,7 +56,7 @@ export default function DashboardLayout({
     return (
         <div className="min-h-screen bg-background text-foreground selection:bg-blue-500/30 overflow-x-hidden transition-colors duration-500">
             {!isAdminLogin && <DashboardSidebar />}
-            <main className={`${!isAdminLogin ? "md:pl-72" : ""} transition-all duration-300 overflow-x-hidden`}>
+            <main className={`${!isAdminLogin ? "md:pl-64" : ""} transition-all duration-300 overflow-x-hidden`}>
                 <div className={`${!isAdminLogin ? "p-4 md:p-8" : ""} max-w-7xl mx-auto pb-24 md:pb-8 pt-20 md:pt-8`}>
                     {children}
                     {!isAdminLogin && <DashboardFooter />}

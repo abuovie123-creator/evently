@@ -159,6 +159,7 @@ export default function PlannerDashboard() {
     const [showDeclineInput, setShowDeclineInput] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [unreadMessages, setUnreadMessages] = useState<Record<string, boolean>>({});
+    const [viewTrendBadge, setViewTrendBadge] = useState("+0% this week");
 
     const logError = (context: string, error: any) => {
         console.error(`${context} (Raw):`, error);
@@ -260,36 +261,62 @@ export default function PlannerDashboard() {
         // 4. Fetch Stats & Daily Views
         const { count: bookingsCount } = await supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('planner_id', uid);
         const { count: viewsCount } = await supabase.from('profile_views').select('id', { count: 'exact', head: true }).eq('profile_id', uid);
+        const { count: pendingCount } = await supabase.from('bookings').select('id', { count: 'exact', head: true }).eq('planner_id', uid).eq('status', 'pending');
 
-        // Fetch views for the last 7 days
+        // Fetch views for the last 7 days AND previous 7 days for real % change
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const fourteenDaysAgo = new Date();
+        fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
 
         const { data: dailyViews } = await supabase
             .from('profile_views')
             .select('created_at')
             .eq('profile_id', uid)
-            .gte('created_at', sevenDaysAgo.toISOString());
+            .gte('created_at', fourteenDaysAgo.toISOString());
+
+        let viewsThisWeek = 0;
+        let viewsLastWeek = 0;
+        let viewsChartData = new Array(7).fill(0);
 
         if (dailyViews) {
-            const counts = new Array(7).fill(0);
             const now = new Date();
             dailyViews.forEach(v => {
                 const day = new Date(v.created_at);
                 const diff = Math.floor((now.getTime() - day.getTime()) / (1000 * 60 * 60 * 24));
                 if (diff >= 0 && diff < 7) {
-                    counts[6 - diff]++;
+                    viewsThisWeek++;
+                    viewsChartData[6 - diff]++;
+                } else if (diff >= 7 && diff < 14) {
+                    viewsLastWeek++;
                 }
             });
-            setVisibilityData(counts);
+            setVisibilityData(viewsChartData);
         }
 
+        // Fetch new bookings in last 7 days
+        const { count: newBookingsThisWeek } = await supabase
+            .from('bookings')
+            .select('id', { count: 'exact', head: true })
+            .eq('planner_id', uid)
+            .gte('created_at', sevenDaysAgo.toISOString());
+
+        // Compute view trend %
+        const viewChange = viewsLastWeek > 0
+            ? Math.round(((viewsThisWeek - viewsLastWeek) / viewsLastWeek) * 100)
+            : viewsThisWeek > 0 ? 100 : 0;
+        const viewChangeTrend = viewChange >= 0 ? `+${viewChange}%` : `${viewChange}%`;
+        const viewTrendLabel = viewChange >= 0 ? `+${viewChange}% this week` : `${viewChange}% this week`;
+
         setStats([
-            { label: "Bookings", value: bookingsCount?.toString() || "0", change: "+0", icon: Calendar },
-            { label: "Profile Views", value: viewsCount?.toString() || "0", change: "+0%", icon: TrendingUp },
-            { label: "Global Rank", value: "Top 5%", change: "Ranked", icon: Sparkles },
-            { label: "Client Rating", value: profile?.rating?.toString() || "0.0", change: "★", icon: Star },
+            { label: "Total Bookings", value: bookingsCount?.toString() || "0", change: newBookingsThisWeek ? `+${newBookingsThisWeek} this week` : "No new this week", icon: Calendar },
+            { label: "Profile Views", value: viewsCount?.toString() || "0", change: viewChangeTrend, icon: TrendingUp },
+            { label: "Pending Requests", value: pendingCount?.toString() || "0", change: pendingCount && pendingCount > 0 ? "Needs action" : "All clear", icon: Sparkles },
+            { label: "Client Rating", value: profile?.rating?.toFixed(1) || "0.0", change: "★", icon: Star },
         ]);
+
+        // Update chart trend badge (stored in state separately)
+        setViewTrendBadge(viewTrendLabel);
 
         if (profile?.full_name) {
             setUserName(profile.full_name.split(' ')[0]);
@@ -608,22 +635,22 @@ export default function PlannerDashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <Card className="lg:col-span-2 p-8 space-y-6 flex flex-col justify-between overflow-hidden relative">
-                    <div className="flex justify-between items-center mb-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="lg:col-span-2 p-6 sm:p-8 space-y-6 flex flex-col justify-between overflow-hidden relative">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                         <div>
                             <h3 className="text-xl font-black tracking-tight">Visibility Trends</h3>
                             <p className="text-xs text-muted-foreground font-light">Real-time profile view analysis</p>
                         </div>
                         <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-black uppercase tracking-widest rounded-full">
                             <TrendingUp size={12} />
-                            +24% Increase
+                            {viewTrendBadge}
                         </div>
                     </div>
                     <ProfileVisibilityChart data={visibilityData} />
                 </Card>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 h-full">
                     {stats.map((stat: StatItem, i: number) => {
                         const Icon = stat.icon;
                         return (

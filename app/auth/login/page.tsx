@@ -161,11 +161,10 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen bg-[#FAF8F3] flex items-center justify-center p-6 pt-20 sm:pt-32">
-            <Card className="max-w-md w-full space-y-8 p-6 sm:p-12" hover={false}>
+            <Card className="max-w-md w-full space-y-8 p-6 sm:p-12 rounded-3xl" hover={false}>
                 <div className="text-center space-y-3">
-                    <span className="section-label">Access Protocol</span>
                     <h2 className="text-4xl md:text-5xl font-serif text-charcoal">Welcome Back</h2>
-                    <p className="text-muted-foreground text-sm font-light italic">Enter your credentials to access your heritage dashboard</p>
+                    <p className="text-muted-foreground text-sm font-light italic">Login to get started</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -183,7 +182,7 @@ export default function LoginPage() {
                         <div className="flex justify-between items-center ml-1">
                             <label className="text-xs font-bold uppercase tracking-widest text-accent">Password</label>
                             <Link href="/auth/forgot-password" title="Forgot password?" className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-charcoal transition-colors">
-                                Recovery
+                                Forgot password?
                             </Link>
                         </div>
                         <div className="relative">
