@@ -171,7 +171,7 @@ function PayoutContent() {
 
     if (isLoading) return (
         <div className="min-h-screen flex items-center justify-center bg-black">
-            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-4 border-charcoal/30 border-t-transparent rounded-full animate-spin" />
         </div>
     );
 
@@ -193,19 +193,19 @@ function PayoutContent() {
                     <div className="lg:col-span-2 space-y-8">
                         <section className="space-y-6">
                             <h3 className="text-xl font-bold flex items-center gap-2">
-                                <CreditCard className="text-blue-400" size={20} />
+                                <CreditCard className="text-amber-600" size={20} />
                                 Select Payment Method
                             </h3>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <button
                                     onClick={() => setSelectedMethod("gateway")}
-                                    className={`p-6 rounded-2xl border-2 transition-all text-left space-y-3 ${selectedMethod === "gateway"
-                                        ? "border-blue-500 bg-blue-500/5 shadow-lg shadow-blue-500/10"
-                                        : "border-white/5 hover:border-white/10"
+                                    className={`p-6 rounded-3xl border-2 transition-all text-left space-y-3 ${selectedMethod === "gateway"
+                                        ? "border-charcoal/30 bg-amber-600/5 shadow-lg shadow-blue-500/10"
+                                        : "border-border hover:border-border"
                                         }`}
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center">
+                                    <div className="w-10 h-10 rounded-3xl bg-amber-600 flex items-center justify-center">
                                         <Zap size={20} />
                                     </div>
                                     <span className="font-bold block">Pay Instant (ATM/Transfer)</span>
@@ -214,12 +214,12 @@ function PayoutContent() {
 
                                 <button
                                     onClick={() => setSelectedMethod("manual")}
-                                    className={`p-6 rounded-2xl border-2 transition-all text-left space-y-3 ${selectedMethod === "manual"
+                                    className={`p-6 rounded-3xl border-2 transition-all text-left space-y-3 ${selectedMethod === "manual"
                                         ? "border-amber-500 bg-amber-500/5 shadow-lg shadow-amber-500/10"
-                                        : "border-white/5 hover:border-white/10"
+                                        : "border-border hover:border-border"
                                         }`}
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center">
+                                    <div className="w-10 h-10 rounded-3xl bg-amber-500 flex items-center justify-center">
                                         <Building2 size={20} />
                                     </div>
                                     <span className="font-bold block">Manual Bank Transfer</span>
@@ -230,7 +230,7 @@ function PayoutContent() {
 
                         {selectedMethod === "manual" && (
                             <section className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="p-6 glass-panel border-amber-500/20 bg-amber-500/5 rounded-3xl space-y-4">
+                                <div className="p-6 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border-amber-500/20 bg-amber-500/5 rounded-3xl space-y-4">
                                     <div className="flex gap-4">
                                         <Info className="text-amber-400 shrink-0" size={20} />
                                         <div className="space-y-2">
@@ -240,7 +240,7 @@ function PayoutContent() {
                                                 <p>Account: <span className="text-white font-bold">{manualDetails.accountNumber}</span></p>
                                                 <p>Name: <span className="text-white font-bold">{manualDetails.accountName}</span></p>
                                                 {manualDetails.additionalInfo && (
-                                                    <div className="mt-4 pt-4 border-t border-white/5">
+                                                    <div className="mt-4 pt-4 border-t border-border">
                                                         <p className="text-[10px] uppercase tracking-widest text-amber-400/60 font-bold mb-1">Note</p>
                                                         <p className="text-xs text-gray-400 italic leading-relaxed">{manualDetails.additionalInfo}</p>
                                                     </div>
@@ -269,7 +269,7 @@ function PayoutContent() {
                                             onChange={handleFileUpload}
                                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                         />
-                                        <div className={`p-8 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center transition-all ${screenshot ? "border-green-500/50 bg-green-500/5" : "border-white/10 group-hover:border-white/20"
+                                        <div className={`p-8 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center transition-all ${screenshot ? "border-green-500/50 bg-green-500/5" : "border-border group-hover:border-white/20"
                                             }`}>
                                             {isSubmitting ? (
                                                 <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
@@ -295,8 +295,8 @@ function PayoutContent() {
 
                         {selectedMethod === "gateway" && (
                             <section className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="p-10 glass-panel rounded-[2rem] text-center space-y-6 border-white/5">
-                                    <div className="w-20 h-20 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto text-blue-400">
+                                <div className="p-10 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl text-center space-y-6 border-border">
+                                    <div className="w-20 h-20 bg-charcoal/5 rounded-full flex items-center justify-center mx-auto text-amber-600">
                                         <Zap size={40} />
                                     </div>
                                     <div className="space-y-2">
@@ -339,7 +339,7 @@ function PayoutContent() {
                                     <span className="text-gray-500">Duration</span>
                                     <span className="font-bold">1 {selectedTier?.period}</span>
                                 </div>
-                                <hr className="border-white/5" />
+                                <hr className="border-border" />
                                 <div className="flex justify-between items-end">
                                     <span className="text-gray-400">Total Charged</span>
                                     <span className="text-2xl font-bold">₦{Number(selectedTier?.price || 0).toLocaleString()}</span>
@@ -367,7 +367,7 @@ export default function PayoutPage() {
     return (
         <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center bg-black">
-                <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-8 h-8 border-4 border-charcoal/30 border-t-transparent rounded-full animate-spin" />
             </div>
         }>
             <PayoutContent />

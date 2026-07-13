@@ -32,7 +32,6 @@ export default function PlannerProfileEdit() {
         twitter_url: "",
         linkedin_url: "",
         facebook_url: "",
-        facebook_url: "",
         public_email: "",
         cover_image_url: ""
     });
@@ -49,7 +48,7 @@ export default function PlannerProfileEdit() {
 
             const { data, error } = await supabase
                 .from('profiles')
-                .select('full_name, username, bio, location, category, avatar_url, cover_image_url, instagram_url, twitter_url, linkedin_url, facebook_url, public_email')
+                .select('full_name, username, bio, location, category, avatar_url, cover_image_url, instagram_url, twitter_url, linkedin_url, facebook_url, public_email, events_completed, years_experience, clients_served')
                 .eq('id', session.user.id)
                 .single();
 
@@ -224,7 +223,7 @@ export default function PlannerProfileEdit() {
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center pt-24">
-                <Loader2 className="animate-spin text-blue-500 w-8 h-8" />
+                <Loader2 className="animate-spin text-charcoal w-8 h-8" />
             </div>
         );
     }
@@ -232,9 +231,9 @@ export default function PlannerProfileEdit() {
     return (
         <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
             {/* Compact Header */}
-            <div className="flex items-center justify-between glass-panel p-4 md:p-6 rounded-3xl border-white/5 bg-white/[0.02]">
+            <div className="flex items-center justify-between bg-white/50 border border-border/50 backdrop-blur-md shadow-sm p-4 md:p-6 rounded-3xl border-border bg-white/[0.02]">
                 <div className="flex items-center gap-4">
-                    <Link href="/dashboard/planner" className="p-2 glass-panel rounded-xl hover:bg-white/10 transition-colors shrink-0">
+                    <Link href="/dashboard/planner" className="p-2 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl hover:bg-white/10 transition-colors shrink-0">
                         <ArrowLeft size={18} className="text-gray-400" />
                     </Link>
                     <div>
@@ -247,14 +246,14 @@ export default function PlannerProfileEdit() {
                         variant="glass"
                         onClick={() => router.push("/dashboard/planner")}
                         disabled={isSaving}
-                        className="hidden sm:flex h-10 px-6 font-bold text-gray-400 hover:text-white border-white/5"
+                        className="hidden sm:flex h-10 px-6 font-bold text-gray-400 hover:text-white border-border"
                     >
                         Cancel
                     </Button>
                     <Button
                         onClick={handleSave}
                         disabled={isSaving || isUploading}
-                        className="bg-blue-600 hover:bg-blue-700 h-10 px-8 font-black shadow-lg shadow-blue-600/20 uppercase tracking-widest text-[10px]"
+                        className="bg-charcoal text-cream hover:bg-charcoal/90 h-10 px-8 font-black shadow-lg shadow-xl shadow-charcoal/20 uppercase tracking-widest text-[10px]"
                     >
                         {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} className="mr-2" />}
                         Save Changes
@@ -267,7 +266,7 @@ export default function PlannerProfileEdit() {
                 <div className="space-y-6">
                     <Card className="p-6 space-y-6" hover={false}>
                         <div className="flex flex-col items-center text-center space-y-4">
-                            <div className="relative w-28 h-28 rounded-full overflow-hidden glass-panel border-2 border-blue-500/20 bg-black/50 group">
+                            <div className="relative w-28 h-28 rounded-full overflow-hidden bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border-2 border-charcoal/10 bg-black/50 group">
                                 {profile.avatar_url ? (
                                     <img src={profile.avatar_url} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
@@ -282,12 +281,12 @@ export default function PlannerProfileEdit() {
                                 <p className="text-sm font-bold text-white">Profile Photo</p>
                                 <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Click image to change (Auto-Saves)</p>
                             </div>
-                            {isUploading && <p className="text-[10px] text-blue-400 animate-pulse font-bold">Uploading media...</p>}
+                            {isUploading && <p className="text-[10px] text-amber-600 animate-pulse font-bold">Uploading media...</p>}
 
-                            <hr className="w-full border-white/5 my-4" />
+                            <hr className="w-full border-border my-4" />
 
                             {/* Cover Image Uploader */}
-                            <div className="relative w-full h-32 rounded-xl overflow-hidden glass-panel border border-white/5 group bg-black/50">
+                            <div className="relative w-full h-32 rounded-3xl overflow-hidden bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border border-border group bg-black/50">
                                 {profile.cover_image_url ? (
                                     <img src={profile.cover_image_url} alt="Cover" className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity" />
                                 ) : (
@@ -306,11 +305,11 @@ export default function PlannerProfileEdit() {
                             </div>
                         </div>
 
-                        <div className="space-y-4 pt-4 border-t border-white/5">
+                        <div className="space-y-4 pt-4 border-t border-border">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Display Name</label>
                                 <Input
-                                    className="h-11 bg-white/[0.03] border-white/10"
+                                    className="h-11 bg-white/50 border-border"
                                     placeholder="Your Name"
                                     value={profile.full_name}
                                     onChange={(e) => handleInputChange('full_name', e.target.value)}
@@ -319,7 +318,7 @@ export default function PlannerProfileEdit() {
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Handle (@username)</label>
                                 <Input
-                                    className="h-11 bg-white/[0.03] border-white/10"
+                                    className="h-11 bg-white/50 border-border"
                                     placeholder="handle"
                                     value={profile.username}
                                     onChange={(e) => handleInputChange('username', e.target.value)}
@@ -336,7 +335,7 @@ export default function PlannerProfileEdit() {
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Business Category</label>
                                 <select
-                                    className="w-full h-11 bg-white/[0.03] border border-white/10 rounded-xl px-4 text-sm text-white focus:outline-none focus:border-blue-500 transition-all appearance-none"
+                                    className="w-full h-11 bg-white/50 border border-border rounded-3xl px-4 text-sm text-white focus:outline-none focus:border-charcoal/30 transition-all appearance-none"
                                     value={profile.category}
                                     onChange={(e) => handleInputChange('category', e.target.value)}
                                 >
@@ -350,7 +349,7 @@ export default function PlannerProfileEdit() {
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Primary Location</label>
                                 <Input
-                                    className="h-11 bg-white/[0.03] border-white/10"
+                                    className="h-11 bg-white/50 border-border"
                                     placeholder="e.g. Lagos, Nigeria"
                                     value={profile.location}
                                     onChange={(e) => handleInputChange('location', e.target.value)}
@@ -358,12 +357,12 @@ export default function PlannerProfileEdit() {
                             </div>
 
                             {/* Pro Stats Grid */}
-                            <div className="md:col-span-2 grid grid-cols-3 gap-4 pt-4 border-t border-white/5">
+                            <div className="md:col-span-2 grid grid-cols-3 gap-4 pt-4 border-t border-border">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Events Done</label>
                                     <Input
                                         type="number"
-                                        className="h-11 bg-white/[0.03] border-white/10"
+                                        className="h-11 bg-white/50 border-border"
                                         value={profile.events_completed}
                                         onChange={(e) => setProfile(p => ({ ...p, events_completed: parseInt(e.target.value) || 0 }))}
                                     />
@@ -372,7 +371,7 @@ export default function PlannerProfileEdit() {
                                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Years Active</label>
                                     <Input
                                         type="number"
-                                        className="h-11 bg-white/[0.03] border-white/10"
+                                        className="h-11 bg-white/50 border-border"
                                         value={profile.years_experience}
                                         onChange={(e) => setProfile(p => ({ ...p, years_experience: parseInt(e.target.value) || 0 }))}
                                     />
@@ -381,7 +380,7 @@ export default function PlannerProfileEdit() {
                                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Happy Clients</label>
                                     <Input
                                         type="number"
-                                        className="h-11 bg-white/[0.03] border-white/10"
+                                        className="h-11 bg-white/50 border-border"
                                         value={profile.clients_served}
                                         onChange={(e) => setProfile(p => ({ ...p, clients_served: parseInt(e.target.value) || 0 }))}
                                     />
@@ -391,7 +390,7 @@ export default function PlannerProfileEdit() {
                             <div className="md:col-span-2 space-y-2 pt-4">
                                 <Textarea
                                     rows={4}
-                                    className="bg-white/[0.03] border-white/10 min-h-[140px] resize-none"
+                                    className="bg-white/50 border-border min-h-[140px] resize-none"
                                     placeholder="Your experience and vision..."
                                     value={profile.bio}
                                     onChange={(e) => handleInputChange('bio', e.target.value)}
@@ -399,16 +398,16 @@ export default function PlannerProfileEdit() {
                             </div>
 
                             {/* Social Media Integration */}
-                            <div className="md:col-span-2 pt-6 border-t border-white/5 space-y-6">
+                            <div className="md:col-span-2 pt-6 border-t border-border space-y-6">
                                 <div className="flex items-center gap-2">
-                                    <Sparkles className="text-blue-500" size={18} />
+                                    <Sparkles className="text-charcoal" size={18} />
                                     <h3 className="text-sm font-black uppercase tracking-widest">Connect Socials</h3>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Instagram URL</label>
                                         <Input
-                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            className="h-11 bg-white/50 border-border"
                                             placeholder="https://instagram.com/..."
                                             value={profile.instagram_url}
                                             onChange={(e) => handleInputChange('instagram_url', e.target.value)}
@@ -417,7 +416,7 @@ export default function PlannerProfileEdit() {
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Twitter URL</label>
                                         <Input
-                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            className="h-11 bg-white/50 border-border"
                                             placeholder="https://twitter.com/..."
                                             value={profile.twitter_url}
                                             onChange={(e) => handleInputChange('twitter_url', e.target.value)}
@@ -426,7 +425,7 @@ export default function PlannerProfileEdit() {
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">LinkedIn URL</label>
                                         <Input
-                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            className="h-11 bg-white/50 border-border"
                                             placeholder="https://linkedin.com/in/..."
                                             value={profile.linkedin_url}
                                             onChange={(e) => handleInputChange('linkedin_url', e.target.value)}
@@ -435,7 +434,7 @@ export default function PlannerProfileEdit() {
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Facebook URL</label>
                                         <Input
-                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            className="h-11 bg-white/50 border-border"
                                             placeholder="https://facebook.com/..."
                                             value={profile.facebook_url}
                                             onChange={(e) => handleInputChange('facebook_url', e.target.value)}
@@ -444,7 +443,7 @@ export default function PlannerProfileEdit() {
                                     <div className="md:col-span-2 space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Public Portfolio Email</label>
                                         <Input
-                                            className="h-11 bg-white/[0.03] border-white/10"
+                                            className="h-11 bg-white/50 border-border"
                                             placeholder="contact@example.com"
                                             value={profile.public_email}
                                             onChange={(e) => handleInputChange('public_email', e.target.value)}
@@ -461,14 +460,14 @@ export default function PlannerProfileEdit() {
             <div className="sm:hidden flex flex-col gap-3">
                 <Button
                     onClick={handleSave}
-                    className="bg-blue-600 w-full h-12 font-black uppercase tracking-widest text-xs"
+                    className="bg-charcoal text-cream w-full h-12 font-black uppercase tracking-widest text-xs"
                 >
                     Save Profile
                 </Button>
                 <Button
                     variant="glass"
                     onClick={() => router.push("/dashboard/planner")}
-                    className="w-full h-12 font-bold text-gray-400 border-white/5"
+                    className="w-full h-12 font-bold text-gray-400 border-border"
                 >
                     Cancel
                 </Button>

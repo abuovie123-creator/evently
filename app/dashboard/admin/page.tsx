@@ -35,7 +35,9 @@ import {
     Shield,
     Bell,
     Info,
-    Star
+    Star,
+    DollarSign,
+    Wallet
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";

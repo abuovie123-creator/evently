@@ -567,7 +567,7 @@ export default function PlannerPortfolio() {
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center pt-24">
-                <Loader2 className="animate-spin text-blue-500 w-8 h-8" />
+                <Loader2 className="animate-spin text-charcoal w-8 h-8" />
             </div>
         );
     }
@@ -575,9 +575,9 @@ export default function PlannerPortfolio() {
     return (
         <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2rem] border-foreground/5 bg-foreground/[0.02]">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm p-6 md:p-8 rounded-3xl border-foreground/5 bg-foreground/[0.02]">
                 <div className="flex items-center gap-4 w-full lg:w-auto">
-                    <Link href="/dashboard/planner" className="p-3 glass-panel rounded-2xl hover:bg-white/10 transition-colors shrink-0">
+                    <Link href="/dashboard/planner" className="p-3 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl hover:bg-white/10 transition-colors shrink-0">
                         <ArrowLeft size={20} className="text-gray-400" />
                     </Link>
                     <div className="flex-1 min-w-0">
@@ -593,7 +593,7 @@ export default function PlannerPortfolio() {
                         <div className="flex items-center gap-3 w-full sm:w-auto">
                             <div className="flex-1 sm:w-32 h-2 bg-foreground/5 rounded-full overflow-hidden border border-foreground/5">
                                 <div
-                                    className={`h-full rounded-full transition-all duration-1000 ${currentImageCount >= imageLimit ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]'}`}
+                                    className={`h-full rounded-full transition-all duration-1000 ${currentImageCount >= imageLimit ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-amber-600 shadow-[0_0_10px_rgba(59,130,246,0.5)]'}`}
                                     style={{ width: `${Math.min(100, (currentImageCount / imageLimit) * 100)}%` }}
                                 />
                             </div>
@@ -601,7 +601,7 @@ export default function PlannerPortfolio() {
                         </div>
                     </div>
 
-                    <Button onClick={() => setShowAddModal(true)} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto h-12 px-8 rounded-2xl shadow-lg shadow-blue-600/20 text-sm font-bold shrink-0">
+                    <Button onClick={() => setShowAddModal(true)} className="bg-charcoal text-cream hover:bg-charcoal/90 w-full sm:w-auto h-12 px-8 rounded-3xl shadow-lg shadow-xl shadow-charcoal/20 text-sm font-bold shrink-0">
                         <Plus size={18} className="mr-2" /> New Album
                     </Button>
                 </div>
@@ -611,14 +611,14 @@ export default function PlannerPortfolio() {
                 {/* Events Sidebar/List */}
                 <div className="lg:col-span-4 space-y-6">
                     {/* Portfolio Highlights Editor */}
-                    <Card className="p-5 border-blue-500/10 bg-blue-500/[0.02]" hover={false}>
+                    <Card className="p-5 border-charcoal/10 bg-charcoal/[]" hover={false}>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Portfolio Highlights</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600">Portfolio Highlights</h4>
                                 <Button
                                     size="sm"
                                     variant="glass"
-                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-blue-500/20 text-blue-400 hover:bg-blue-500/10"
+                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-charcoal/10 text-amber-600 hover:bg-charcoal/5"
                                     onClick={handleSaveStats}
                                     disabled={isSavingStats}
                                 >
@@ -645,7 +645,7 @@ export default function PlannerPortfolio() {
                                     <div className="relative">
                                         <Input
                                             type="number"
-                                            className="h-9 bg-white/[0.03] border-white/5 text-xs font-bold pl-3 pr-8"
+                                            className="h-9 bg-white/50 border-border text-xs font-bold pl-3 pr-8"
                                             value={stats.years_experience}
                                             onChange={(e) => setStats({ ...stats, years_experience: parseInt(e.target.value) || 0 })}
                                         />
@@ -657,7 +657,7 @@ export default function PlannerPortfolio() {
                                     <div className="relative">
                                         <Input
                                             type="number"
-                                            className="h-9 bg-white/[0.03] border-white/5 text-xs font-bold pl-3 pr-8"
+                                            className="h-9 bg-white/50 border-border text-xs font-bold pl-3 pr-8"
                                             value={stats.clients_served}
                                             onChange={(e) => setStats({ ...stats, clients_served: parseInt(e.target.value) || 0 })}
                                         />
@@ -669,14 +669,14 @@ export default function PlannerPortfolio() {
                     </Card>
 
                     {/* Social & Contact Links */}
-                    <Card className="p-5 border-blue-500/10 bg-blue-500/[0.01]" hover={false}>
+                    <Card className="p-5 border-charcoal/10 bg-charcoal/[]" hover={false}>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Social & Contact</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600">Social & Contact</h4>
                                 <Button
                                     size="sm"
                                     variant="glass"
-                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-blue-500/20 text-blue-400 hover:bg-blue-500/10"
+                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-charcoal/10 text-amber-600 hover:bg-charcoal/5"
                                     onClick={handleSaveSocial}
                                     disabled={isSavingSocial}
                                 >
@@ -699,7 +699,7 @@ export default function PlannerPortfolio() {
                                         />
                                     </div>
                                     <div className="relative group">
-                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-400 transition-colors">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-amber-600 transition-colors">
                                             <Twitter size={14} />
                                         </div>
                                         <Input
@@ -721,7 +721,7 @@ export default function PlannerPortfolio() {
                                         />
                                     </div>
                                     <div className="relative group">
-                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-600 transition-colors">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-charcoal transition-colors">
                                             <Facebook size={14} />
                                         </div>
                                         <Input
@@ -750,14 +750,14 @@ export default function PlannerPortfolio() {
                     </Card>
 
                     {/* Profile & Cover Images */}
-                    <Card className="p-5 border-blue-500/10 bg-blue-500/[0.01]" hover={false}>
+                    <Card className="p-5 border-charcoal/10 bg-charcoal/[]" hover={false}>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400">Profile Defaults</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600">Profile Defaults</h4>
                                 <Button
                                     size="sm"
                                     variant="glass"
-                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-blue-500/20 text-blue-400 hover:bg-blue-500/10"
+                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-charcoal/10 text-amber-600 hover:bg-charcoal/5"
                                     onClick={handleSaveImages}
                                     disabled={isSavingImages}
                                 >
@@ -795,7 +795,7 @@ export default function PlannerPortfolio() {
                                             onChange={(e) => setProfileImages({ ...profileImages, cover_image_url: e.target.value })}
                                         />
                                     </div>
-                                    <div className="h-24 w-full rounded-xl overflow-hidden glass-panel border border-foreground/5 relative group cursor-crosshair">
+                                    <div className="h-24 w-full rounded-3xl overflow-hidden bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border border-foreground/5 relative group cursor-crosshair">
                                         <img src={profileImages.cover_image_url} className="w-full h-full object-cover" alt="Cover Preview" onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80")} />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <span className="text-xs font-bold text-white tracking-widest uppercase">Cover Preview</span>
@@ -844,8 +844,8 @@ export default function PlannerPortfolio() {
                                                 <button
                                                     key={i}
                                                     onClick={() => setProfileImages({ ...profileImages, avatar_url: avatar })}
-                                                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${profileImages.avatar_url === avatar
-                                                        ? "border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-110 z-10"
+                                                    className={`aspect-square rounded-3xl overflow-hidden border-2 transition-all hover:scale-105 ${profileImages.avatar_url === avatar
+                                                        ? "border-charcoal/30 shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-110 z-10"
                                                         : "border-transparent opacity-60 hover:opacity-100"
                                                         }`}
                                                 >
@@ -860,12 +860,12 @@ export default function PlannerPortfolio() {
                     </Card>
 
                     <h3 className="text-lg font-bold flex items-center gap-2">
-                        <LayoutGrid size={18} className="text-blue-400" /> Your Albums
+                        <LayoutGrid size={18} className="text-amber-600" /> Your Albums
                     </h3>
 
                     <div className="grid grid-cols-1 gap-3">
                         {events.length === 0 ? (
-                            <Card className="p-16 text-center border-dashed border-white/10 flex flex-col items-center space-y-6" hover={false}>
+                            <Card className="p-16 text-center border-dashed border-border flex flex-col items-center space-y-6" hover={false}>
                                 <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-500">
                                     <Images size={32} />
                                 </div>
@@ -873,7 +873,7 @@ export default function PlannerPortfolio() {
                                     <p className="text-gray-400 font-bold">No albums yet</p>
                                     <p className="text-gray-600 text-xs max-w-[200px] mx-auto italic">Showcase your best work to attract more clients.</p>
                                 </div>
-                                <Button onClick={() => setShowAddModal(true)} size="sm" className="bg-blue-600 hover:bg-blue-700 rounded-xl">
+                                <Button onClick={() => setShowAddModal(true)} size="sm" className="bg-charcoal text-cream hover:bg-charcoal/90 rounded-3xl">
                                     <Plus size={16} className="mr-2" /> Create First Album
                                 </Button>
                             </Card>
@@ -881,19 +881,19 @@ export default function PlannerPortfolio() {
                             <button
                                 key={event.id}
                                 onClick={() => setSelectedEvent(event)}
-                                className={`w-full text-left p-4 rounded-2xl border transition-all group flex items-center justify-between ${selectedEvent?.id === event.id
-                                    ? "bg-foreground/10 border-blue-500/50 shadow-lg shadow-blue-500/5"
-                                    : "glass-panel border-foreground/5 hover:border-foreground/20"
+                                className={`w-full text-left p-4 rounded-3xl border transition-all group flex items-center justify-between ${selectedEvent?.id === event.id
+                                    ? "bg-foreground/10 border-charcoal/30/50 shadow-lg shadow-blue-500/5"
+                                    : "bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border-foreground/5 hover:border-foreground/20"
                                     }`}
                             >
                                 <div className="space-y-1">
-                                    <h4 className="font-bold text-sm group-hover:text-blue-400 transition-colors">{event.title}</h4>
+                                    <h4 className="font-bold text-sm group-hover:text-amber-600 transition-colors">{event.title}</h4>
                                     <div className="flex items-center gap-3 text-[10px] text-gray-500 font-medium">
                                         <span className="flex items-center gap-1"><Calendar size={10} /> {new Date(event.date).toLocaleDateString()}</span>
-                                        <span className="flex items-center gap-1 font-bold text-blue-400 uppercase tracking-tighter bg-blue-500/10 px-1.5 py-0.5 rounded-md">{event.category}</span>
+                                        <span className="flex items-center gap-1 font-bold text-amber-600 uppercase tracking-tighter bg-charcoal/5 px-1.5 py-0.5 rounded-md">{event.category}</span>
                                     </div>
                                 </div>
-                                <ChevronRight size={16} className={`text-gray-600 transition-transform ${selectedEvent?.id === event.id ? "rotate-90 text-blue-400" : ""}`} />
+                                <ChevronRight size={16} className={`text-gray-600 transition-transform ${selectedEvent?.id === event.id ? "rotate-90 text-amber-600" : ""}`} />
                             </button>
                         ))}
                     </div>
@@ -902,7 +902,7 @@ export default function PlannerPortfolio() {
                 {/* Media Management Area */}
                 <div className="lg:col-span-8">
                     {!selectedEvent ? (
-                        <div className="h-full min-h-[400px] flex flex-col items-center justify-center glass-panel rounded-[2rem] border-white/5 space-y-4 border-dashed">
+                        <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-border space-y-4 border-dashed">
                             <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-600">
                                 <Images size={32} />
                             </div>
@@ -914,18 +914,18 @@ export default function PlannerPortfolio() {
                     ) : (
                         <Card className="space-y-8 p-8" hover={false}>
                             {/* Selected Event Header */}
-                            <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-white/5 pb-8">
+                            <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-border pb-8">
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-3">
                                         <h2 className="text-2xl font-black">{selectedEvent.title}</h2>
-                                        <Link href={`/events/${selectedEvent.slug}`} target="_blank" className="p-2 hover:bg-white/5 rounded-lg text-gray-500 hover:text-blue-400 transition-all">
+                                        <Link href={`/events/${selectedEvent.slug}`} target="_blank" className="p-2 hover:bg-white/5 rounded-lg text-gray-500 hover:text-amber-600 transition-all">
                                             <ExternalLink size={16} />
                                         </Link>
                                     </div>
                                     <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><Calendar size={14} className="text-blue-500" /> {new Date(selectedEvent.date).toLocaleDateString()}</span>
-                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><MapPin size={14} className="text-blue-500" /> {selectedEvent.location || "Online"}</span>
-                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><Tag size={14} className="text-blue-500" /> {selectedEvent.category}</span>
+                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><Calendar size={14} className="text-charcoal" /> {new Date(selectedEvent.date).toLocaleDateString()}</span>
+                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><MapPin size={14} className="text-charcoal" /> {selectedEvent.location || "Online"}</span>
+                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><Tag size={14} className="text-charcoal" /> {selectedEvent.category}</span>
                                     </div>
                                     <p className="text-sm text-gray-500 max-w-xl italic">"{selectedEvent.description || "No description provided."}"</p>
                                 </div>
@@ -940,7 +940,7 @@ export default function PlannerPortfolio() {
                             <div className="space-y-6">
                                 <div className="flex justify-between items-center">
                                     <h3 className="text-lg font-bold flex items-center gap-2">
-                                        <ImageIcon size={18} className="text-blue-400" /> Album Media
+                                        <ImageIcon size={18} className="text-amber-600" /> Album Media
                                         <span className="text-[10px] font-bold text-muted-foreground ml-2 bg-foreground/5 px-2 py-0.5 rounded-full">{eventMedia.length} Items</span>
                                     </h3>
 
@@ -974,25 +974,25 @@ export default function PlannerPortfolio() {
                                 </div>
 
                                 {isUploading && (
-                                    <div className="p-4 glass-panel border-blue-500/20 rounded-xl flex items-center justify-center gap-3 animate-pulse">
-                                        <Loader2 size={16} className="animate-spin text-blue-500" />
-                                        <span className="text-xs font-bold text-blue-400">Uploading media to secure storage...</span>
+                                    <div className="p-4 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border-charcoal/10 rounded-3xl flex items-center justify-center gap-3 animate-pulse">
+                                        <Loader2 size={16} className="animate-spin text-charcoal" />
+                                        <span className="text-xs font-bold text-amber-600">Uploading media to secure storage...</span>
                                     </div>
                                 )}
 
                                 {eventMedia.length === 0 ? (
-                                    <div className="p-16 text-center glass-panel rounded-2xl border-white/5 border-dashed">
+                                    <div className="p-16 text-center bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-border border-dashed">
                                         <p className="text-gray-500 text-sm italic">This album is empty. Upload some gorgeous photos or videos of your work!</p>
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                                         {eventMedia.map((media, i) => (
-                                            <div key={media.id} className="relative aspect-square rounded-xl overflow-hidden glass-panel border-foreground/10 group bg-background/40 backdrop-blur-md">
+                                            <div key={media.id} className="relative aspect-square rounded-3xl overflow-hidden bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border-foreground/10 group bg-background/40 backdrop-blur-md">
                                                 {media.media_type === 'image' ? (
                                                     <img src={media.media_url} alt="Event Media" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center">
-                                                        <Video className="text-blue-500" size={32} />
+                                                        <Video className="text-charcoal" size={32} />
                                                     </div>
                                                 )}
 
@@ -1050,7 +1050,7 @@ export default function PlannerPortfolio() {
                                 <h3 className="text-2xl font-black">Create New Album</h3>
                                 <p className="text-gray-400 text-sm">Group your beautiful event media into a single album.</p>
                             </div>
-                            <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-white/5 rounded-xl transition-colors text-gray-400">
+                            <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-white/5 rounded-3xl transition-colors text-gray-400">
                                 <X size={20} />
                             </button>
                         </div>
@@ -1069,7 +1069,7 @@ export default function PlannerPortfolio() {
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Category</label>
                                     <select
-                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none appearance-none"
+                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-3xl px-4 py-3 text-sm text-foreground focus:outline-none appearance-none"
                                         value={newEvent.category}
                                         onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })}
                                     >
@@ -1110,7 +1110,7 @@ export default function PlannerPortfolio() {
                             </div>
                         </div>
 
-                        <div className="flex gap-4 pt-4 border-t border-white/5">
+                        <div className="flex gap-4 pt-4 border-t border-border">
                             <Button
                                 variant="outline"
                                 className="flex-1"
@@ -1120,7 +1120,7 @@ export default function PlannerPortfolio() {
                                 Cancel
                             </Button>
                             <Button
-                                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                                className="flex-1 bg-charcoal text-cream hover:bg-charcoal/90"
                                 onClick={handleCreateEvent}
                                 disabled={isSaving}
                             >

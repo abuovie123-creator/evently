@@ -16,7 +16,7 @@ const tiers = [
         description: "Get discovered and start building your client base.",
         icon: Zap,
         color: "from-gray-500 to-gray-600",
-        borderColor: "border-white/10",
+        borderColor: "border-border",
         features: [
             "Basic public profile",
             "5 portfolio images",
@@ -34,8 +34,8 @@ const tiers = [
         period: "/month",
         description: "Stand out with premium tools and priority placement.",
         icon: Sparkles,
-        color: "from-blue-500 to-cyan-500",
-        borderColor: "border-blue-500/30",
+        color: "from-amber-600 to-amber-400",
+        borderColor: "border-charcoal/20",
         features: [
             "Verified badge ✓",
             "25 portfolio images",
@@ -120,7 +120,7 @@ export default function PricingPage() {
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-black">
-                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-10 h-10 border-4 border-charcoal/30 border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
+import { createClient } from "@/lib/supabase/client";
 import {
     User,
     Bell,
@@ -36,6 +37,7 @@ interface NotificationItem {
 }
 
 export default function SettingsPage() {
+    const { showToast } = useToast();
     const [activeTab, setActiveTab] = useState("account");
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(true);

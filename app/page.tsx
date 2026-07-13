@@ -19,6 +19,7 @@ interface FeaturedPlanner {
     category: string;
     avatar_url: string;
     rating: number;
+    is_verified: boolean;
 }
 
 interface RecentEvent {

@@ -79,13 +79,13 @@ const ProfileVisibilityChart = ({ data }: { data: number[] }) => {
                 })}
             </svg>
             <div className="absolute inset-x-0 -bottom-2 flex justify-between px-2 pt-4 opacity-100 transition-opacity pointer-events-none">
-                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Mon</span>
-                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Tue</span>
-                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Wed</span>
-                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Thu</span>
-                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Fri</span>
-                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Sat</span>
-                <span className="text-[10px] font-black text-blue-500/30 uppercase tracking-tighter">Sun</span>
+                <span className="text-[10px] font-black text-charcoal/30 uppercase tracking-tighter">Mon</span>
+                <span className="text-[10px] font-black text-charcoal/30 uppercase tracking-tighter">Tue</span>
+                <span className="text-[10px] font-black text-charcoal/30 uppercase tracking-tighter">Wed</span>
+                <span className="text-[10px] font-black text-charcoal/30 uppercase tracking-tighter">Thu</span>
+                <span className="text-[10px] font-black text-charcoal/30 uppercase tracking-tighter">Fri</span>
+                <span className="text-[10px] font-black text-charcoal/30 uppercase tracking-tighter">Sat</span>
+                <span className="text-[10px] font-black text-charcoal/30 uppercase tracking-tighter">Sun</span>
             </div>
         </div>
     );
@@ -543,10 +543,10 @@ export default function PlannerDashboard() {
     if (isLoading) {
         return (
             <div className="animate-pulse space-y-8 p-6">
-                <div className="h-32 bg-foreground/5 rounded-[2rem]" />
+                <div className="h-32 bg-foreground/5 rounded-3xl" />
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2 h-64 bg-foreground/5 rounded-[2rem]" />
-                    <div className="h-64 bg-foreground/5 rounded-[2rem]" />
+                    <div className="lg:col-span-2 h-64 bg-foreground/5 rounded-3xl" />
+                    <div className="h-64 bg-foreground/5 rounded-3xl" />
                 </div>
             </div>
         );
@@ -566,7 +566,7 @@ export default function PlannerDashboard() {
                     <form onSubmit={handleKycSubmit} className="space-y-6 relative z-10">
                         <div className="space-y-4">
                             {kycRequirements.map(req => (
-                                <div key={req.id} className="space-y-2 p-4 glass-panel rounded-2xl border border-white/5">
+                                <div key={req.id} className="space-y-2 p-4 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border border-border">
                                     <label className="text-sm font-bold text-gray-200 uppercase tracking-widest">{req.label} {req.required && <span className="text-red-400">*</span>}</label>
                                     {req.type === 'file' ? (
                                         <Input
@@ -587,7 +587,7 @@ export default function PlannerDashboard() {
                                 </div>
                             ))}
                         </div>
-                        <Button type="submit" className="w-full h-14 text-base font-bold bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-500/20" disabled={isSubmittingKyc}>
+                        <Button type="submit" className="w-full h-14 text-base font-bold bg-charcoal text-cream hover:bg-charcoal/90 shadow-xl shadow-blue-500/20" disabled={isSubmittingKyc}>
                             {isSubmittingKyc ? "Uploading Credentials..." : "Submit Verification"}
                         </Button>
                     </form>
@@ -614,21 +614,21 @@ export default function PlannerDashboard() {
 
     return (
         <div className="space-y-12 animate-in fade-in duration-700">
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 glass-panel p-6 md:p-8 rounded-[2.5rem] border-blue-500/10 bg-blue-600/[0.02] shadow-2xl shadow-blue-500/5 hover:border-blue-500/20 transition-all duration-500 animate-in fade-in slide-in-from-top-4">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm p-6 md:p-8 rounded-3xl border-charcoal/10 bg-charcoal text-cream/[0.02] shadow-2xl shadow-blue-500/5 hover:border-charcoal/10 transition-all duration-500 animate-in fade-in slide-in-from-top-4">
                 <div className="flex-1 min-w-0">
                     <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-2 truncate">
-                        Welcome back, <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">{userName}</span>!
+                        Welcome back, <span className="bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent">{userName}</span>!
                     </h1>
                     <p className="text-muted-foreground text-xs md:text-sm truncate font-light">Here's a look at your platform performance over the last 7 days.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
                     <Link href="/dashboard/planner/profile" className="w-full sm:w-auto">
-                        <Button variant="outline" className="w-full h-12 rounded-2xl font-bold border-white/10 hover:bg-white/5">
+                        <Button variant="outline" className="w-full h-12 rounded-3xl font-bold border-border hover:bg-white/5">
                             Edit Profile Handle
                         </Button>
                     </Link>
                     <Link href="/dashboard/planner/portfolio" className="w-full sm:w-auto">
-                        <Button className="bg-blue-600 hover:bg-blue-700 w-full h-12 rounded-2xl font-bold shadow-lg shadow-blue-600/20">
+                        <Button className="bg-charcoal text-cream hover:bg-charcoal/90 w-full h-12 rounded-3xl font-bold shadow-lg shadow-xl shadow-charcoal/20">
                             Manage Portfolio
                         </Button>
                     </Link>
@@ -654,12 +654,12 @@ export default function PlannerDashboard() {
                     {stats.map((stat: StatItem, i: number) => {
                         const Icon = stat.icon;
                         return (
-                            <Card key={i} className={`p-6 flex flex-col justify-between group rounded-[2rem] animate-in fade-in slide-in-from-right-4 duration-500`} style={{ animationDelay: `${i * 100}ms` }}>
+                            <Card key={i} className={`p-6 flex flex-col justify-between group rounded-3xl animate-in fade-in slide-in-from-right-4 duration-500`} style={{ animationDelay: `${i * 100}ms` }}>
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                    <div className="w-10 h-10 rounded-3xl bg-charcoal text-cream/10 flex items-center justify-center text-charcoal group-hover:bg-charcoal text-cream group-hover:text-white transition-all">
                                         <Icon size={18} />
                                     </div>
-                                    <span className={`text-[10px] font-black uppercase tracking-widest ${stat.change.startsWith('+') || stat.change.includes('★') ? 'text-green-500' : 'text-blue-400'}`}>
+                                    <span className={`text-[10px] font-black uppercase tracking-widest ${stat.change.startsWith('+') || stat.change.includes('★') ? 'text-green-500' : 'text-amber-600'}`}>
                                         {stat.change}
                                     </span>
                                 </div>
@@ -677,17 +677,17 @@ export default function PlannerDashboard() {
             <Card className="p-0 overflow-hidden" hover={false}>
                 <div className="relative">
                     {/* Gradient header */}
-                    <div className="absolute inset-0 h-32 bg-gradient-to-r from-blue-600/20 via-cyan-600/10 to-transparent" />
+                    <div className="absolute inset-0 h-32 bg-gradient-to-r from-charcoal/20 via-cyan-600/10 to-transparent" />
                     <div className="relative p-6 md:p-8 space-y-6">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div className="flex items-center gap-4">
-                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                                <div className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-600 to-amber-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
                                     <Sparkles size={24} className="text-white" />
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
                                         <h3 className="text-xl font-bold">My Subscription</h3>
-                                        <span className="px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-widest rounded-full">
+                                        <span className="px-3 py-1 bg-charcoal/5 border border-charcoal/10 text-amber-600 text-[10px] font-bold uppercase tracking-widest rounded-full">
                                             {currentPlan.name}
                                         </span>
                                     </div>
@@ -715,9 +715,9 @@ export default function PlannerDashboard() {
                         {/* Usage Stats */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
                             {/* Portfolio Images Usage */}
-                            <div className="p-4 glass-panel rounded-2xl border-foreground/5 space-y-3">
+                            <div className="p-4 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-foreground/5 space-y-3">
                                 <div className="flex items-center gap-2">
-                                    <ImageIcon size={14} className="text-blue-400" />
+                                    <ImageIcon size={14} className="text-amber-600" />
                                     <span className="text-xs font-bold text-gray-400">Portfolio Images</span>
                                 </div>
                                 <p className="text-lg font-bold">
@@ -726,7 +726,7 @@ export default function PlannerDashboard() {
                                 </p>
                                 <div className="w-full h-1.5 bg-foreground/5 rounded-full overflow-hidden">
                                     <div
-                                        className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-1000"
+                                        className="h-full bg-gradient-to-r from-amber-600 to-amber-400 rounded-full transition-all duration-1000"
                                         style={{ width: `${(currentPlan.usage.portfolioImages.used / currentPlan.usage.portfolioImages.total) * 100}%` }}
                                     />
                                 </div>
@@ -738,7 +738,7 @@ export default function PlannerDashboard() {
                                 { label: "Analytics", enabled: currentPlan.usage.analytics },
                                 { label: "Direct Messaging", enabled: currentPlan.usage.directMessaging },
                             ].map((feature: PlanFeature, i: number) => (
-                                <div key={i} className="p-4 glass-panel rounded-2xl border-foreground/5 flex items-center gap-3">
+                                <div key={i} className="p-4 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-foreground/5 flex items-center gap-3">
                                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${feature.enabled ? "bg-green-500/10" : "bg-foreground/5"}`}>
                                         <Check size={14} className={feature.enabled ? "text-green-400" : "text-gray-600"} />
                                     </div>
@@ -753,16 +753,16 @@ export default function PlannerDashboard() {
                         </div>
 
                         {/* Renewal Notice */}
-                        <div className="p-4 bg-blue-500/[0.05] border border-blue-500/10 rounded-xl flex items-center justify-between">
+                        <div className="p-4 bg-charcoal/[] border border-charcoal/10 rounded-3xl flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <Calendar size={16} className="text-blue-400" />
+                                <Calendar size={16} className="text-amber-600" />
                                 <span className="text-sm text-muted-foreground">
                                     Your subscription renews in <span className="font-bold text-foreground">{currentPlan.daysLeft} days</span>
                                 </span>
                             </div>
                             <Link
                                 href="/dashboard/planner/billing"
-                                className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors"
+                                className="text-xs font-bold text-amber-600 hover:text-blue-300 transition-colors"
                             >
                                 Manage Billing
                             </Link>
@@ -774,10 +774,10 @@ export default function PlannerDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Availability Calendar (Pro/Elite Only) */}
                 {(currentPlan.name.toLowerCase() === 'pro' || currentPlan.name.toLowerCase() === 'elite') && (
-                    <Card className="lg:col-span-2 p-6 border-white/5 space-y-4" hover={false}>
+                    <Card className="lg:col-span-2 p-6 border-border space-y-4" hover={false}>
                         <div className="space-y-1">
                             <h3 className="text-xl font-bold flex items-center gap-2">
-                                <Calendar className="text-blue-500" size={20} />
+                                <Calendar className="text-charcoal" size={20} />
                                 Availability Calendar
                             </h3>
                             <p className="text-sm text-gray-400">Block out dates to prevent clients from booking you on days you are unavailable.</p>
@@ -791,7 +791,7 @@ export default function PlannerDashboard() {
                                 onChange={(e) => setNewBlockedDate(e.target.value)}
                                 min={new Date().toISOString().split("T")[0]}
                             />
-                            <Button type="submit" disabled={isSavingDates || !newBlockedDate} className="whitespace-nowrap bg-blue-600 hover:bg-blue-700">
+                            <Button type="submit" disabled={isSavingDates || !newBlockedDate} className="whitespace-nowrap bg-charcoal text-cream hover:bg-charcoal/90">
                                 {isSavingDates ? "Saving..." : "Block Date"}
                             </Button>
                         </form>
@@ -800,8 +800,8 @@ export default function PlannerDashboard() {
                                 <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500">Currently Blocked Dates</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {unavailableDates.map((date) => (
-                                        <div key={date} className="flex items-center gap-2 glass-panel border border-foreground/10 px-3 py-1.5 rounded-full text-sm">
-                                            <span className="font-mono font-bold text-blue-400">{date}</span>
+                                        <div key={date} className="flex items-center gap-2 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border border-foreground/10 px-3 py-1.5 rounded-full text-sm">
+                                            <span className="font-mono font-bold text-amber-600">{date}</span>
                                             <button
                                                 onClick={() => handleRemoveBlockedDate(date)}
                                                 disabled={isSavingDates}
@@ -824,11 +824,11 @@ export default function PlannerDashboard() {
                         {isLoading ? (
                             <div className="space-y-4">
                                 {[1, 2, 3].map(i => (
-                                    <div key={i} className="h-20 bg-foreground/5 rounded-2xl animate-pulse" />
+                                    <div key={i} className="h-20 bg-foreground/5 rounded-3xl animate-pulse" />
                                 ))}
                             </div>
                         ) : recentBookings.length === 0 ? (
-                            <div className="text-center py-12 glass-panel rounded-3xl border-dashed border-foreground/10">
+                            <div className="text-center py-12 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-dashed border-foreground/10">
                                 <Calendar className="mx-auto text-muted-foreground/20 mb-3" size={32} />
                                 <p className="text-muted-foreground text-sm font-medium">No recent bookings found.</p>
                             </div>
@@ -836,7 +836,7 @@ export default function PlannerDashboard() {
                             <div key={i} className="space-y-3">
                                 <button
                                     onClick={() => setSelectedBooking(booking)}
-                                    className="w-full flex items-center justify-between p-4 glass-panel rounded-2xl border-foreground/5 hover:border-blue-500/30 hover:bg-foreground/[0.02] transition-all text-left"
+                                    className="w-full flex items-center justify-between p-4 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-foreground/5 hover:border-charcoal/20 hover:bg-foreground/[0.02] transition-all text-left"
                                 >
                                     <div>
                                         <p className="font-bold text-foreground">{booking.title}</p>
@@ -863,18 +863,18 @@ export default function PlannerDashboard() {
                         {isLoading ? (
                             <div className="space-y-4">
                                 {[1, 2].map(i => (
-                                    <div key={i} className="h-16 bg-foreground/5 rounded-2xl animate-pulse" />
+                                    <div key={i} className="h-16 bg-foreground/5 rounded-3xl animate-pulse" />
                                 ))}
                             </div>
                         ) : recentMessages.length === 0 ? (
-                            <div className="text-center py-12 glass-panel rounded-3xl border-dashed border-foreground/10">
+                            <div className="text-center py-12 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-dashed border-foreground/10">
                                 <MessageCircle className="mx-auto text-muted-foreground/20 mb-3" size={32} />
                                 <p className="text-muted-foreground text-sm font-medium">No messages yet.</p>
                             </div>
                         ) : recentMessages.map((msg, i) => (
-                            <Link key={i} href={`/dashboard/messages?id=${msg.id}`} className="flex items-center gap-4 p-4 glass-panel rounded-2xl border-foreground/5 hover:border-blue-500/30 hover:bg-foreground/[0.02] transition-all relative">
+                            <Link key={i} href={`/dashboard/messages?id=${msg.id}`} className="flex items-center gap-4 p-4 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-foreground/5 hover:border-charcoal/20 hover:bg-foreground/[0.02] transition-all relative">
                                 {unreadMessages[msg.id] && (
-                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full" />
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-amber-600 rounded-r-full" />
                                 )}
                                 <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center font-bold overflow-hidden border border-foreground/10">
                                     {msg.avatar ? <img src={msg.avatar} alt="" className="w-full h-full object-cover" /> : msg.name[0]}
@@ -903,8 +903,8 @@ export default function PlannerDashboard() {
 
                         <div className="space-y-4">
                             <div className="flex items-center gap-4">
-                                <div className="p-3 bg-blue-500/10 rounded-2xl">
-                                    <Calendar className="text-blue-500" size={24} />
+                                <div className="p-3 bg-charcoal/5 rounded-3xl">
+                                    <Calendar className="text-charcoal" size={24} />
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-black tracking-tight">{selectedBooking.eventType}</h3>
@@ -924,7 +924,7 @@ export default function PlannerDashboard() {
                                 {selectedBooking.budget && (
                                     <div className="col-span-2">
                                         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Budget</p>
-                                        <p className="text-sm font-bold text-blue-500">{selectedBooking.budget}</p>
+                                        <p className="text-sm font-bold text-charcoal">{selectedBooking.budget}</p>
                                     </div>
                                 )}
                                 {selectedBooking.description && (
@@ -963,7 +963,7 @@ export default function PlannerDashboard() {
                                         <Button variant="outline" className="flex-1 border-red-500/20 text-red-400 hover:bg-red-500/5" onClick={() => setShowDeclineInput(true)} disabled={isUpdating}>
                                             Decline Request
                                         </Button>
-                                        <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" onClick={() => handleStatusUpdate(selectedBooking.id, 'approved')} disabled={isUpdating}>
+                                        <Button className="flex-1 bg-charcoal text-cream hover:bg-charcoal/90 text-white" onClick={() => handleStatusUpdate(selectedBooking.id, 'approved')} disabled={isUpdating}>
                                             Accept Booking
                                         </Button>
                                     </div>
@@ -972,7 +972,7 @@ export default function PlannerDashboard() {
                         )}
 
                         {selectedBooking.status.toLowerCase() === 'approved' && (
-                            <div className="p-4 bg-green-500/5 border border-green-500/10 rounded-2xl flex items-center justify-between">
+                            <div className="p-4 bg-green-500/5 border border-green-500/10 rounded-3xl flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-green-500/20 rounded-lg">
                                         <Check size={16} className="text-green-500" />

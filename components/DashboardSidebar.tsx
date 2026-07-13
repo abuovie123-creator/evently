@@ -52,9 +52,10 @@ interface UserDropdownProps {
     name: string;
     avatar: string | null;
     onLogout: () => void;
+    profileLink?: string;
 }
 
-function UserDropdown({ name, avatar, onLogout }: UserDropdownProps) {
+function UserDropdown({ name, avatar, onLogout, profileLink }: UserDropdownProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -81,14 +82,16 @@ function UserDropdown({ name, avatar, onLogout }: UserDropdownProps) {
             {isOpen && (
                 <div className="absolute right-0 mt-3 w-48 bg-cream border border-om-border/40 shadow-2xl z-[100] animate-in fade-in slide-in-from-top-4 duration-500">
                     <div className="p-1 space-y-1">
-                        <Link
-                            href="/dashboard/client/settings"
-                            className="flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors"
-                            onClick={() => setIsOpen(false)}
-                        >
-                            <User size={12} className="text-gold" />
-                            My Profile
-                        </Link>
+                        {profileLink && (
+                            <Link
+                                href={profileLink}
+                                className="flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                <User size={12} className="text-gold" />
+                                My Profile
+                            </Link>
+                        )}
                         <button
                             onClick={() => {
                                 setIsOpen(false);
@@ -297,7 +300,15 @@ function SidebarContent({
                 )}
             </nav>
 
-            {/* Bottom section removed per request to simplify sidebar */}
+            <div className="p-6 mt-auto border-t border-om-border/10">
+                <button
+                    onClick={handleSignOut}
+                    className="w-full flex items-center gap-4 px-4 py-3 rounded-none text-[12px] font-bold uppercase tracking-widest text-[#6B5E4E]/80 hover:text-red-800 hover:bg-red-900/5 transition-all group"
+                >
+                    <LogOut size={16} className="group-hover:text-red-700 transition-colors" />
+                    <span>Sign Out</span>
+                </button>
+            </div>
         </div>
     );
 }
@@ -489,17 +500,16 @@ export function DashboardSidebar() {
                 </button>
 
                 <div className="flex items-center gap-4">
-                    {role === 'client' ? (
-                        <UserDropdown
-                            name={fullName || "User"}
-                            avatar={user?.user_metadata?.avatar_url || null}
-                            onLogout={handleSignOut}
-                        />
-                    ) : (
-                        <div className="w-10 h-10 rounded-none border border-om-border/20 flex items-center justify-center bg-surface">
-                            <User size={20} className="text-gold/60" />
-                        </div>
-                    )}
+                    <UserDropdown
+                        name={fullName || "User"}
+                        avatar={user?.user_metadata?.avatar_url || null}
+                        onLogout={handleSignOut}
+                        profileLink={
+                            role === 'client' ? '/dashboard/client/settings' :
+                                role === 'planner' ? '/dashboard/planner/profile' :
+                                    role === 'admin' ? '/dashboard/admin#settings' : undefined
+                        }
+                    />
                 </div>
             </div>
 

@@ -331,6 +331,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
     };
 
     const toggleSavePlanner = async () => {
+        if (!planner) return;
         const supabase = createClient();
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {

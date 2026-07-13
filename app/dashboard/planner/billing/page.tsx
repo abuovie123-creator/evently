@@ -65,7 +65,7 @@ export default function PlannerBillingPage() {
     const renderPlanIcon = (name: string) => {
         if (name.toLowerCase().includes("elite")) return <Sparkles size={24} className="text-purple-400" />;
         if (name.toLowerCase().includes("pro")) return <Zap size={24} className="text-yellow-400" />;
-        return <Shield size={24} className="text-blue-400" />;
+        return <Shield size={24} className="text-amber-600" />;
     };
 
     return (
@@ -73,7 +73,7 @@ export default function PlannerBillingPage() {
             <div className="flex items-center justify-between pb-6 border-b border-foreground/10">
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard/planner">
-                        <Button variant="glass" className="h-12 w-12 rounded-2xl p-0 flex items-center justify-center border-foreground/10">
+                        <Button variant="glass" className="h-12 w-12 rounded-3xl p-0 flex items-center justify-center border-foreground/10">
                             <ArrowLeft size={20} className="text-muted-foreground" />
                         </Button>
                     </Link>
@@ -86,9 +86,9 @@ export default function PlannerBillingPage() {
 
             {/* Current Plan Overview */}
             <div className="flex flex-col md:flex-row gap-8">
-                <Card className="flex-1 p-8 space-y-6 bg-gradient-to-br from-blue-600/[0.05] to-purple-600/[0.05] border-foreground/10 shadow-2xl rounded-[2.5rem]" hover={false}>
+                <Card className="flex-1 p-8 space-y-6 bg-gradient-to-br from-charcoal/[0.05] to-purple-600/[0.05] border-foreground/10 shadow-2xl rounded-3xl" hover={false}>
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-500">
+                        <div className="p-3 bg-charcoal/5 rounded-3xl text-charcoal">
                             <CreditCard size={24} />
                         </div>
                         <div>
@@ -112,7 +112,7 @@ export default function PlannerBillingPage() {
 
                     <div className="pt-6 border-t border-foreground/10">
                         <Link href="/payout">
-                            <Button className="h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-xs bg-foreground hover:bg-foreground/90 text-background shadow-xl shadow-foreground/10 transition-all w-full md:w-auto">
+                            <Button className="h-14 px-8 rounded-3xl font-black uppercase tracking-widest text-xs bg-foreground hover:bg-foreground/90 text-background shadow-xl shadow-foreground/10 transition-all w-full md:w-auto">
                                 Upgrade Plan / Payout <ExternalLink size={14} className="ml-2" />
                             </Button>
                         </Link>
@@ -131,11 +131,11 @@ export default function PlannerBillingPage() {
                             <Card
                                 key={plan.id}
                                 hover={false}
-                                className={`p-8 relative overflow-hidden transition-all duration-300 rounded-[2.5rem] border ${isCurrent ? 'border-blue-500 shadow-2xl shadow-blue-500/20 bg-blue-500/[0.02]' : 'border-foreground/5 bg-background shadow-lg'}`}
+                                className={`p-8 relative overflow-hidden transition-all duration-300 rounded-3xl border ${isCurrent ? 'border-charcoal/30 shadow-2xl shadow-blue-500/20 bg-charcoal/[]' : 'border-foreground/5 bg-background shadow-lg'}`}
                             >
                                 {isCurrent && (
                                     <div className="absolute top-0 right-0 p-4">
-                                        <div className="px-3 py-1 bg-blue-500/10 text-blue-500 text-[9px] font-black uppercase tracking-widest rounded-full border border-blue-500/20">
+                                        <div className="px-3 py-1 bg-charcoal/5 text-charcoal text-[9px] font-black uppercase tracking-widest rounded-full border border-charcoal/10">
                                             Current
                                         </div>
                                     </div>
