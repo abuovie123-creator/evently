@@ -574,14 +574,14 @@ export default function PlannerDashboard() {
                                             accept="image/*,application/pdf"
                                             required={req.required}
                                             onChange={(e) => setKycFormData({ ...kycFormData, [req.id]: e.target.files?.[0] })}
-                                            className="bg-black/20"
+                                            className="bg-surface text-foreground"
                                         />
                                     ) : (
                                         <Input
                                             type="text"
                                             required={req.required}
                                             onChange={(e) => setKycFormData({ ...kycFormData, [req.id]: e.target.value })}
-                                            className="bg-black/20"
+                                            className="bg-surface text-foreground"
                                         />
                                     )}
                                 </div>

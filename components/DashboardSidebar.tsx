@@ -152,7 +152,7 @@ function SidebarContent({
                         <input
                             type="text"
                             placeholder="Search parameters..."
-                            className="w-full bg-charcoal/5 border border-om-border/30 rounded-none py-3 pl-10 pr-4 text-[11px] font-sans uppercase tracking-widest focus:ring-1 focus:ring-gold/50 outline-none transition-all placeholder:text-charcoal/30"
+                            className="w-full bg-charcoal/5 border border-om-border/30 rounded-none py-3 pl-10 pr-4 text-[11px] text-charcoal font-sans uppercase tracking-widest focus:ring-1 focus:ring-gold/50 outline-none transition-all placeholder:text-charcoal/30"
                             value={menuSearch}
                             onChange={(e) => setMenuSearch(e.target.value)}
                         />
@@ -491,7 +491,7 @@ export function DashboardSidebar() {
                 <div className="flex items-center gap-4">
                     {role === 'client' ? (
                         <UserDropdown
-                            name={fullName || "Estate Client"}
+                            name={fullName || "User"}
                             avatar={user?.user_metadata?.avatar_url || null}
                             onLogout={handleSignOut}
                         />

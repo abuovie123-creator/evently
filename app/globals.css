@@ -48,6 +48,12 @@ body {
   font-family: 'DM Sans', 'Inter', sans-serif;
 }
 
+/* ─── Ensure all textarea text is always visible ─────────────────── */
+textarea {
+  color: var(--foreground);
+  background: var(--surface);
+}
+
 /* ─── Typography helpers ─────────────────────────────────────────── */
 .font-serif {
   font-family: 'Cormorant Garamond', 'Georgia', serif;
