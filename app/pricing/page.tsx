@@ -129,42 +129,42 @@ export default function PricingPage() {
         <main className="min-h-screen p-6 md:p-8 pt-32 md:pt-48 max-w-7xl mx-auto animate-in fade-in duration-1000 bg-cream">
             {/* Hero Section */}
             <div className="text-center max-w-4xl mx-auto mb-24 space-y-8">
-                <div className="inline-flex items-center gap-3 px-6 py-2 rounded-none bg-charcoal/5 border border-om-border/30 text-charcoal text-[10px] font-bold uppercase tracking-[0.3em] mb-4">
-                    The Heritage Collections
+                <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-charcoal/5 border border-charcoal/10 text-charcoal text-[10px] font-bold uppercase tracking-[0.3em] mb-4">
+                    Simple, Transparent Pricing
                 </div>
-                <h1 className="text-6xl md:text-9xl font-serif italic text-charcoal tracking-tighter leading-none mb-8">
-                    The Heritage Collections
+                <h1 className="text-6xl md:text-8xl font-serif italic text-charcoal tracking-tighter leading-none mb-8">
+                    Pricing
                 </h1>
-                <p className="text-[#6B5E4E] text-xs md:text-sm font-sans uppercase tracking-[0.5em] max-w-3xl mx-auto opacity-60 leading-loose">
-                    Curated architectural foundations for your estate management. Each tier is meticulously tailored to elevate your heritage planning operations.
+                <p className="text-[#6B5E4E] text-xs md:text-sm font-sans max-w-xl mx-auto opacity-75 leading-relaxed">
+                    Choose a plan that fits your business. Start free and upgrade as you grow.
                 </p>
 
-                {/* Heritage Billing Toggle */}
-                <div className="flex items-center justify-center gap-8 mt-12">
+                {/* Billing Toggle */}
+                <div className="flex items-center justify-center gap-6 mt-12">
                     <button
                         onClick={() => setBillingCycle("monthly")}
-                        className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all ${billingCycle === "monthly" ? "text-charcoal border-b border-gold pb-1" : "text-[#6B5E4E]/40 hover:text-charcoal"}`}
+                        className={`text-xs font-bold uppercase tracking-widest transition-all ${billingCycle === "monthly" ? "text-charcoal" : "text-[#6B5E4E]/60 hover:text-charcoal"}`}
                     >
                         Monthly
                     </button>
                     <button
                         onClick={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
-                        className={`w-14 h-7 rounded-none transition-all relative border border-om-border/40 ${billingCycle === "yearly" ? "bg-charcoal" : "bg-cream"}`}
+                        className={`w-14 h-7 rounded-full transition-all duration-300 relative border border-charcoal/20 shadow-inner ${billingCycle === "yearly" ? "bg-charcoal" : "bg-charcoal/10"}`}
                     >
-                        <div className={`absolute top-1 w-4 h-4 rounded-none transition-all ${billingCycle === "yearly" ? "right-1.5 bg-gold" : "left-1.5 bg-charcoal/20"}`} />
+                        <div className={`absolute top-1 w-5 h-5 rounded-full shadow transition-all duration-300 ${billingCycle === "yearly" ? "right-1 bg-amber-400" : "left-1 bg-charcoal/40"}`} />
                     </button>
                     <button
                         onClick={() => setBillingCycle("yearly")}
-                        className={`text-[10px] font-bold uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${billingCycle === "yearly" ? "text-charcoal border-b border-gold pb-1" : "text-[#6B5E4E]/40 hover:text-charcoal"}`}
+                        className={`text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-3 ${billingCycle === "yearly" ? "text-charcoal" : "text-[#6B5E4E]/60 hover:text-charcoal"}`}
                     >
                         Yearly
-                        <span className="px-2 py-0.5 bg-gold/10 text-gold text-[9px] font-bold tracking-widest">− 20%</span>
+                        <span className="px-2.5 py-1 bg-amber-500/10 text-amber-600 text-[9px] font-bold tracking-widest rounded-full">− 20%</span>
                     </button>
                 </div>
             </div>
 
             {/* Pricing Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto mb-24">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 max-w-6xl mx-auto mb-24">
                 {dynamicTiers.map((tier, index) => {
                     const Icon = tier.icon;
                     const rawPrice = parseInt(tier.price.replace(/[₦,]/g, "")) || 0;
@@ -192,9 +192,9 @@ export default function PricingPage() {
                             )}
 
                             <Card
-                                className={`h-full flex flex-col p-10 md:p-14 border border-om-border/30 rounded-none bg-surface shadow-none ${tier.popular
-                                    ? "border-gold/40 scale-105 z-10"
-                                    : "opacity-90"
+                                className={`h-full flex flex-col p-8 md:p-12 border border-charcoal/10 rounded-3xl bg-surface transition-all duration-300 ${tier.popular
+                                    ? "border-amber-400/50 scale-105 z-10 shadow-xl shadow-amber-400/10"
+                                    : "shadow-sm hover:shadow-md hover:border-charcoal/20"
                                     }`}
                                 hover={false}
                             >
@@ -219,8 +219,8 @@ export default function PricingPage() {
                                         )}
                                     </div>
                                     {billingCycle === "yearly" && tier.price !== "Free" && (
-                                        <p className="text-[9px] text-accent mt-3 font-bold uppercase tracking-[0.2em] italic">
-                                            Heritage Discount Applied
+                                        <p className="text-[9px] text-amber-600 mt-3 font-bold uppercase tracking-[0.2em]">
+                                            Annual discount applied
                                         </p>
                                     )}
                                 </div>
@@ -244,9 +244,9 @@ export default function PricingPage() {
                                     className="block"
                                 >
                                     <Button
-                                        className={`w-full h-16 rounded-none font-bold uppercase tracking-[0.3em] text-[10px] transition-all duration-700 ${tier.popular
-                                            ? "bg-charcoal text-cream hover:bg-black border-charcoal"
-                                            : "bg-transparent border-charcoal text-charcoal hover:bg-charcoal hover:text-cream"
+                                        className={`w-full h-13 rounded-2xl font-bold uppercase tracking-widest text-[10px] transition-all duration-300 ${tier.popular
+                                            ? "bg-charcoal text-cream hover:bg-black shadow-lg shadow-charcoal/20"
+                                            : "bg-transparent border border-charcoal/30 text-charcoal hover:bg-charcoal hover:text-cream hover:border-charcoal"
                                             }`}
                                         variant={tier.popular ? "primary" : "outline"}
                                         size="lg"
