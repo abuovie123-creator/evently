@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/Toast";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, MapPin, Star, X, MessageSquare, Share2, Instagram, Twitter, Linkedin, Facebook, Mail, Heart, Award, Calendar, Users, ChevronDown, ShieldCheck } from "lucide-react";
@@ -296,7 +297,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
                 <div className="absolute inset-0 bg-gradient-to-r from-charcoal/20 to-transparent" />
 
                 {/* Top action row — pushed below fixed navbar */}
-                <div className="absolute top-[70px] md:top-[90px] right-6 z-30 flex items-center gap-3">
+                <div className="absolute top-[86px] md:top-[96px] right-6 z-30 flex items-center gap-3">
                     {!isUserAdmin && (
                         <button
                             onClick={toggleSavePlanner}
@@ -347,7 +348,7 @@ export default function PlannerProfilePage({ params }: { params: Promise<{ usern
 
             {/* ── Sticky floating CTA bar ── */}
             {!isUserAdmin && (
-                <div className="sticky top-[57px] md:top-[65px] z-40 bg-cream/95 backdrop-blur-md border-b border-charcoal/10 shadow-sm">
+                <div className="sticky top-[70px] md:top-[65px] z-40 bg-cream/95 backdrop-blur-md border-b border-charcoal/10 shadow-sm">
                     <div className="max-w-7xl mx-auto px-6 md:px-16 py-3 flex items-center justify-end gap-4">
                         <div className="flex items-center gap-3">
                             <button
