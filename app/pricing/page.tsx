@@ -197,44 +197,44 @@ export default function PricingPage() {
                             className="relative"
                         >
                             <Card
-                                className={`h-full flex flex-col p-8 md:p-12 border border-charcoal/10 rounded-3xl bg-surface transition-all duration-300 ${tier.popular
+                                className={`h-full flex flex-col p-6 md:p-8 border border-charcoal/10 rounded-3xl bg-surface transition-all duration-300 ${tier.popular
                                     ? "border-amber-400/50 scale-105 z-10 shadow-xl shadow-amber-400/10"
                                     : "shadow-sm hover:shadow-md hover:border-charcoal/20"
                                     }`}
                                 hover={false}
                             >
                                 {/* Tier Header */}
-                                <div className="space-y-8 mb-16">
-                                    <div className="w-20 h-20 bg-cream border border-om-border/30 flex items-center justify-center">
-                                        <Icon size={32} className="text-charcoal" />
+                                <div className="space-y-4 mb-8">
+                                    <div className="w-14 h-14 bg-cream border border-om-border/30 flex items-center justify-center rounded-2xl">
+                                        <Icon size={24} className="text-charcoal" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <h3 className="text-4xl font-serif italic text-charcoal leading-none">{tier.name}</h3>
+                                    <div className="space-y-1">
+                                        <h3 className="text-3xl font-serif italic text-charcoal leading-none">{tier.name}</h3>
                                         <p className="text-[10px] text-[#6B5E4E] uppercase tracking-[0.3em] leading-relaxed opacity-50 italic">Collection Tier</p>
                                     </div>
-                                    <p className="text-[12px] text-[#6B5E4E] leading-relaxed opacity-70 font-sans tracking-wide">{tier.description}</p>
+                                    <p className="text-[11px] text-[#6B5E4E] leading-relaxed opacity-70 font-sans tracking-wide">{tier.description}</p>
                                 </div>
 
                                 {/* Price */}
-                                <div className="mb-12 border-y border-om-border/20 py-8">
+                                <div className="mb-8 border-y border-om-border/20 py-6">
                                     <div className="flex items-baseline gap-2">
-                                        <span className="text-5xl font-serif text-charcoal">{displayPrice}</span>
+                                        <span className="text-4xl font-serif text-charcoal">{displayPrice}</span>
                                         {displayPeriod && (
                                             <span className="text-[10px] text-[#6B5E4E] uppercase tracking-widest opacity-60">{displayPeriod}</span>
                                         )}
                                     </div>
                                     {billingCycle === "yearly" && tier.price !== "Free" && (
-                                        <p className="text-[9px] text-amber-600 mt-3 font-bold uppercase tracking-[0.2em]">
+                                        <p className="text-[9px] text-amber-600 mt-2 font-bold uppercase tracking-[0.2em]">
                                             Annual discount applied
                                         </p>
                                     )}
                                 </div>
 
                                 {/* Features */}
-                                <div className="space-y-4 mb-12 flex-1">
+                                <div className="space-y-3 mb-8 flex-1">
                                     {tier.features.map((feature, i) => (
-                                        <div key={i} className="flex items-start gap-4">
-                                            <Check size={14} className="text-gold mt-1 flex-shrink-0" />
+                                        <div key={i} className="flex items-start gap-3">
+                                            <Check size={14} className="text-gold mt-0.5 flex-shrink-0" />
                                             <span className="text-[11px] text-[#6B5E4E] uppercase tracking-widest leading-relaxed opacity-80">{feature}</span>
                                         </div>
                                     ))}

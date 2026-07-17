@@ -60,35 +60,30 @@ function UserDropdown({ name, avatar, onLogout, profileLink }: UserDropdownProps
 
     return (
         <div className="relative">
+            {isOpen && (
+                <div 
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-3 px-4 py-2 bg-surface border border-om-border/30 shadow-sm group active:scale-95 transition-all duration-300"
+                className="relative z-50 flex items-center justify-center px-5 py-2.5 bg-surface border border-om-border/30 shadow-sm rounded-full group active:scale-95 transition-all duration-300 min-w-[100px]"
             >
-                <div className="w-6 h-6 rounded-none overflow-hidden border border-om-border/30 group-hover:border-gold transition-colors">
-                    {avatar ? (
-                        <img src={avatar} alt={name} className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-charcoal text-gold italic font-serif text-[10px]">
-                            {name[0]}
-                        </div>
-                    )}
-                </div>
-                <div className="text-left">
-                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-charcoal leading-none">{name.split(' ')[0]}</p>
-                </div>
-                <ChevronDown size={12} className={`text-charcoal/30 transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-charcoal leading-none">
+                    {name.split(' ')[0]}
+                </p>
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-3 w-48 bg-cream border border-om-border/40 shadow-2xl z-[100] animate-in fade-in slide-in-from-top-4 duration-500">
-                    <div className="p-1 space-y-1">
+                <div className="absolute right-0 mt-2 w-full min-w-[120px] bg-cream border border-om-border/40 shadow-xl z-[100] rounded-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="flex flex-col">
                         {profileLink && (
                             <Link
                                 href={profileLink}
-                                className="flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors"
+                                className="px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors text-center border-b border-om-border/10"
                                 onClick={() => setIsOpen(false)}
                             >
-                                <User size={12} className="text-gold" />
                                 My Profile
                             </Link>
                         )}
@@ -97,10 +92,9 @@ function UserDropdown({ name, avatar, onLogout, profileLink }: UserDropdownProps
                                 setIsOpen(false);
                                 onLogout();
                             }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-red-900/60 hover:bg-red-900/5 transition-colors text-left"
+                            className="w-full px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-red-900/80 hover:bg-red-900/5 transition-colors text-center"
                         >
-                            <LogOut size={12} />
-                            Depart Estate
+                            Sign Out
                         </button>
                     </div>
                 </div>

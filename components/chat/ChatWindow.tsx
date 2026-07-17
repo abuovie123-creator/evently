@@ -149,7 +149,7 @@ export function ChatWindow({
                     <div className="flex flex-col items-center justify-center h-full py-16 space-y-4">
                         <MessageSquare size={32} style={{ color: 'var(--border)' }} />
                         <p className="text-[10px] tracking-[0.25em] uppercase" style={{ color: 'var(--muted-foreground)' }}>
-                            Begin your correspondence
+                            Begin conversation
                         </p>
                     </div>
                 )}
@@ -375,10 +375,7 @@ function ChatInput({
                 </div>
             </div>
 
-            {/* Footer note */}
-            <p className="text-center text-[8px] tracking-[0.25em] uppercase pb-2" style={{ color: 'var(--border)' }}>
-                Encryption Active · Private Concierge Channel
-            </p>
+            {/* Footer note removed per user request */}
         </div>
     );
 }

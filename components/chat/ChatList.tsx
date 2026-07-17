@@ -178,7 +178,7 @@ export function ChatList({ currentUserId, onSelectConversation, activeId }: Chat
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start mb-0.5">
                                         <h4
-                                            className="text-sm font-semibold truncate font-serif italic"
+                                            className="text-base font-bold truncate"
                                             style={{ color: 'var(--charcoal)' }}
                                         >
                                             {conv.other_party_name}
@@ -191,7 +191,7 @@ export function ChatList({ currentUserId, onSelectConversation, activeId }: Chat
                                         )}
                                     </div>
                                     <p className="text-[11px] truncate" style={{ color: 'var(--muted-foreground)' }}>
-                                        {conv.last_message || 'Begin your correspondence...'}
+                                        {conv.last_message || 'Begin conversation...'}
                                     </p>
                                 </div>
                             </button>
