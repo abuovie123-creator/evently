@@ -59,13 +59,23 @@ export function ChatWindow({
     recipientLastSeen,
     onClose
 }: ChatWindowProps) {
-    const { messages, sendMessage, broadcastTyping, otherPartyTyping, loading } = useChat(conversationId);
+    const { messages, sendMessage, broadcastTyping, otherPartyTyping, loading, markAsRead } = useChat(conversationId);
     const scrollRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const imageInputRef = useRef<HTMLInputElement>(null);
 
     const isOnline = recipientLastSeen &&
         (new Date().getTime() - new Date(recipientLastSeen).getTime() < 60000);
+
+    // Mark messages as read when they load or update
+    useEffect(() => {
+        if (!loading && messages.length > 0) {
+            const hasUnread = messages.some(m => !m.is_read && m.sender_id !== currentUserId);
+            if (hasUnread) {
+                markAsRead(currentUserId);
+            }
+        }
+    }, [messages, loading, currentUserId, markAsRead]);
 
     useEffect(() => {
         if (scrollRef.current) {

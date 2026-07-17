@@ -27,7 +27,7 @@ export default function MessagesPage() {
 
     return (
         <div
-            className="flex h-[calc(100dvh-11rem)] md:h-[calc(100vh-7rem)] overflow-hidden rounded-2xl"
+            className="flex mt-6 md:mt-0 h-[calc(100dvh-12.5rem)] md:h-[calc(100vh-7rem)] overflow-hidden rounded-2xl"
             style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
         >
             {/* ── Conversation List ─────────────────────────────── */}

@@ -178,7 +178,7 @@ function SidebarContent({
                                             <Link
                                                 key={item.label}
                                                 href={item.href}
-                                                className={`flex items-center gap-4 px-4 py-3 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream shadow-xl' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
+                                                className={`flex items-center gap-4 px-4 py-3 rounded-xl text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream shadow-xl' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
                                             >
                                                 <item.icon size={16} className={isActive ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
                                                 <span>{item.label}</span>
@@ -218,9 +218,9 @@ function SidebarContent({
                                         <Link
                                             href={item.href || "#"}
                                             onClick={() => setIsMobileOpen(false)}
-                                            className={`flex items-center gap-4 px-4 py-4 rounded-none text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream font-black' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
+                                            className={`flex items-center gap-4 px-4 py-4 rounded-xl text-[12px] font-bold uppercase tracking-widest transition-all duration-300 group ${isActive ? 'bg-charcoal text-cream font-black' : 'text-[#6B5E4E] hover:text-charcoal hover:bg-charcoal/5'}`}
                                         >
-                                            <div className={`p-2 rounded-none transition-colors ${isActive ? 'bg-transparent' : 'bg-charcoal/5 group-hover:bg-charcoal/10'}`}>
+                                            <div className={`p-2 rounded-xl transition-colors ${isActive ? 'bg-transparent' : 'bg-charcoal/5 group-hover:bg-charcoal/10'}`}>
                                                 <item.icon size={16} className={isActive ? 'text-gold' : 'group-hover:text-gold transition-colors'} />
                                             </div>
                                             <div className="flex-1 flex items-center justify-between">
@@ -508,7 +508,8 @@ export function DashboardSidebar() {
                     <Menu size={24} />
                 </button>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1.5">
+                    <NotificationBell />
                     <UserDropdown
                         name={fullName || "User"}
                         avatar={user?.user_metadata?.avatar_url || null}

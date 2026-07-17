@@ -165,13 +165,30 @@ export function useChat(conversationId: string | null) {
         };
     }, [conversationId, fetchMessages, supabase]);
 
+    const markAsRead = useCallback(async (userId: string) => {
+        if (!conversationId) return;
+        const { error } = await supabase
+            .from('messages')
+            .update({ is_read: true })
+            .eq('conversation_id', conversationId)
+            .eq('is_read', false)
+            .neq('sender_id', userId);
+        
+        if (!error) {
+            setMessages(prev => prev.map(m => 
+                (!m.is_read && m.sender_id !== userId) ? { ...m, is_read: true } : m
+            ));
+        }
+    }, [conversationId, supabase]);
+
     return {
         messages,
         loading,
         sendMessage,
         broadcastTyping,
         otherPartyTyping,
-        setMessages
+        setMessages,
+        markAsRead
     };
 }
 

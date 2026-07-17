@@ -161,9 +161,9 @@ export function NotificationBell() {
             {/* Dropdown Popover */}
             {isOpen && (
                 <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+                    <div className="fixed inset-0 z-40 bg-black/[0.02] transition-opacity duration-300" onClick={() => setIsOpen(false)} />
                     <div
-                        className="fixed md:absolute top-20 md:top-full left-4 md:left-auto right-4 md:-right-4 mt-2 md:mt-3 w-auto md:w-80 max-h-[calc(100vh-120px)] md:max-h-[480px] z-[150] bg-cream border border-om-border/50 shadow-2xl rounded-none flex flex-col animate-in zoom-in-95 duration-200 origin-top-right"
+                        className="fixed md:absolute top-20 md:top-full left-4 md:left-auto right-4 md:-right-4 mt-2 md:mt-3 w-auto md:w-80 max-h-[calc(100vh-120px)] md:max-h-[480px] z-[150] bg-cream border border-om-border/50 shadow-2xl rounded-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 origin-top-right"
                     >
                         <div className="p-5 border-b border-om-border/30 bg-surface flex items-center justify-between">
                             <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-charcoal font-serif">Notifications</h3>
@@ -184,8 +184,8 @@ export function NotificationBell() {
                                 </div>
                             ) : notifications.length === 0 ? (
                                 <div className="p-16 text-center space-y-4">
-                                    <Bell size={28} className="mx-auto text-charcoal/10" />
-                                    <p className="text-[11px] text-[#6B5E4E] font-serif italic">All remains tranquil in your estate.</p>
+                                    <Bell size={28} className="mx-auto text-charcoal/20" />
+                                    <p className="text-[11px] text-[#6B5E4E] font-bold uppercase tracking-widest">No notification yet</p>
                                 </div>
                             ) : (
                                 <div className="divide-y divide-om-border/20">
@@ -241,12 +241,6 @@ export function NotificationBell() {
                                     ))}
                                 </div>
                             )}
-                        </div>
-
-                        <div className="p-4 border-t border-om-border/30 bg-surface/50 text-center">
-                            <span className="text-[8px] text-[#6B5E4E] font-bold uppercase tracking-[0.25em]">
-                                Estate Activity Journal
-                            </span>
                         </div>
                     </div>
                 </>

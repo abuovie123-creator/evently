@@ -229,7 +229,7 @@ export default function PlannerProfileEdit() {
     }
 
     return (
-        <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">
+        <main className="min-h-screen pb-12 w-full max-w-5xl mx-auto space-y-8 animate-in fade-in duration-500">
             {/* Compact Header */}
             <div className="flex items-center justify-between bg-white/50 border border-border/50 backdrop-blur-md shadow-sm p-4 md:p-6 rounded-3xl border-border bg-white/[0.02]">
                 <div className="flex items-center gap-4">
@@ -261,7 +261,7 @@ export default function PlannerProfileEdit() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column: Avatar & Basic Info */}
                 <div className="space-y-6">
                     <Card className="p-6 space-y-6" hover={false}>
@@ -329,9 +329,9 @@ export default function PlannerProfileEdit() {
                 </div>
 
                 {/* Right/Middle Column: Bio & Pro Stats */}
-                <div className="lg:col-span-2 space-y-6">
-                    <Card className="p-6" hover={false}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="lg:col-span-2 space-y-8">
+                    <Card className="p-8" hover={false}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Business Category</label>
                                 <select
@@ -357,7 +357,7 @@ export default function PlannerProfileEdit() {
                             </div>
 
                             {/* Pro Stats Grid */}
-                            <div className="md:col-span-2 grid grid-cols-3 gap-4 pt-4 border-t border-border">
+                            <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t border-border">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Events Done</label>
                                     <Input
@@ -387,7 +387,7 @@ export default function PlannerProfileEdit() {
                                 </div>
                             </div>
 
-                            <div className="md:col-span-2 space-y-2 pt-4">
+                            <div className="md:col-span-2 space-y-3 pt-6">
                                 <Textarea
                                     rows={4}
                                     className="bg-white/50 border-border min-h-[140px] resize-none"
@@ -398,12 +398,12 @@ export default function PlannerProfileEdit() {
                             </div>
 
                             {/* Social Media Integration */}
-                            <div className="md:col-span-2 pt-6 border-t border-border space-y-6">
-                                <div className="flex items-center gap-2">
+                            <div className="md:col-span-2 pt-8 border-t border-border space-y-6">
+                                <div className="flex items-center gap-2 mb-2">
                                     <Sparkles className="text-charcoal" size={18} />
                                     <h3 className="text-sm font-black uppercase tracking-widest">Connect Socials</h3>
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 pl-1">Instagram URL</label>
                                         <Input
