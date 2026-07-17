@@ -147,12 +147,26 @@ export default function PricingPage() {
                     >
                         Monthly
                     </button>
+
+                    {/* Toggle track — always visible */}
                     <button
                         onClick={() => setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")}
-                        className={`w-14 h-7 rounded-full transition-all duration-300 relative border border-charcoal/20 shadow-inner ${billingCycle === "yearly" ? "bg-charcoal" : "bg-charcoal/10"}`}
+                        className="w-14 h-7 rounded-full relative transition-all duration-300 flex-shrink-0"
+                        style={{
+                            background: billingCycle === "yearly" ? "var(--charcoal)" : "var(--muted)",
+                            border: "1.5px solid var(--border)",
+                        }}
                     >
-                        <div className={`absolute top-1 w-5 h-5 rounded-full shadow transition-all duration-300 ${billingCycle === "yearly" ? "right-1 bg-amber-400" : "left-1 bg-charcoal/40"}`} />
+                        {/* Knob */}
+                        <div
+                            className="absolute top-[3px] w-[18px] h-[18px] rounded-full shadow-sm transition-all duration-300"
+                            style={{
+                                background: billingCycle === "yearly" ? "var(--gold)" : "var(--accent)",
+                                left: billingCycle === "yearly" ? "calc(100% - 21px)" : "3px",
+                            }}
+                        />
                     </button>
+
                     <button
                         onClick={() => setBillingCycle("yearly")}
                         className={`text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-3 ${billingCycle === "yearly" ? "text-charcoal" : "text-[#6B5E4E]/60 hover:text-charcoal"}`}
@@ -180,17 +194,8 @@ export default function PricingPage() {
                     return (
                         <div
                             key={tier.name}
-                            className={`relative ${tier.popular ? "md:-mt-4 md:mb-0" : ""}`}
+                            className="relative"
                         >
-                            {/* Popular Badge */}
-                            {tier.popular && (
-                                <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
-                                    <div className="px-8 py-2 bg-gold text-[9px] font-bold uppercase tracking-[0.3em] text-charcoal shadow-xl">
-                                        Signature Choice
-                                    </div>
-                                </div>
-                            )}
-
                             <Card
                                 className={`h-full flex flex-col p-8 md:p-12 border border-charcoal/10 rounded-3xl bg-surface transition-all duration-300 ${tier.popular
                                     ? "border-amber-400/50 scale-105 z-10 shadow-xl shadow-amber-400/10"

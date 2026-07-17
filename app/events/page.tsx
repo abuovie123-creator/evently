@@ -90,20 +90,23 @@ export default function EventsPage() {
         <main className="min-h-screen bg-background text-foreground pb-20 pt-32 transition-colors duration-500">
             <div className="max-w-7xl mx-auto px-6 space-y-12">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out">
-                    <div className="space-y-4">
-                        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight underline decoration-blue-500/30 underline-offset-8 text-foreground">Events Gallery</h1>
-                        <p className="text-muted-foreground text-lg max-w-xl font-light">Browse curated albums from the most remarkable celebrations across the country.</p>
+                <div className="flex flex-col space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                        <div className="space-y-4">
+                            <h1 className="text-5xl md:text-7xl font-serif text-charcoal font-normal tracking-wide">Events Gallery</h1>
+                            <p className="text-muted-foreground text-lg max-w-xl font-light">Browse curated albums from the most remarkable celebrations across the country.</p>
+                        </div>
+                        <div className="w-full md:w-96 relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                            <Input
+                                placeholder="Search by name or city..."
+                                className="pl-12 bg-transparent border-om-border focus:border-gold hover:border-gold/50 rounded-2xl h-14 text-foreground transition-colors duration-300 placeholder:text-muted-foreground font-sans-body"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
                     </div>
-                    <div className="w-full md:w-96 relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                        <Input
-                            placeholder="Search by name or city..."
-                            className="pl-12 bg-foreground/5 border-foreground/10 h-14 text-foreground"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
+                    <div className="gold-divider w-full"></div>
                 </div>
 
                 {/* Filter Pills */}
@@ -112,9 +115,9 @@ export default function EventsPage() {
                         <button
                             key={cat}
                             onClick={() => setActiveCategory(cat)}
-                            className={`px-8 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all border ${activeCategory === cat
-                                ? "bg-blue-600 text-white border-blue-600 shadow-xl shadow-blue-600/20"
-                                : "bg-foreground/5 text-muted-foreground border-foreground/5 hover:border-foreground/20"
+                            className={`px-8 py-3 rounded-full text-[10px] font-semibold uppercase tracking-widest transition-all duration-300 border ${activeCategory === cat
+                                ? "bg-charcoal text-cream border-charcoal shadow-lg shadow-charcoal/10"
+                                : "bg-transparent text-muted-foreground border-om-border hover:border-gold hover:text-charcoal"
                                 }`}
                         >
                             {cat}
@@ -126,35 +129,35 @@ export default function EventsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                     {filteredEvents.map((event, i) => (
                         <Link key={event.slug} href={`/events/${event.slug}`} className="group">
-                            <Card className="p-0 overflow-hidden border-foreground/5 hover:border-blue-500/30 transition-all h-full flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out bg-background dark:bg-black/40" style={{ transitionDelay: `${i * 50}ms` }}>
+                            <Card className="om-card p-0 overflow-hidden h-full flex flex-col animate-in fade-in slide-in-from-bottom-8 duration-500 ease-out rounded-[2rem] border-none bg-surface" style={{ transitionDelay: `${i * 50}ms` }}>
                                 <div className="aspect-[16/10] overflow-hidden relative">
                                     <img
                                         src={event.image}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform [transition-duration:1500ms] ease-out brightness-75 group-hover:brightness-100"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform [transition-duration:1500ms] ease-out brightness-75 group-hover:brightness-90"
                                         alt={event.title}
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
 
-                                    <div className="absolute top-4 left-4">
-                                        <div className="bg-black/40 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10">
-                                            <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">
+                                    <div className="absolute top-4 left-4 z-10">
+                                        <div className="bg-black/60 backdrop-blur-md px-4 py-1.5 border border-white/10 rounded-2xl shadow-lg">
+                                            <span className="text-[9px] font-semibold text-gold uppercase tracking-[0.25em]">
                                                 {event.category}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="absolute bottom-6 left-6 right-6">
-                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 italic">
+                                    <div className="absolute bottom-6 left-6 right-6 z-10">
+                                        <p className="text-[9px] md:text-[10px] text-white uppercase tracking-[0.2em] mb-2 font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                                             {event.planner_name ? `Planned by ${event.planner_name}` : "Professional Planner"}
                                         </p>
-                                        <h3 className="text-2xl font-black text-white group-hover:text-blue-400 transition-colors tracking-tight leading-none">
+                                        <h3 className="text-xl md:text-2xl font-serif text-white group-hover:text-gold transition-colors tracking-wide leading-snug drop-shadow-lg">
                                             {event.title}
                                         </h3>
                                     </div>
                                 </div>
-                                <div className="p-6 bg-foreground/[0.01] flex justify-between items-center text-[10px] text-muted-foreground uppercase tracking-widest font-black border-t border-foreground/5">
-                                    <span className="flex items-center gap-2"><MapPin size={12} className="text-blue-500" /> {event.location}</span>
-                                    <span className="flex items-center gap-2"><Calendar size={12} className="text-blue-500" /> {event.date}</span>
+                                <div className="p-4 md:p-6 bg-surface flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 text-[10px] md:text-[11px] text-muted-foreground uppercase tracking-widest font-semibold border-t border-om-border">
+                                    <span className="flex items-center gap-2"><MapPin size={14} className="text-accent shrink-0" /> <span className="truncate">{event.location}</span></span>
+                                    <span className="flex items-center gap-2"><Calendar size={14} className="text-accent shrink-0" /> {event.date}</span>
                                 </div>
                             </Card>
                         </Link>
@@ -162,17 +165,17 @@ export default function EventsPage() {
                 </div>
 
                 {filteredEvents.length === 0 && (
-                    <div className="text-center py-32 glass-panel rounded-[3rem] border-white/5 space-y-6">
-                        <div className="w-20 h-20 bg-foreground/5 rounded-full flex items-center justify-center mx-auto text-muted-foreground/30">
-                            <Images size={32} />
+                    <div className="text-center py-32 om-card rounded-[3rem] space-y-6 max-w-3xl mx-auto">
+                        <div className="w-20 h-20 border border-om-border bg-transparent rounded-full flex items-center justify-center mx-auto text-gold">
+                            <Images size={32} strokeWidth={1} />
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-xl font-bold text-foreground">No events found</h3>
-                            <p className="text-muted-foreground max-w-sm mx-auto">Try adjusting your filters or search keywords to find what you are looking for.</p>
+                            <h3 className="text-2xl font-serif text-charcoal">No events found</h3>
+                            <p className="text-muted-foreground max-w-sm mx-auto font-light">Try adjusting your filters or search keywords to find what you are looking for.</p>
                         </div>
-                        <Button variant="outline" className="px-8" onClick={() => { setSearch(""); setActiveCategory("All"); }}>
+                        <button className="om-btn-outline mt-6 rounded-full" onClick={() => { setSearch(""); setActiveCategory("All"); }}>
                             Show all events
-                        </Button>
+                        </button>
                     </div>
                 )}
             </div>

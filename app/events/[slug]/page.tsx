@@ -253,14 +253,9 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
 
                                             {/* Fine-art print caption style */}
                                             <div className="mt-4 sm:mt-5 flex justify-between items-center px-1">
-                                                <div className="space-y-0.5">
-                                                    <span className="text-[9px] font-bold tracking-[0.25em] text-[#8B7355] uppercase">
-                                                        {event.title} &middot; Plate {String(i + 1).padStart(2, '0')}
-                                                    </span>
-                                                    <h4 className="font-serif italic text-sm text-[#1C1A16]/70">
-                                                        {item.media_type === 'video' ? 'Motion capture' : 'Still photograph'}
-                                                    </h4>
-                                                </div>
+                                                <span className="text-[10px] font-bold tracking-[0.25em] text-[#8B7355] uppercase">
+                                                    {event.title}
+                                                </span>
                                                 <span className="text-[10px] font-medium tracking-widest uppercase text-[#1C1A16]/40 group-hover:text-[#8B7355] transition-colors">
                                                     Expand details &rarr;
                                                 </span>
@@ -278,15 +273,11 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                         <div className="absolute inset-2 border border-[#D4C5A9]/30 rounded-[1.7rem] pointer-events-none" />
                         
                         <div className="space-y-3 relative z-10">
-                            <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-[#8B7355]">
-                                Bespoke Celebrations
-                            </span>
                             <h2 className="font-serif italic text-3xl md:text-5xl text-[#1C1A16]">
-                                Inspired by this creation?
+                                Inspired by this?
                             </h2>
-                            <div className="w-16 h-px bg-[#C4A55A] mx-auto my-4" />
-                            <p className="text-sm text-[#1C1A16]/70 max-w-lg mx-auto font-sans leading-relaxed">
-                                Let us collaborate to design your next milestone. Connect with {event.planner.name} to design an unforgettable experience tailored exactly to your vision.
+                            <p className="text-sm text-[#1C1A16]/70 max-w-lg mx-auto font-sans leading-relaxed pt-2">
+                                Connect with {event.planner.name} to create an unforgettable experience.
                             </p>
                         </div>
 
@@ -296,12 +287,12 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                                 className="w-full sm:w-auto"
                             >
                                 <button className="om-btn-primary w-full shadow-sm">
-                                    Commission Planner
+                                    Book Planner
                                 </button>
                             </Link>
                             <button 
                                 onClick={handleShare} 
-                                className="om-btn-outline w-full text-[#1C1A16] border-[#D4C5A9] hover:bg-[#FAF8F3] transition-all"
+                                className="om-btn-outline w-full !text-[#1C1A16] border-[#D4C5A9] hover:bg-[#1C1A16] hover:!text-[#FAF8F3] hover:border-[#1C1A16] transition-all"
                             >
                                 Share Album
                             </button>
@@ -350,19 +341,16 @@ export default function EventAlbumPage({ params }: { params: Promise<{ "slug": s
                             {/* Caption info below the pop-up */}
                             <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-2">
                                 <div>
-                                    <span className="text-[9px] font-bold tracking-[0.2em] text-[#8B7355] uppercase">
-                                        Exhibited Plate
-                                    </span>
-                                    <h4 className="font-serif italic text-2xl text-[#1C1A16] mt-0.5">
+                                    <h4 className="font-serif italic text-2xl text-[#1C1A16]">
                                         {event.title}
                                     </h4>
                                 </div>
                                 <div className="flex gap-3 w-full sm:w-auto">
                                     <button 
                                         onClick={handleShare}
-                                        className="text-[10px] font-bold uppercase tracking-widest px-4 py-2 border border-[#D4C5A9] rounded-xl hover:bg-[#F5F0E8] transition-colors w-full sm:w-auto text-center"
+                                        className="text-[10px] font-bold uppercase tracking-widest px-5 py-2 border border-[#D4C5A9] rounded-xl hover:bg-[#F5F0E8] text-[#1C1A16] font-semibold transition-colors w-full sm:w-auto text-center"
                                     >
-                                        Share Plate Link
+                                        Share
                                     </button>
                                 </div>
                             </div>

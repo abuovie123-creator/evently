@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Send, MoreVertical, Phone, Video, X, Check, CheckCheck, Loader2, MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { Send, MoreVertical, X, CheckCheck, Loader2, MessageSquare, Smile, ImageIcon, Plus, ArrowLeft } from "lucide-react";
 import { useChat, Message } from "@/lib/hooks/useChat";
 
 interface ChatWindowProps {
@@ -16,6 +14,42 @@ interface ChatWindowProps {
     onClose?: () => void;
 }
 
+/* ── Helpers ─────────────────────────────────────────────── */
+function formatDateSeparator(dateStr: string) {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+        month: 'long', day: 'numeric', year: 'numeric'
+    }).toUpperCase();
+}
+
+function formatMsgTime(dateStr: string) {
+    return new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function groupByDate(messages: Message[]) {
+    const groups: { dateLabel: string; messages: Message[] }[] = [];
+    for (const msg of messages) {
+        const label = formatDateSeparator(msg.created_at);
+        const last = groups[groups.length - 1];
+        if (last && last.dateLabel === label) {
+            last.messages.push(msg);
+        } else {
+            groups.push({ dateLabel: label, messages: [msg] });
+        }
+    }
+    return groups;
+}
+
+function formatRole(role: string) {
+    if (!role) return 'Member';
+    if (role === 'planner') return 'Event Planner';
+    if (role === 'client') return 'Event Client';
+    return role.charAt(0).toUpperCase() + role.slice(1);
+}
+
+/* ── Simple emoji palette ────────────────────────────────── */
+const EMOJIS = ['😊', '👍', '🎉', '❤️', '🙏', '✨', '👌', '😂', '🔥', '💯', '😍', '🥂'];
+
+/* ── ChatWindow ──────────────────────────────────────────── */
 export function ChatWindow({
     conversationId,
     currentUserId,
@@ -26,142 +60,325 @@ export function ChatWindow({
     onClose
 }: ChatWindowProps) {
     const { messages, sendMessage, broadcastTyping, otherPartyTyping, loading } = useChat(conversationId);
-    const [input, setInput] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const imageInputRef = useRef<HTMLInputElement>(null);
 
-    // Auto-scroll to bottom
+    const isOnline = recipientLastSeen &&
+        (new Date().getTime() - new Date(recipientLastSeen).getTime() < 60000);
+
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages, otherPartyTyping]);
 
-    const handleSend = async () => {
-        if (!input.trim()) return;
-        const content = input;
-        setInput("");
-        broadcastTyping(false);
-        await sendMessage(content, currentUserId);
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInput(e.target.value);
-        broadcastTyping(e.target.value.length > 0);
-    };
-
-    const isOnline = recipientLastSeen && (new Date().getTime() - new Date(recipientLastSeen).getTime() < 60000);
+    const grouped = groupByDate(messages);
 
     return (
-        <Card className="flex flex-col h-[calc(100vh-14rem)] md:h-[600px] w-full max-w-2xl bg-background/80 dark:bg-black/90 backdrop-blur-2xl border-foreground/10 shadow-2xl rounded-t-[2rem] md:rounded-[2rem] overflow-hidden animate-in fade-in zoom-in duration-300">
-            {/* Header */}
-            <div className="p-4 border-b border-foreground/5 flex items-center justify-between bg-foreground/[0.02]">
+        <div className="flex flex-col h-full w-full" style={{ background: 'var(--background)' }}>
+
+            {/* ── Header ─────────────────────────────────────── */}
+            <div
+                className="flex items-center justify-between px-4 md:px-6 py-4 shrink-0"
+                style={{ borderBottom: '1px solid var(--border)', background: 'var(--surface)' }}
+            >
                 <div className="flex items-center gap-3">
+                    {/* Mobile back button */}
+                    {onClose && (
+                        <button
+                            onClick={onClose}
+                            className="md:hidden w-8 h-8 flex items-center justify-center shrink-0 transition-colors rounded"
+                            style={{ color: 'var(--muted-foreground)' }}
+                            aria-label="Back to conversations"
+                        >
+                            <ArrowLeft size={18} />
+                        </button>
+                    )}
+
                     <div className="relative">
-                        <img src={recipientAvatar} className="w-10 h-10 rounded-full object-cover" alt={recipientName} />
-                        {isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />}
+                        <img
+                            src={recipientAvatar}
+                            className="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover"
+                            style={{ border: '1px solid var(--border)' }}
+                            alt={recipientName}
+                        />
+                        {isOnline && (
+                            <div
+                                className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full"
+                                style={{ background: '#5C7A5C', border: '2px solid var(--surface)' }}
+                            />
+                        )}
                     </div>
+
                     <div>
-                        <h3 className="text-sm font-bold text-foreground leading-none">{recipientName}</h3>
-                        <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-widest font-black">
-                            {isOnline ? "Online" : "Away"} • {recipientRole}
+                        <h3 className="text-sm md:text-base font-serif italic leading-none" style={{ color: 'var(--charcoal)' }}>
+                            {recipientName}
+                        </h3>
+                        <p className="text-[9px] font-bold tracking-[0.2em] uppercase mt-1" style={{ color: 'var(--muted-foreground)' }}>
+                            {formatRole(recipientRole)}{isOnline ? ' · Online' : ''}
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="glass" size="sm" onClick={onClose} className="h-8 w-8 bg-transparent border-transparent shadow-none text-muted-foreground hover:text-foreground hover:bg-foreground/10"><X size={16} /></Button>
-                </div>
+
+                {/* More options */}
+                <button
+                    className="w-8 h-8 flex items-center justify-center rounded transition-colors"
+                    style={{ color: 'var(--muted-foreground)' }}
+                    onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = 'var(--charcoal)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted-foreground)'}
+                    aria-label="More options"
+                >
+                    <MoreVertical size={18} />
+                </button>
             </div>
 
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide" ref={scrollRef}>
+            {/* ── Messages ───────────────────────────────────── */}
+            <div
+                ref={scrollRef}
+                className="flex-1 overflow-y-auto px-4 md:px-6 py-5 space-y-6"
+                style={{ background: 'var(--background)' }}
+            >
                 {loading && (
-                    <div className="flex justify-center py-4">
-                        <Loader2 className="animate-spin text-blue-500" />
+                    <div className="flex justify-center py-8">
+                        <Loader2 size={20} className="animate-spin" style={{ color: 'var(--accent)' }} />
                     </div>
                 )}
 
-                <div className="space-y-4">
-                    {messages.map((msg) => (
-                        <MessageItem key={msg.id} msg={msg} isMe={msg.sender_id === currentUserId} />
-                    ))}
-                </div>
+                {!loading && messages.length === 0 && (
+                    <div className="flex flex-col items-center justify-center h-full py-16 space-y-4">
+                        <MessageSquare size={32} style={{ color: 'var(--border)' }} />
+                        <p className="text-[10px] tracking-[0.25em] uppercase" style={{ color: 'var(--muted-foreground)' }}>
+                            Begin your correspondence
+                        </p>
+                    </div>
+                )}
 
-                {/* Typing Indicator UX */}
+                {grouped.map(({ dateLabel, messages: dayMsgs }) => (
+                    <div key={dateLabel} className="space-y-4">
+                        {/* Date Separator */}
+                        <div className="flex items-center gap-4 py-1">
+                            <div className="flex-1 h-px" style={{ background: 'var(--border-light)' }} />
+                            <span className="text-[9px] tracking-[0.22em] font-medium shrink-0" style={{ color: 'var(--muted-foreground)' }}>
+                                {dateLabel}
+                            </span>
+                            <div className="flex-1 h-px" style={{ background: 'var(--border-light)' }} />
+                        </div>
+
+                        {dayMsgs.map((msg) => (
+                            <MessageBubble
+                                key={msg.id}
+                                msg={msg}
+                                isMe={msg.sender_id === currentUserId}
+                                avatar={recipientAvatar}
+                            />
+                        ))}
+                    </div>
+                ))}
+
+                {/* Typing indicator */}
                 {otherPartyTyping && (
                     <div className="flex items-end gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
-                        <div className="relative group">
-                            <img src={recipientAvatar} className="w-6 h-6 rounded-full object-cover border border-foreground/20 translate-y-1" alt="" />
-                            <div className="absolute -top-1 -right-1">
-                                <MessageSquare size={8} className="text-blue-400 animate-bounce" />
-                            </div>
-                        </div>
-                        <div className="bg-foreground/5 border border-foreground/10 p-2 px-3 rounded-2xl rounded-bl-none flex gap-1 items-center">
-                            <span className="w-1 h-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                            <span className="w-1 h-1 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                            <span className="w-1 h-1 bg-muted-foreground rounded-full animate-bounce"></span>
+                        <img
+                            src={recipientAvatar}
+                            className="w-6 h-6 rounded-full object-cover shrink-0"
+                            style={{ border: '1px solid var(--border)' }}
+                            alt=""
+                        />
+                        <div
+                            className="px-4 py-3 flex gap-1.5 items-center"
+                            style={{ background: 'var(--secondary)', border: '1px solid var(--border-light)' }}
+                        >
+                            {['-0.3s', '-0.15s', '0s'].map((delay, i) => (
+                                <span
+                                    key={i}
+                                    className="w-1.5 h-1.5 rounded-full animate-bounce"
+                                    style={{ background: 'var(--accent)', animationDelay: delay }}
+                                />
+                            ))}
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* Input Area */}
-            <ChatInput onSendMessage={(content) => sendMessage(content, currentUserId)} onTyping={broadcastTyping} />
-        </Card>
+            {/* ── Input ──────────────────────────────────────── */}
+            {/* Hidden file inputs — wired to the + and image buttons */}
+            <input ref={fileInputRef} type="file" className="hidden" accept="*/*" />
+            <input ref={imageInputRef} type="file" className="hidden" accept="image/*" />
+
+            <ChatInput
+                onSendMessage={(content) => sendMessage(content, currentUserId)}
+                onTyping={broadcastTyping}
+                onAttach={() => fileInputRef.current?.click()}
+                onImage={() => imageInputRef.current?.click()}
+            />
+        </div>
     );
 }
 
-// Sub-components for better performance
-const MessageItem = React.memo(({ msg, isMe }: { msg: Message, isMe: boolean }) => (
-    <div className={`flex ${isMe ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2`}>
-        <div className={`max-w-[85%] md:max-w-[80%] p-3 rounded-2xl text-sm ${isMe
-            ? "bg-blue-600 text-white rounded-tr-none shadow-lg shadow-blue-600/10"
-            : "bg-foreground/10 text-foreground rounded-tl-none border border-foreground/5"
-            }`}>
-            <p className="whitespace-pre-wrap break-words">{msg.content}</p>
-            <div className={`flex items-center gap-1 mt-1 justify-end opacity-50 text-[9px]`}>
-                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                {isMe && <CheckCheck size={10} className="text-blue-300" />}
+/* ── Message Bubble ─────────────────────────────────────── */
+const MessageBubble = React.memo(({
+    msg,
+    isMe,
+    avatar
+}: {
+    msg: Message;
+    isMe: boolean;
+    avatar: string;
+}) => (
+    <div className={`flex ${isMe ? 'justify-end' : 'justify-start'} items-end gap-2 animate-in fade-in slide-in-from-bottom-1`}>
+        {!isMe && (
+            <img src={avatar} className="w-6 h-6 rounded-full object-cover shrink-0 mb-0.5" style={{ border: '1px solid var(--border)' }} alt="" />
+        )}
+
+        <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} max-w-[75%] md:max-w-[65%]`}>
+            <div
+                className="px-4 py-3 text-sm leading-relaxed"
+                style={isMe
+                    ? { background: 'var(--charcoal)', color: 'var(--cream)' }
+                    : { background: 'var(--secondary)', color: 'var(--foreground)', border: '1px solid var(--border-light)' }
+                }
+            >
+                <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+            </div>
+
+            <div className={`flex items-center gap-1.5 mt-1 ${isMe ? 'flex-row-reverse' : 'flex-row'}`}>
+                <span className="text-[9px] tracking-wider font-medium" style={{ color: 'var(--muted-foreground)' }}>
+                    {isMe && msg.is_read ? 'READ · ' : ''}{formatMsgTime(msg.created_at)}
+                </span>
+                {isMe && <CheckCheck size={10} style={{ color: msg.is_read ? 'var(--gold)' : 'var(--border)' }} />}
             </div>
         </div>
+
+        {isMe && <div className="w-6 shrink-0" />}
     </div>
 ));
+MessageBubble.displayName = "MessageBubble";
 
-MessageItem.displayName = "MessageItem";
-
-const ChatInput = ({ onSendMessage, onTyping }: { onSendMessage: (content: string) => void, onTyping: (typing: boolean) => void }) => {
+/* ── Chat Input ─────────────────────────────────────────── */
+function ChatInput({
+    onSendMessage,
+    onTyping,
+    onAttach,
+    onImage,
+}: {
+    onSendMessage: (content: string) => void;
+    onTyping: (typing: boolean) => void;
+    onAttach: () => void;
+    onImage: () => void;
+}) {
     const [input, setInput] = useState("");
+    const [showEmoji, setShowEmoji] = useState(false);
 
     const handleSend = () => {
         if (!input.trim()) return;
         onSendMessage(input.trim());
         setInput("");
         onTyping(false);
+        setShowEmoji(false);
+    };
+
+    const insertEmoji = (emoji: string) => {
+        setInput(prev => prev + emoji);
+        setShowEmoji(false);
     };
 
     return (
-        <div className="p-4 border-t border-foreground/5 bg-foreground/[0.01] pb-8 md:pb-4">
-            <div className="relative flex items-center gap-2">
+        <div className="shrink-0 relative" style={{ borderTop: '1px solid var(--border)', background: 'var(--surface)' }}>
+
+            {/* Emoji palette */}
+            {showEmoji && (
+                <div
+                    className="absolute bottom-full left-4 mb-2 p-3 grid grid-cols-6 gap-2 shadow-lg z-20 rounded"
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+                >
+                    {EMOJIS.map(e => (
+                        <button
+                            key={e}
+                            onClick={() => insertEmoji(e)}
+                            className="text-lg hover:scale-125 transition-transform"
+                        >
+                            {e}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            <div className="flex items-center gap-2 px-3 md:px-4 py-3">
+                {/* Attach file */}
+                <button
+                    onClick={onAttach}
+                    className="w-8 h-8 flex items-center justify-center shrink-0 rounded-full transition-colors"
+                    style={{ color: 'var(--muted-foreground)' }}
+                    onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = 'var(--charcoal)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted-foreground)'}
+                    title="Attach file"
+                    aria-label="Attach file"
+                >
+                    <Plus size={18} />
+                </button>
+
+                {/* Text input */}
                 <input
                     type="text"
-                    placeholder="Type a message..."
-                    className="flex-1 bg-foreground/5 border border-foreground/10 rounded-2xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-blue-500/50 transition-all"
+                    placeholder="WRITE YOUR MESSAGE..."
+                    className="flex-1 bg-transparent text-xs focus:outline-none min-w-0"
+                    style={{ color: 'var(--foreground)', letterSpacing: '0.07em', caretColor: 'var(--accent)' }}
                     value={input}
                     onChange={(e) => {
                         setInput(e.target.value);
                         onTyping(e.target.value.length > 0);
                     }}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
                 />
-                <Button
-                    size="sm"
-                    onClick={handleSend}
-                    className="h-11 w-11 rounded-xl bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20"
-                    disabled={!input.trim()}
-                >
-                    <Send size={18} />
-                </Button>
+
+                {/* Right icons */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                    {/* Emoji */}
+                    <button
+                        onClick={() => setShowEmoji(prev => !prev)}
+                        className="w-7 h-7 flex items-center justify-center transition-colors rounded"
+                        style={{ color: showEmoji ? 'var(--accent)' : 'var(--muted-foreground)' }}
+                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = 'var(--charcoal)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = showEmoji ? 'var(--accent)' : 'var(--muted-foreground)'}
+                        title="Emoji"
+                        aria-label="Emoji"
+                    >
+                        <Smile size={17} />
+                    </button>
+
+                    {/* Image */}
+                    <button
+                        onClick={onImage}
+                        className="w-7 h-7 flex items-center justify-center transition-colors rounded"
+                        style={{ color: 'var(--muted-foreground)' }}
+                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.color = 'var(--charcoal)'}
+                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.color = 'var(--muted-foreground)'}
+                        title="Send image"
+                        aria-label="Send image"
+                    >
+                        <ImageIcon size={16} />
+                    </button>
+
+                    {/* Send */}
+                    <button
+                        onClick={handleSend}
+                        disabled={!input.trim()}
+                        className="flex items-center gap-1.5 px-4 h-8 text-[10px] font-bold tracking-[0.2em] uppercase transition-all duration-200 disabled:opacity-40 rounded-sm"
+                        style={{ background: 'var(--charcoal)', color: 'var(--cream)' }}
+                        onMouseEnter={e => { if (input.trim()) (e.currentTarget as HTMLButtonElement).style.background = 'var(--accent)'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'var(--charcoal)'; }}
+                        aria-label="Send message"
+                    >
+                        Send <Send size={11} />
+                    </button>
+                </div>
             </div>
+
+            {/* Footer note */}
+            <p className="text-center text-[8px] tracking-[0.25em] uppercase pb-2" style={{ color: 'var(--border)' }}>
+                Encryption Active · Private Concierge Channel
+            </p>
         </div>
     );
-};
-
+}

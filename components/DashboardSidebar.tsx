@@ -143,7 +143,7 @@ function SidebarContent({
     user
 }: SidebarContentProps) {
     return (
-        <div className="flex flex-col h-full bg-cream border-r border-om-border/40 py-6 transition-colors duration-700 overflow-hidden">
+        <div className="flex flex-col h-full bg-cream border border-om-border/40 py-6 transition-colors duration-700 overflow-hidden rounded-2xl">
             <div className="px-6 mb-8 mt-2 flex items-center justify-center">
                 <span className="text-3xl font-black bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">Evently</span>
             </div>
@@ -347,11 +347,26 @@ export function DashboardSidebar() {
                 setFullName(profile?.full_name);
 
                 const fetchUnread = async () => {
+                    // First get conversations this user belongs to
+                    const { data: convs } = await supabase
+                        .from('conversations')
+                        .select('id')
+                        .or(`client_id.eq.${user.id},planner_id.eq.${user.id}`);
+
+                    if (!convs || convs.length === 0) {
+                        setUnreadCount(0);
+                        return;
+                    }
+
+                    const convIds = convs.map((c: any) => c.id);
+
                     const { count } = await supabase
                         .from('messages')
                         .select('*', { count: 'exact', head: true })
                         .eq('is_read', false)
-                        .neq('sender_id', user.id);
+                        .neq('sender_id', user.id)
+                        .in('conversation_id', convIds);
+
                     setUnreadCount(count || 0);
                 };
                 fetchUnread();
@@ -513,7 +528,7 @@ export function DashboardSidebar() {
                 </div>
             </div>
 
-            <aside className="hidden md:block fixed top-0 left-0 bottom-0 w-64 z-40 transform-gpu transition-transform duration-700 ease-out">
+            <aside className="hidden md:block fixed top-3 left-3 bottom-3 w-64 z-40 transform-gpu transition-transform duration-700 ease-out rounded-2xl overflow-hidden shadow-md">
                 <SidebarContent {...commonProps} />
             </aside>
 

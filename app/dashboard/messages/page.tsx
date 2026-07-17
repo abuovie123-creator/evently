@@ -6,14 +6,13 @@ import { ChatWindow } from "@/components/chat/ChatWindow";
 import { Conversation } from "@/lib/hooks/useChat";
 import { createClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
-import { MessageSquare, X } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 
 export default function MessagesPage() {
     const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const searchParams = useSearchParams();
     const convId = searchParams.get('id');
-
     const supabase = createClient();
 
     useEffect(() => {
@@ -27,57 +26,66 @@ export default function MessagesPage() {
     if (!currentUserId) return null;
 
     return (
-        <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)]">
-            {/* Header */}
-            <div className="flex items-center gap-4 glass-panel p-6 md:p-8 rounded-[2rem] border-white/5 bg-white/[0.02] mb-8">
-                <button
-                    onClick={() => window.history.back()}
-                    className="p-3 glass-panel rounded-2xl hover:bg-white/10 transition-colors shrink-0"
-                >
-                    <X size={20} className="text-gray-400" />
-                </button>
-                <div className="flex-1 min-w-0">
-                    <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight truncate uppercase italic">Messages</h1>
-                    <p className="text-gray-400 text-xs md:text-sm truncate">Chat with your clients and planners.</p>
-                </div>
+        <div
+            className="flex h-[calc(100vh-7rem)] overflow-hidden rounded-2xl"
+            style={{ border: '1px solid var(--border)', background: 'var(--surface)' }}
+        >
+            {/* ── Conversation List ─────────────────────────────── */}
+            {/* On mobile: show list when no conv selected. On desktop: always show */}
+            <div
+                className={`
+                    flex-col h-full border-r
+                    ${selectedConv ? 'hidden md:flex' : 'flex w-full md:w-80'}
+                    md:w-80 shrink-0
+                `}
+                style={{ borderColor: 'var(--border)' }}
+            >
+                <ChatList
+                    currentUserId={currentUserId}
+                    onSelectConversation={(conv) => setSelectedConv(conv)}
+                    activeId={selectedConv?.id || convId || undefined}
+                />
             </div>
 
-            <div className="flex-1 flex flex-col md:flex-row glass-panel border-white/5 overflow-hidden rounded-[2.5rem] mt-2 animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
-                {/* Sidebar List */}
-                <div className={`md:block ${selectedConv ? 'hidden' : 'block'} border-r border-white/5`}>
-                    <ChatList
+            {/* ── Chat Window ───────────────────────────────────── */}
+            <div
+                className={`
+                    flex-col h-full flex-1
+                    ${selectedConv ? 'flex' : 'hidden md:flex'}
+                `}
+            >
+                {selectedConv ? (
+                    <ChatWindow
+                        conversationId={selectedConv.id}
                         currentUserId={currentUserId}
-                        onSelectConversation={(conv) => setSelectedConv(conv)}
-                        activeId={selectedConv?.id || convId || undefined}
+                        recipientName={(selectedConv as any).other_party_name}
+                        recipientAvatar={(selectedConv as any).other_party_avatar}
+                        recipientRole={(selectedConv as any).other_party_role}
+                        recipientLastSeen={(selectedConv as any).other_party_last_seen}
+                        onClose={() => setSelectedConv(null)}
                     />
-                </div>
-
-                {/* Chat Area */}
-                <div className={`flex-1 flex flex-col bg-black/20 ${selectedConv ? 'block' : 'hidden md:flex'}`}>
-                    {selectedConv ? (
-                        <div className="h-full flex items-center justify-center md:p-4">
-                            <ChatWindow
-                                conversationId={selectedConv.id}
-                                currentUserId={currentUserId}
-                                recipientName={(selectedConv as any).other_party_name}
-                                recipientAvatar={(selectedConv as any).other_party_avatar}
-                                recipientRole={(selectedConv as any).other_party_role}
-                                recipientLastSeen={(selectedConv as any).other_party_last_seen}
-                                onClose={() => setSelectedConv(null)}
-                            />
+                ) : (
+                    /* Empty state — desktop only */
+                    <div
+                        className="flex-1 flex flex-col items-center justify-center gap-5 text-center p-12"
+                        style={{ background: 'var(--background)' }}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="h-px w-12" style={{ background: 'var(--gold)' }} />
+                            <MessageSquare size={20} style={{ color: 'var(--accent)' }} />
+                            <div className="h-px w-12" style={{ background: 'var(--gold)' }} />
                         </div>
-                    ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center space-y-4 text-center p-12">
-                            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center text-gray-700">
-                                <MessageSquare size={32} />
-                            </div>
-                            <div className="space-y-2">
-                                <h2 className="text-xl font-bold text-white">Your Messages</h2>
-                                <p className="text-sm text-gray-500 max-w-xs">Select a conversation from the list to start chatting with your planner or client.</p>
-                            </div>
+                        <div className="space-y-2">
+                            <h2 className="text-2xl font-serif italic" style={{ color: 'var(--charcoal)' }}>
+                                Your Correspondence
+                            </h2>
+                            <p className="text-[11px] tracking-widest uppercase max-w-xs leading-relaxed" style={{ color: 'var(--muted-foreground)' }}>
+                                Select a conversation to begin your private exchange
+                            </p>
                         </div>
-                    )}
-                </div>
+                        <div className="h-px w-16 mx-auto" style={{ background: 'var(--border)' }} />
+                    </div>
+                )}
             </div>
         </div>
     );
