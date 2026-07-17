@@ -73,7 +73,8 @@ export function useChat(conversationId: string | null) {
             });
 
         if (messageError) {
-            console.error("Supabase Message Insert Error:", messageError);
+            console.error("Supabase Message Insert Error:", JSON.stringify(messageError, null, 2));
+            console.error("Error details:", messageError.message, messageError.details, messageError.hint);
             // Revert optimistic update
             setMessages((prev) => prev.filter(m => m.id !== newMessage.id));
             return;
