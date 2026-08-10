@@ -163,15 +163,8 @@ export function Navbar() {
 
                         {user ? (
                             <div className="flex items-center gap-4">
-                                <Link href={dashboardLink}>
-                                    <button
-                                        className="flex items-center gap-2 text-[10px] uppercase tracking-widest transition-all duration-200 px-4 py-2 border border-[#D4C5A9] text-[#1C1A16] font-bold rounded-xl"
-                                        style={{
-                                            fontFamily: "var(--font-dm-sans), sans-serif",
-                                        }}
-                                    >
-                                        <Settings size={12} /> Dashboard
-                                    </button>
+                                <Link href={dashboardLink} className="flex items-center gap-2 text-[10px] uppercase tracking-widest transition-all duration-200 px-4 py-2 border border-[var(--border)] text-[var(--charcoal)] font-bold rounded-xl font-sans-body">
+                                    <Settings size={12} /> Dashboard
                                 </Link>
                                 <button
                                     onClick={handleSignOut}
@@ -193,16 +186,11 @@ export function Navbar() {
                                 >
                                     Log In
                                 </Link>
-                                <Link href="/auth/register">
-                                    <button
-                                        className="text-[10px] uppercase tracking-widest transition-all duration-200 px-6 py-2.5 bg-[#1C1A16] text-[#FAF8F3] border border-[#1C1A16] font-bold rounded-xl"
-                                        style={{
-                                            fontFamily: "var(--font-dm-sans), sans-serif",
-                                            letterSpacing: '0.14em',
-                                        }}
-                                    >
-                                        Get Started
-                                    </button>
+                                <Link
+                                    href="/auth/register"
+                                    className="text-[10px] uppercase tracking-widest transition-all duration-200 px-6 py-2.5 bg-[var(--charcoal)] text-[var(--cream)] border border-[var(--charcoal)] font-bold rounded-xl font-sans-body"
+                                >
+                                    Get Started
                                 </Link>
                             </div>
                         )}
@@ -288,18 +276,10 @@ export function Navbar() {
                         <div className="mt-auto space-y-3 pt-8" style={{ borderTop: '1px solid var(--border)' }}>
                             {user ? (
                                 <>
-                                    <Link href={dashboardLink} onClick={() => setIsOpen(false)} className="block w-full">
-                                        <button
-                                            className="w-full py-3 text-xs uppercase tracking-widest rounded-xl"
-                                            style={{
-                                                border: '1px solid var(--border)',
-                                                color: 'var(--charcoal)',
-                                                fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
-                                                letterSpacing: '0.14em',
-                                            }}
-                                        >
+                                    <Link href={dashboardLink} className="block w-full">
+                                        <div className="w-full py-3 text-xs uppercase tracking-widest rounded-xl text-center border border-[var(--border)] text-[var(--charcoal)] font-sans-body" style={{ letterSpacing: '0.14em' }}>
                                             Dashboard
-                                        </button>
+                                        </div>
                                     </Link>
                                     <button
                                         onClick={handleSignOut}
@@ -311,22 +291,12 @@ export function Navbar() {
                             ) : (
                                 <>
                                     <Link href="/auth/login" onClick={() => setIsOpen(false)} className="block w-full">
-                                        <button
-                                            className="w-full py-3 text-xs uppercase tracking-widest rounded-xl"
-                                            style={{
-                                                border: '1px solid var(--border)',
-                                                color: 'var(--charcoal)',
-                                                fontFamily: "var(--font-dm-sans), 'DM Sans', sans-serif",
-                                                letterSpacing: '0.14em',
-                                            }}
-                                        >
+                                        <div className="w-full py-3 text-xs uppercase tracking-widest rounded-xl text-center border border-[var(--border)] text-[var(--charcoal)] font-sans-body" style={{ letterSpacing: '0.14em' }}>
                                             Log In
-                                        </button>
+                                        </div>
                                     </Link>
-                                    <Link href="/auth/register" onClick={() => setIsOpen(false)} className="block w-full">
-                                        <button className="block w-full om-btn-primary">
-                                            Get Started
-                                        </button>
+                                    <Link href="/auth/register" onClick={() => setIsOpen(false)} className="block w-full text-center om-btn-primary">
+                                        Get Started
                                     </Link>
                                 </>
                             )}

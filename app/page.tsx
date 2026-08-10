@@ -231,7 +231,7 @@ export default function Home() {
                                 <input
                                     type="text"
                                     placeholder={settings.hero_search_loc_placeholder || "Where is your event?"}
-                                    className="w-full pl-10 md:pl-12 pr-4 py-3 md:py-4 bg-transparent text-xs md:text-sm focus:outline-none placeholder-[#6B5E4E]/50"
+                                    className="w-full pl-10 md:pl-12 pr-4 py-3 md:py-4 bg-transparent text-sm md:text-base focus:outline-none placeholder-[#6B5E4E]/70"
                                     value={searchLocation}
                                     onChange={(e) => setSearchLocation(e.target.value)}
                                 />
@@ -242,12 +242,12 @@ export default function Home() {
                                 <input
                                     type="text"
                                     placeholder={settings.hero_search_type_placeholder || "Event Type"}
-                                    className="w-full pl-10 md:pl-12 pr-4 py-3 md:py-4 bg-transparent text-xs md:text-sm focus:outline-none placeholder-[#6B5E4E]/50"
+                                    className="w-full pl-10 md:pl-12 pr-4 py-3 md:py-4 bg-transparent text-sm md:text-base focus:outline-none placeholder-[#6B5E4E]/70"
                                     value={searchType}
                                     onChange={(e) => setSearchType(e.target.value)}
                                 />
                             </div>
-                            <button type="submit" className="w-full md:w-auto om-btn-primary px-12 py-3 md:py-4 text-xs md:text-sm">
+                            <button type="submit" className="w-full md:w-auto om-btn-primary px-12 py-3 md:py-4 text-sm md:text-base">
                                 Explore
                             </button>
                         </form>
@@ -360,8 +360,8 @@ export default function Home() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 h-auto md:h-[800px]">
-                        <div className="md:col-span-8 group relative overflow-hidden h-[400px] md:h-full">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:h-[800px]">
+                        <div className="md:col-span-8 group relative overflow-hidden aspect-square md:aspect-auto md:h-full">
                             <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
                                 <img
                                     src={settings.discovery_img_1 || "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=1200"}
@@ -373,7 +373,7 @@ export default function Home() {
                         </div>
 
                         <div className="md:col-span-4 flex flex-col gap-8">
-                            <div className="flex-1 group relative overflow-hidden h-[300px] md:h-auto">
+                            <div className="flex-1 group relative overflow-hidden aspect-[4/3] md:aspect-auto md:h-auto">
                                 <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
                                     <img
                                         src={settings.discovery_img_2 || "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800"}
@@ -382,7 +382,7 @@ export default function Home() {
                                     />
                                 </div>
                             </div>
-                            <div className="flex-1 group relative overflow-hidden h-[300px] md:h-auto">
+                            <div className="flex-1 group relative overflow-hidden aspect-[4/3] md:aspect-auto md:h-auto">
                                 <div className="w-full h-full border border-[#D4C5A9]/30 overflow-hidden relative">
                                     <img
                                         src={settings.discovery_img_3 || "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800"}
@@ -410,15 +410,11 @@ export default function Home() {
                         {settings.visionaries_subtitle || "Are you an architect of memories? Showcase your portfolio to the world's most discerning guests."}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-                        <Link href="/auth/register-planner">
-                            <button className="om-btn-outline border-[#C4A55A] text-[#FAF8F3] hover:bg-[#C4A55A] hover:text-[#1A2E1A]">
-                                Join as Planner
-                            </button>
+                        <Link href="/auth/register-planner" className="om-btn-outline border-[#C4A55A] text-[#FAF8F3] hover:bg-[#C4A55A] hover:text-[#1A2E1A] text-center">
+                            Join as Planner
                         </Link>
-                        <Link href="/planners">
-                            <button className="om-btn-primary bg-[#FAF8F3] text-[#1A2E1A] border-[#FAF8F3] hover:bg-transparent hover:text-[#FAF8F3]">
-                                Explore More
-                            </button>
+                        <Link href="/planners" className="om-btn-primary bg-[#FAF8F3] text-[#1A2E1A] border-[#FAF8F3] hover:bg-transparent hover:text-[#FAF8F3] text-center">
+                            Explore More
                         </Link>
                     </div>
                 </div>
