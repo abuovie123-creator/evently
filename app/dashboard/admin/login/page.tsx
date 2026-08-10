@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, ShieldCheck, Lock, Mail, Users } from "lucide-react";
+import { Eye, EyeOff, ShieldCheck, Lock, Users } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
@@ -79,7 +79,7 @@ export default function AdminLoginPage() {
                 .single();
 
             if (profileError || profile?.role !== 'admin') {
-                setError("Access Denied: This account is not authorized for Admin Access. Please use the dedicated 'admin' account.");
+                setError("Access Denied. This account does not have administrator privileges.");
                 showToast("Logging out incompatible session...", "info");
                 await supabase.auth.signOut();
                 setLoading(false);
@@ -92,98 +92,111 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
-            {/* Background elements for "Secure" feel */}
-            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(79,70,229,0.1),transparent_50%)]" />
-            <div className="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/10 blur-[120px] rounded-full" />
-            <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-amber-500/5 blur-[120px] rounded-full" />
+        <div className="min-h-screen bg-[#FAF8F3] flex items-center justify-center p-6 pt-20 sm:pt-32 relative overflow-hidden">
+            {/* Subtle warm background texture */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[radial-gradient(ellipse,rgba(196,165,90,0.06),transparent_70%)]" />
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[radial-gradient(ellipse,rgba(139,115,85,0.04),transparent_70%)]" />
+            </div>
 
-            <div className="max-w-md w-full relative z-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <div className="text-center mb-12 space-y-4">
-                    <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-3xl flex items-center justify-center mx-auto shadow-2xl shadow-indigo-500/20 mb-6 group transition-transform hover:scale-105 duration-500">
-                        <ShieldCheck size={40} className="text-white animate-pulse" />
+            <div className="max-w-md w-full relative z-10">
+                <Card className="space-y-8 p-6 sm:p-12 rounded-3xl" hover={false}>
+
+                    {/* Header */}
+                    <div className="text-center space-y-3 mb-6">
+                        <p className="section-label" style={{ color: 'var(--accent)' }}>Restricted Access</p>
+                        <h1 className="text-4xl md:text-5xl font-serif" style={{ color: 'var(--charcoal)' }}>
+                            Admin
+                        </h1>
+                        <p className="text-sm font-light italic" style={{ color: 'var(--muted-foreground)' }}>
+                            Authorized personnel only
+                        </p>
                     </div>
-                    <h1 className="text-3xl font-extrabold tracking-tight text-white capitalize">Admin Access</h1>
-                    <p className="text-gray-500 text-sm max-w-[320px] mx-auto leading-relaxed">
-                        Authorized personnel only. Admin accounts must be separate from regular user accounts.
-                    </p>
-                </div>
 
-                <Card className="p-6 sm:p-10 bg-black/40 backdrop-blur-3xl border-white/5 shadow-2xl space-y-8" hover={false}>
+                    {/* Form */}
                     <form onSubmit={handleLogin} className="space-y-6">
+                        {/* Username */}
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-1">Admin Username</label>
-                            <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-400 transition-colors">
-                                    <Users size={18} />
+                            <label className="text-xs font-bold uppercase tracking-widest ml-1"
+                                style={{ color: 'var(--accent)' }}>
+                                Admin Username
+                            </label>
+                            <div className="relative">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                                    style={{ color: 'var(--accent)' }}>
+                                    <Users size={16} />
                                 </div>
-                                <input
+                                <Input
                                     type="text"
                                     placeholder="admin"
-                                    className="w-full flex h-14 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-50 pl-12 focus:border-indigo-500/50 transition-all font-medium text-white"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                     required
+                                    className="pl-11"
                                 />
                             </div>
                         </div>
 
+                        {/* Password */}
                         <div className="space-y-2">
-                            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500 ml-1">Access Key</label>
-                            <div className="relative group">
-                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-400 transition-colors">
-                                    <Lock size={18} />
+                            <label className="text-xs font-bold uppercase tracking-widest ml-1"
+                                style={{ color: 'var(--accent)' }}>
+                                Access Key
+                            </label>
+                            <div className="relative">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                                    style={{ color: 'var(--accent)' }}>
+                                    <Lock size={16} />
                                 </div>
                                 <Input
                                     type={showPassword ? "text" : "password"}
                                     placeholder="••••••••"
-                                    className="pl-12 pr-12 bg-white/5 border-white/10 focus:border-indigo-500/50 transition-all h-14 rounded-2xl"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
+                                    className="pl-11 pr-12"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors p-1"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 transition-colors"
+                                    style={{ color: 'var(--muted-foreground)' }}
                                 >
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                 </button>
                             </div>
                         </div>
 
+                        {/* Error */}
                         {error && (
-                            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl animate-in shake duration-500">
-                                <p className="text-red-500 text-xs text-center font-medium leading-relaxed">
-                                    {error}
-                                </p>
+                            <div className="bg-red-50 border border-red-200 text-red-600 text-[10px] uppercase tracking-widest font-bold p-4 rounded-sm animate-in fade-in duration-300">
+                                Access Denied: {error}
                             </div>
                         )}
 
+                        {/* Submit */}
                         <Button
                             type="submit"
-                            className="w-full h-14 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold rounded-2xl shadow-xl shadow-indigo-600/20 border-none group transition-all duration-300 active:scale-[0.98]"
+                            className="w-full h-14"
+                            size="lg"
                             disabled={loading}
                         >
-                            {loading ? (
-                                <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                    <span>Authorizing...</span>
-                                </div>
-                            ) : (
-                                "Authenticate"
-                            )}
+                            {loading ? "Authenticating..." : "Authenticate"}
                         </Button>
                     </form>
-                </Card>
 
-                <div className="mt-8 text-center sm:flex sm:items-center sm:justify-center gap-4 space-y-4 sm:space-y-0 text-[10px] font-bold uppercase tracking-widest text-gray-600">
-                    <button onClick={() => router.push("/")} className="hover:text-white transition-colors">Back to Terminal</button>
-                    <span className="hidden sm:inline opacity-20">•</span>
-                    <button className="hover:text-white transition-colors cursor-not-allowed">Reset Access Key</button>
-                    <span className="hidden sm:inline opacity-20">•</span>
-                    <button className="hover:text-white transition-colors cursor-not-allowed">Support (Encrypted)</button>
-                </div>
+                    {/* Footer links */}
+                    <div className="pt-2 flex items-center justify-center text-[10px] font-bold uppercase tracking-widest"
+                        style={{ color: 'var(--muted-foreground)' }}>
+                        <button
+                            onClick={() => router.push("/")}
+                            className="hover:underline transition-colors"
+                            style={{ color: 'var(--accent)' }}
+                        >
+                            Back to Home
+                        </button>
+                    </div>
+                </Card>
             </div>
         </div>
     );
