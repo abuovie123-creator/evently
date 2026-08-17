@@ -170,21 +170,21 @@ function PayoutContent() {
     };
 
     if (isLoading) return (
-        <div className="min-h-screen flex items-center justify-center bg-black">
-            <div className="w-8 h-8 border-4 border-charcoal/30 border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen flex items-center justify-center bg-[#FAF8F3]">
+            <div className="w-8 h-8 border-4 border-[#C4A55A]/30 border-t-[#C4A55A] rounded-full animate-spin" />
         </div>
     );
 
     return (
-        <main className="min-h-screen bg-black text-white p-6 pt-32 pb-20">
+        <main className="min-h-screen bg-[#FAF8F3] text-[#1C1A16] p-6 pt-32 pb-20">
             <div className="max-w-4xl mx-auto space-y-12">
                 <header className="flex items-center gap-4">
-                    <Link href="/pricing" className="p-2 hover:bg-white/5 rounded-full transition-colors">
-                        <ArrowLeft size={20} />
+                    <Link href="/pricing" className="p-2 hover:bg-[#1A2E1A]/5 rounded-none border border-transparent hover:border-[#D4C5A9]/30 transition-all">
+                        <ArrowLeft size={20} className="text-[#1A2E1A]" />
                     </Link>
                     <div>
-                        <h1 className="text-3xl font-bold">Checkout</h1>
-                        <p className="text-gray-400">Upgrade to {selectedTier?.name} Plan</p>
+                        <h1 className="text-4xl font-serif text-[#1C1A16]">Checkout</h1>
+                        <p className="text-[#6B5E4E] italic">Upgrade to {selectedTier?.name} Plan</p>
                     </div>
                 </header>
 
@@ -192,57 +192,57 @@ function PayoutContent() {
                     {/* Payment Form */}
                     <div className="lg:col-span-2 space-y-8">
                         <section className="space-y-6">
-                            <h3 className="text-xl font-bold flex items-center gap-2">
-                                <CreditCard className="text-amber-600" size={20} />
+                            <h3 className="text-2xl font-serif flex items-center gap-2 text-[#1C1A16]">
+                                <CreditCard className="text-[#8B7355]" size={20} />
                                 Select Payment Method
                             </h3>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <button
                                     onClick={() => setSelectedMethod("gateway")}
-                                    className={`p-6 rounded-3xl border-2 transition-all text-left space-y-3 ${selectedMethod === "gateway"
-                                        ? "border-charcoal/30 bg-amber-600/5 shadow-lg shadow-blue-500/10"
-                                        : "border-border hover:border-border"
+                                    className={`p-6 border transition-all text-left space-y-3 rounded-none ${selectedMethod === "gateway"
+                                        ? "border-[#C4A55A] bg-white shadow-xl"
+                                        : "border-[#D4C5A9]/30 hover:border-[#C4A55A]/50 bg-[#F5F0E8]"
                                         }`}
                                 >
-                                    <div className="w-10 h-10 rounded-3xl bg-amber-600 flex items-center justify-center">
+                                    <div className="w-10 h-10 rounded-full bg-[#1A2E1A] flex items-center justify-center text-[#F5F0E8]">
                                         <Zap size={20} />
                                     </div>
-                                    <span className="font-bold block">Pay Instant (ATM/Transfer)</span>
-                                    <p className="text-xs text-gray-500">Pay via Paystack or Flutterwave</p>
+                                    <span className="font-serif text-lg block text-[#1C1A16]">Pay Instant (ATM/Transfer)</span>
+                                    <p className="text-xs text-[#6B5E4E] font-light">Pay via Paystack or Flutterwave</p>
                                 </button>
 
                                 <button
                                     onClick={() => setSelectedMethod("manual")}
-                                    className={`p-6 rounded-3xl border-2 transition-all text-left space-y-3 ${selectedMethod === "manual"
-                                        ? "border-amber-500 bg-amber-500/5 shadow-lg shadow-amber-500/10"
-                                        : "border-border hover:border-border"
+                                    className={`p-6 border transition-all text-left space-y-3 rounded-none ${selectedMethod === "manual"
+                                        ? "border-[#C4A55A] bg-white shadow-xl"
+                                        : "border-[#D4C5A9]/30 hover:border-[#C4A55A]/50 bg-[#F5F0E8]"
                                         }`}
                                 >
-                                    <div className="w-10 h-10 rounded-3xl bg-amber-500 flex items-center justify-center">
+                                    <div className="w-10 h-10 rounded-full bg-[#8B7355] flex items-center justify-center text-[#F5F0E8]">
                                         <Building2 size={20} />
                                     </div>
-                                    <span className="font-bold block">Manual Bank Transfer</span>
-                                    <p className="text-xs text-gray-500">Upload receipt for admin approval</p>
+                                    <span className="font-serif text-lg block text-[#1C1A16]">Manual Bank Transfer</span>
+                                    <p className="text-xs text-[#6B5E4E] font-light">Upload receipt for admin approval</p>
                                 </button>
                             </div>
                         </section>
 
                         {selectedMethod === "manual" && (
                             <section className="space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="p-6 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border-amber-500/20 bg-amber-500/5 rounded-3xl space-y-4">
+                                <div className="p-6 bg-white border border-[#D4C5A9]/30 rounded-none space-y-4">
                                     <div className="flex gap-4">
-                                        <Info className="text-amber-400 shrink-0" size={20} />
+                                        <Info className="text-[#8B7355] shrink-0" size={20} />
                                         <div className="space-y-2">
-                                            <p className="font-bold text-amber-400">Our Bank Details</p>
-                                            <div className="space-y-1 text-sm text-gray-300">
-                                                <p>Bank: <span className="text-white font-bold">{manualDetails.bankName}</span></p>
-                                                <p>Account: <span className="text-white font-bold">{manualDetails.accountNumber}</span></p>
-                                                <p>Name: <span className="text-white font-bold">{manualDetails.accountName}</span></p>
+                                            <p className="font-serif text-[#1C1A16] text-lg">Our Bank Details</p>
+                                            <div className="space-y-1 text-sm text-[#6B5E4E]">
+                                                <p>Bank: <span className="text-[#1C1A16] font-bold">{manualDetails.bankName}</span></p>
+                                                <p>Account: <span className="text-[#1C1A16] font-bold">{manualDetails.accountNumber}</span></p>
+                                                <p>Name: <span className="text-[#1C1A16] font-bold">{manualDetails.accountName}</span></p>
                                                 {manualDetails.additionalInfo && (
-                                                    <div className="mt-4 pt-4 border-t border-border">
-                                                        <p className="text-[10px] uppercase tracking-widest text-amber-400/60 font-bold mb-1">Note</p>
-                                                        <p className="text-xs text-gray-400 italic leading-relaxed">{manualDetails.additionalInfo}</p>
+                                                    <div className="mt-4 pt-4 border-t border-[#D4C5A9]/30">
+                                                        <p className="text-[10px] uppercase tracking-widest text-[#8B7355] font-bold mb-1">Note</p>
+                                                        <p className="text-xs text-[#6B5E4E] italic leading-relaxed">{manualDetails.additionalInfo}</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -250,18 +250,19 @@ function PayoutContent() {
                                     </div>
                                 </div>
 
-                                <div className="space-y-4">
-                                    <label className="text-sm font-bold uppercase tracking-widest text-gray-500">Amount Paid (₦)</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#8B7355]">Amount Paid (₦)</label>
                                     <Input
                                         type="number"
                                         placeholder="Enter amount"
                                         value={amount}
                                         onChange={(e) => setAmount(e.target.value)}
+                                        className="rounded-none border-[#D4C5A9]/30 h-14 bg-white focus:border-[#C4A55A]"
                                     />
                                 </div>
 
-                                <div className="space-y-4">
-                                    <label className="text-sm font-bold uppercase tracking-widest text-gray-500">Upload Screenshot</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-[#8B7355]">Upload Screenshot</label>
                                     <div className="relative group">
                                         <input
                                             type="file"
@@ -269,22 +270,21 @@ function PayoutContent() {
                                             onChange={handleFileUpload}
                                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                                         />
-                                        <div className={`p-8 border-2 border-dashed rounded-3xl flex flex-col items-center justify-center transition-all ${screenshot ? "border-green-500/50 bg-green-500/5" : "border-border group-hover:border-white/20"
+                                        <div className={`p-8 border border-[#D4C5A9]/30 rounded-none flex flex-col items-center justify-center transition-all bg-white ${screenshot ? "bg-[#F5F0E8] border-[#C4A55A]" : "group-hover:border-[#C4A55A]"
                                             }`}>
                                             {isSubmitting ? (
-                                                <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                                                <div className="w-8 h-8 border-4 border-[#C4A55A] border-t-transparent rounded-full animate-spin" />
                                             ) : (
-                                                <Upload className={screenshot ? "text-green-400" : "text-gray-500"} size={32} />
+                                                <Upload className={screenshot ? "text-[#1A2E1A]" : "text-[#D4C5A9]"} size={32} />
                                             )}
-                                            <p className="mt-4 font-bold">{screenshot ? screenshot.name : "Click to upload payment receipt"}</p>
-                                            <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
+                                            <p className="mt-4 font-serif text-[#1C1A16]">{screenshot ? screenshot.name : "Click to upload payment receipt"}</p>
+                                            <p className="text-xs text-[#6B5E4E] italic mt-1">PNG, JPG up to 5MB</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <Button
-                                    className="w-full py-6 bg-amber-500 hover:bg-amber-600"
-                                    size="lg"
+                                    className="w-full h-14 rounded-none bg-[#1A2E1A] hover:bg-[#2C3A2E] text-white uppercase tracking-widest text-xs font-bold"
                                     onClick={handleSubmitManual}
                                     disabled={isSubmitting}
                                 >
@@ -295,26 +295,26 @@ function PayoutContent() {
 
                         {selectedMethod === "gateway" && (
                             <section className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="p-10 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl text-center space-y-6 border-border">
-                                    <div className="w-20 h-20 bg-charcoal/5 rounded-full flex items-center justify-center mx-auto text-amber-600">
+                                <div className="p-10 bg-white border border-[#D4C5A9]/30 rounded-none text-center space-y-6 shadow-xl">
+                                    <div className="w-20 h-20 bg-[#F5F0E8] rounded-full flex items-center justify-center mx-auto text-[#8B7355]">
                                         <Zap size={40} />
                                     </div>
                                     <div className="space-y-2">
-                                        <h4 className="text-xl font-bold">Instant Activation</h4>
-                                        <p className="text-gray-400 text-sm max-w-sm mx-auto">
+                                        <h4 className="text-2xl font-serif text-[#1C1A16]">Instant Activation</h4>
+                                        <p className="text-[#6B5E4E] text-sm max-w-sm mx-auto italic font-light">
                                             Pay securely using your card or bank app and get upgraded instantly.
                                         </p>
                                     </div>
                                     <div className="space-y-3 w-full max-w-sm mx-auto">
                                         <Button
-                                            className="w-full py-6 bg-[#0BA4DB] hover:bg-[#0BA4DB]/90 text-white font-black uppercase tracking-widest text-xs"
+                                            className="w-full h-14 bg-[#1A2E1A] hover:bg-[#2C3A2E] rounded-none text-white font-bold uppercase tracking-widest text-[10px]"
                                             onClick={() => handleGatewayCheckout("paystack")}
                                             disabled={isSubmitting}
                                         >
                                             {isSubmitting ? "Initializing..." : `Pay ₦${Number(selectedTier?.price || 0).toLocaleString()} with Paystack`}
                                         </Button>
                                         <Button
-                                            className="w-full py-6 bg-[#FB9129] hover:bg-[#FB9129]/90 text-white font-black uppercase tracking-widest text-xs"
+                                            className="w-full h-14 bg-white border border-[#1C1A16] hover:bg-[#F5F0E8] rounded-none text-[#1C1A16] font-bold uppercase tracking-widest text-[10px]"
                                             onClick={() => handleGatewayCheckout("flutterwave")}
                                             disabled={isSubmitting}
                                         >
@@ -328,29 +328,29 @@ function PayoutContent() {
 
                     {/* Order Summary */}
                     <div className="lg:col-span-1">
-                        <Card className="sticky top-32 space-y-6" hover={false}>
-                            <h3 className="text-lg font-bold">Order Summary</h3>
+                        <Card className="sticky top-32 space-y-6 p-8 border-[#D4C5A9]/30 bg-white rounded-none shadow-xl" hover={false}>
+                            <h3 className="text-2xl font-serif text-[#1C1A16]">Order Summary</h3>
                             <div className="space-y-4">
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-gray-500">{selectedTier?.name} Plan</span>
-                                    <span className="font-bold">₦{Number(selectedTier?.price || 0).toLocaleString()}</span>
+                                    <span className="text-[#6B5E4E]">{selectedTier?.name} Plan</span>
+                                    <span className="font-bold text-[#1C1A16]">₦{Number(selectedTier?.price || 0).toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-gray-500">Duration</span>
-                                    <span className="font-bold">1 {selectedTier?.period}</span>
+                                    <span className="text-[#6B5E4E]">Duration</span>
+                                    <span className="font-bold text-[#1C1A16]">1 {selectedTier?.period}</span>
                                 </div>
-                                <hr className="border-border" />
+                                <hr className="border-[#D4C5A9]/30" />
                                 <div className="flex justify-between items-end">
-                                    <span className="text-gray-400">Total Charged</span>
-                                    <span className="text-2xl font-bold">₦{Number(selectedTier?.price || 0).toLocaleString()}</span>
+                                    <span className="text-[#6B5E4E] font-serif italic">Total Charged</span>
+                                    <span className="text-2xl font-serif text-[#1C1A16]">₦{Number(selectedTier?.price || 0).toLocaleString()}</span>
                                 </div>
                             </div>
 
                             <div className="pt-4 space-y-4">
-                                <p className="text-[10px] text-gray-500 leading-relaxed font-medium">
-                                    By completing your purchase, you agree to our Terms of Service and Privacy Policy. Subscriptions renew automatically until cancelled.
+                                <p className="text-[10px] text-[#6B5E4E] leading-relaxed uppercase tracking-widest">
+                                    By completing your purchase, you agree to our Terms of Service and Privacy Policy. Subscriptions renew automatically.
                                 </p>
-                                <div className="flex items-center gap-2 text-green-400 text-[10px] font-bold uppercase tracking-widest">
+                                <div className="flex items-center gap-2 text-[#8B7355] text-[10px] font-bold uppercase tracking-widest">
                                     <CheckCircle2 size={12} />
                                     Secure SSL Encryption
                                 </div>
@@ -366,8 +366,8 @@ function PayoutContent() {
 export default function PayoutPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center bg-black">
-                <div className="w-8 h-8 border-4 border-charcoal/30 border-t-transparent rounded-full animate-spin" />
+            <div className="min-h-screen flex items-center justify-center bg-[#FAF8F3]">
+                <div className="w-8 h-8 border-4 border-[#C4A55A]/30 border-t-[#C4A55A] rounded-full animate-spin" />
             </div>
         }>
             <PayoutContent />

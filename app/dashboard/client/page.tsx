@@ -22,35 +22,29 @@ function UserDropdown({ name, avatar, onLogout }: UserDropdownProps) {
 
     return (
         <div className="relative">
+            {isOpen && (
+                <div 
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-4 px-6 py-2.5 bg-surface border border-om-border/30 hover:border-gold transition-all duration-500 group"
+                className="relative z-50 flex items-center justify-center px-5 py-2.5 bg-surface border border-om-border/30 shadow-sm rounded-full group active:scale-95 transition-all duration-300 min-w-[100px]"
             >
-                <div className="w-8 h-8 rounded-none overflow-hidden border border-om-border/30 group-hover:border-gold transition-colors">
-                    {avatar ? (
-                        <img src={avatar} alt={name} className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-charcoal text-gold">
-                            <User size={14} />
-                        </div>
-                    )}
-                </div>
-                <div className="text-left hidden lg:block">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-charcoal leading-none mb-1">{name || "Estate Client"}</p>
-                    <p className="text-[8px] font-bold text-accent/60 uppercase tracking-widest leading-none">Concierge</p>
-                </div>
-                <ChevronDown size={14} className={`text-charcoal/30 group-hover:text-gold transition-transform duration-500 ${isOpen ? 'rotate-180' : ''}`} />
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-charcoal leading-none">
+                    {name ? name.split(' ')[0] : "Client"}
+                </p>
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-cream border border-om-border/40 shadow-2xl z-[100] animate-in slide-in-from-top-2 duration-300">
-                    <div className="p-2 space-y-1">
+                <div className="absolute right-0 mt-2 w-full min-w-[120px] bg-cream border border-om-border/40 shadow-xl z-[100] rounded-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="flex flex-col">
                         <Link
                             href="/dashboard/client/settings"
-                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors"
+                            className="px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-charcoal hover:bg-charcoal/5 transition-colors text-center border-b border-om-border/10"
                             onClick={() => setIsOpen(false)}
                         >
-                            <User size={14} className="text-gold" />
                             My Profile
                         </Link>
                         <button
@@ -58,10 +52,9 @@ function UserDropdown({ name, avatar, onLogout }: UserDropdownProps) {
                                 setIsOpen(false);
                                 onLogout();
                             }}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-red-900/60 hover:bg-red-900/5 transition-colors text-left"
+                            className="w-full px-4 py-3 text-[9px] font-bold uppercase tracking-widest text-red-900/80 hover:bg-red-900/5 transition-colors text-center"
                         >
-                            <LogOut size={14} />
-                            Depart Estate
+                            Sign Out
                         </button>
                     </div>
                 </div>
@@ -199,16 +192,9 @@ export default function ClientDashboard() {
     return (
         <div className="space-y-12 animate-in fade-in duration-500">
             {/* Top Navigation Bar - Hidden on Mobile */}
-            <div className="hidden md:flex flex-row justify-between items-center pb-12 w-full border-b border-om-border/20">
-                <Link href="/" className="text-2xl font-serif text-charcoal tracking-widest uppercase">
-                    EVENTLY<span className="text-gold">.</span>
-                </Link>
-                <nav className="flex gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-[#6B5E4E]">
-                    <Link href="/portfolio" className="hover:text-charcoal transition-colors">Portfolio</Link>
-                    <Link href="/planners" className="hover:text-charcoal transition-colors">Collections</Link>
-                    <Link href="/events" className="hover:text-charcoal transition-colors">Inspiration</Link>
-                </nav>
-                <div className="flex gap-6 items-center">
+            <div className="hidden md:flex flex-row justify-end items-center pb-8 w-full border-b border-om-border/10">
+                <div className="flex gap-4 items-center">
+                    <NotificationBell />
                     <UserDropdown
                         name={profileName}
                         avatar={avatarUrl}
@@ -245,9 +231,9 @@ export default function ClientDashboard() {
                             </div>
                         ) : savedPlanners.map((saved, i) => (
                             <Link href={`/planner/${saved.profiles?.username || saved.profiles?.id}`} key={i} className="group block space-y-4">
-                                <div className="relative aspect-[4/5] overflow-hidden bg-surface border border-om-border/20">
+                                <div className="relative aspect-square md:aspect-[4/5] overflow-hidden bg-surface border border-om-border/10">
                                     <img src={saved.profiles?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${saved.profiles?.id}`} alt={saved.profiles?.full_name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
-                                    <div className="absolute top-4 right-4 bg-cream p-3 rounded-none border border-gold/20 text-gold shadow-sm transition-transform group-hover:scale-110">
+                                    <div className="absolute top-4 right-4 bg-cream p-2.5 rounded-full border border-om-border/20 text-[#8B7355] shadow-sm transition-transform group-hover:scale-110">
                                         <svg fill="currentColor" viewBox="0 0 24 24" className="w-5 h-5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
                                     </div>
                                 </div>
@@ -261,8 +247,8 @@ export default function ClientDashboard() {
                 </div>
 
                 {/* Right Column: Booking Requests */}
-                <div className="lg:col-span-1 border border-om-border/30 bg-surface p-6 md:p-8 space-y-8 h-fit shadow-sm">
-                    <h3 className="text-[10px] font-bold tracking-[0.3em] uppercase text-accent/70 italic">Booking Requests</h3>
+                <div className="lg:col-span-1 bg-[#F4F2EE] p-6 md:p-8 space-y-8 h-fit">
+                    <h3 className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#8B7355] italic">Booking Requests</h3>
 
                     <div className="space-y-8">
                         {bookings.length === 0 ? (

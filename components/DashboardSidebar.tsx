@@ -256,21 +256,6 @@ function SidebarContent({
 
                 {role === 'client' && (
                     <div className="pt-8 mt-8 border-t border-om-border/10 space-y-1">
-                        <Link
-                            href="#"
-                            className="flex items-center gap-4 px-4 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest text-[#6B5E4E]/60 hover:text-charcoal transition-all group"
-                        >
-                            <History size={14} className="group-hover:text-gold transition-colors" />
-                            <span>Archived</span>
-                        </Link>
-                        <Link
-                            href="/dashboard/client/support"
-                            className="flex items-center gap-4 px-4 py-3 rounded-none text-[11px] font-bold uppercase tracking-widest text-[#6B5E4E]/60 hover:text-charcoal transition-all group"
-                        >
-                            <LifeBuoy size={14} className="group-hover:text-gold transition-colors" />
-                            <span>Help</span>
-                        </Link>
-
                         {externalLinks.length > 0 && (
                             <div className="pt-6 px-4">
                                 <a

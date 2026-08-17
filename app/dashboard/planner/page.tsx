@@ -963,7 +963,7 @@ export default function PlannerDashboard() {
                                         <Button variant="outline" className="flex-1 border-red-500/20 text-red-400 hover:bg-red-500/5" onClick={() => setShowDeclineInput(true)} disabled={isUpdating}>
                                             Decline Request
                                         </Button>
-                                        <Button className="flex-1 bg-charcoal text-cream hover:bg-charcoal/90 text-white" onClick={() => handleStatusUpdate(selectedBooking.id, 'approved')} disabled={isUpdating}>
+                                        <Button className="flex-1 bg-charcoal text-cream hover:bg-charcoal/90" onClick={() => handleStatusUpdate(selectedBooking.id, 'approved')} disabled={isUpdating}>
                                             Accept Booking
                                         </Button>
                                     </div>

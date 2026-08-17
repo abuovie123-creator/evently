@@ -136,7 +136,7 @@ export default function SettingsPage() {
                 </div>
             </div>
             <div className="flex justify-end pt-4">
-                <Button onClick={handleSaveAccount} className="bg-blue-600 hover:bg-blue-700 gap-2 h-12 rounded-2xl px-8 font-bold">
+                <Button onClick={handleSaveAccount} className="bg-charcoal hover:bg-charcoal/80 text-cream gap-2 h-12 rounded-2xl px-8 font-bold">
                     <Save size={18} /> Save Changes
                 </Button>
             </div>
@@ -152,7 +152,7 @@ export default function SettingsPage() {
                     { title: "Security Alerts", desc: "Important notices about your account security." },
                     { title: "Marketing Emails", desc: "Promotions and event planning tips." },
                 ].map((item: NotificationItem, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-4 glass-panel rounded-2xl border-white/5">
+                    <div key={i} className="flex items-center justify-between p-4 bg-foreground/[0.03] border border-foreground/10 rounded-2xl">
                         <div>
                             <p className="font-bold">{item.title}</p>
                             <p className="text-xs text-gray-500">{item.desc}</p>
@@ -196,7 +196,7 @@ export default function SettingsPage() {
                 </div>
             </div>
 
-            <div className="pt-8 border-t border-white/5">
+            <div className="pt-8 border-t border-foreground/10">
                 <h4 className="text-red-400 font-bold mb-4 flex items-center gap-2">
                     <Trash2 size={18} /> Danger Zone
                 </h4>
@@ -217,16 +217,17 @@ export default function SettingsPage() {
 
     const renderBilling = () => (
         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-            <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-foreground/10 p-8 text-center md:text-left">
+            <Card className="bg-gradient-to-br from-charcoal/5 to-gold/10 border-gold/20 p-8 text-center md:text-left">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                     <div>
-                        <span className="px-3 py-1 bg-blue-500 text-foreground text-[10px] font-bold uppercase tracking-widest rounded-full mb-4 inline-block">
+                        <span className="px-3 py-1 bg-charcoal text-cream text-[10px] font-bold uppercase tracking-widest rounded-full mb-4 inline-block">
                             Current Plan: Professional
                         </span>
-                        <h3 className="text-3xl font-extrabold mb-2 text-foreground">$49<span className="text-lg font-normal text-gray-400">/month</span></h3>
-                        <p className="text-sm text-gray-400">Next billing date: April 24, 2026</p>
+                        <h3 className="text-3xl font-extrabold mb-2 text-foreground">$49<span className="text-lg font-normal text-muted-foreground">/month</span></h3>
+                        <p className="text-sm text-muted-foreground">Next billing date: April 24, 2026</p>
+
                     </div>
-                    <Button className="bg-foreground text-background hover:bg-gray-200">Upgrade Plan</Button>
+                    <Button className="bg-charcoal text-cream hover:bg-charcoal/80">Upgrade Plan</Button>
                 </div>
             </Card>
 
@@ -238,7 +239,7 @@ export default function SettingsPage() {
                     { id: "INV-001", date: "Mar 24, 2026", amount: "$49.00", status: "Paid" },
                     { id: "INV-002", date: "Feb 24, 2026", amount: "$49.00", status: "Paid" },
                 ].map((inv: Invoice, i: number) => (
-                    <div key={i} className="flex items-center justify-between p-4 glass-panel rounded-2xl border-white/5">
+                    <div key={i} className="flex items-center justify-between p-4 bg-foreground/[0.03] border border-foreground/10 rounded-2xl">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400">
                                 <CheckCircle2 size={20} />
@@ -267,7 +268,7 @@ export default function SettingsPage() {
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
-                <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+                <div className="w-12 h-12 border-4 border-charcoal/10 border-t-charcoal rounded-full animate-spin" />
                 <p className="text-muted-foreground font-medium animate-pulse">Loading settings...</p>
             </div>
         );
@@ -277,15 +278,15 @@ export default function SettingsPage() {
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div>
                 <h1 className="text-4xl font-extrabold tracking-tight mb-2">Settings</h1>
-                <p className="text-gray-400">Control your account, security, and notification preferences.</p>
+                <p className="text-muted-foreground">Control your account, security, and notification preferences.</p>
             </div>
 
-            <div className="flex gap-2 p-1 bg-white/5 rounded-2xl border border-white/10 w-full overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 p-1 bg-foreground/5 rounded-2xl border border-foreground/10 w-full overflow-x-auto scrollbar-hide">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 min-w-fit flex-shrink-0 ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+                        className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 min-w-fit flex-shrink-0 ${activeTab === tab.id ? 'bg-charcoal text-cream shadow-lg shadow-charcoal/20' : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'}`}
                     >
                         <tab.icon size={18} />
                         {tab.label}

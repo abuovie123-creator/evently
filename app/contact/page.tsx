@@ -7,17 +7,39 @@ import { Input } from "@/components/ui/Input";
 import { Mail, Phone, MessageSquare, Send } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
+import { useToast } from "@/components/ui/Toast";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ContactPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { showToast } = useToast();
+    const supabase = createClient();
+    const [formData, setFormData] = useState({
+        full_name: "",
+        email: "",
+        subject: "",
+        message: ""
+    });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Simulate form submission
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setIsSubmitting(false);
-        alert("Thank you. Our concierge will be in touch shortly.");
+        
+        try {
+            const { error } = await supabase
+                .from('inquiries')
+                .insert([formData]);
+                
+            if (error) throw error;
+            
+            showToast("Inquiry submitted successfully. Our concierge will be in touch shortly.", "success");
+            setFormData({ full_name: "", email: "", subject: "", message: "" });
+        } catch (error) {
+            console.error("Error submitting inquiry:", error);
+            showToast("Failed to submit inquiry. Please try again.", "error");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -85,6 +107,8 @@ export default function ContactPage() {
                                         <label className="section-label opacity-60">Full Name</label>
                                         <Input
                                             required
+                                            value={formData.full_name}
+                                            onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                                             placeholder="Enter your name"
                                             className="h-14 rounded-none border-[#D4C5A9]/20 bg-[#FAF8F3] focus:border-[#C4A55A] transition-all"
                                         />
@@ -94,6 +118,8 @@ export default function ContactPage() {
                                         <Input
                                             required
                                             type="email"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                             placeholder="your@email.com"
                                             className="h-14 rounded-none border-[#D4C5A9]/20 bg-[#FAF8F3] focus:border-[#C4A55A] transition-all"
                                         />
@@ -104,6 +130,8 @@ export default function ContactPage() {
                                     <label className="section-label opacity-60">Subject</label>
                                     <Input
                                         required
+                                        value={formData.subject}
+                                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                                         placeholder="Reason for inquiry"
                                         className="h-14 rounded-none border-[#D4C5A9]/20 bg-[#FAF8F3] focus:border-[#C4A55A] transition-all"
                                     />
@@ -114,6 +142,8 @@ export default function ContactPage() {
                                     <textarea
                                         required
                                         rows={6}
+                                        value={formData.message}
+                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                                         placeholder="How may we assist you?"
                                         className="w-full p-4 rounded-none border border-[#D4C5A9]/20 bg-[#FAF8F3] focus:border-[#C4A55A] focus:outline-none transition-all text-sm min-h-[150px]"
                                     />

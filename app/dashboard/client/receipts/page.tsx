@@ -66,9 +66,7 @@ export default function ClientReceiptsPage() {
     }, [showToast]);
 
     const handleDownload = (id: string) => {
-        // In a real app, this would use a PDF generation library like jspdf.
-        // For now, we mock the download sequence.
-        showToast("Generating secure PDF receipt...", "success");
+        showToast("Preparing secure PDF receipt...", "success");
         setTimeout(() => {
             window.print();
         }, 1000);
