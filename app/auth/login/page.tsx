@@ -88,43 +88,44 @@ export default function LoginPage() {
             return;
         }
 
-        // Try instant routing via metadata first
-        const metadataRole = data.user?.user_metadata?.role;
-        if (metadataRole) {
-            showToast("Login Successful");
-            setIsRedirecting(true);
-            router.refresh();
-
-            if (redirectUrl) router.push(redirectUrl);
-            else if (metadataRole === 'admin') router.push("/dashboard/admin");
-            else if (metadataRole === 'planner') {
-                const { data: planner } = await supabase.from('planners').select('id').eq('id', data.user.id).single();
-                if (!planner) router.push(`/auth/register-planner${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`);
-                else router.push("/dashboard/planner");
-            } else router.push("/dashboard/client");
-            return;
-        }
-
-        // Get user profile to determine role (fallback)
+        // Get user profile to check account status and role
         let { data: profile } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role, account_status')
             .eq('id', data.user.id)
             .single();
 
-        // If profile is missing (e.g. user created before trigger was active), create it
+        // If profile is missing, create it as approved for existing users
         if (!profile) {
             const { data: newProfile, error: profileError } = await supabase
                 .from('profiles')
                 .insert({
                     id: data.user.id,
                     role: data.user.user_metadata?.role || 'client',
-                    full_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0]
+                    full_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
+                    account_status: 'approved'
                 })
                 .select()
                 .single();
 
             if (!profileError) profile = newProfile;
+        }
+
+        // Account approval check (Admin accounts bypass approval check)
+        const accountStatus = profile?.account_status || 'approved';
+        if (profile?.role !== 'admin' && accountStatus !== 'approved') {
+            await supabase.auth.signOut();
+            setLoading(false);
+            if (accountStatus === 'pending_approval') {
+                setError("Your account is currently pending admin approval. Please check back later.");
+            } else if (accountStatus === 'suspended') {
+                setError("Your account has been suspended. Please contact support.");
+            } else if (accountStatus === 'rejected') {
+                setError("Your account application was not approved.");
+            } else {
+                setError("Account access restricted.");
+            }
+            return;
         }
 
         if (profile) {

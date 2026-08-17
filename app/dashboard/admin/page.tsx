@@ -37,7 +37,11 @@ import {
     Info,
     Star,
     DollarSign,
-    Wallet
+    Wallet,
+    UserCheck,
+    Ban,
+    Clock,
+    RotateCcw
 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { createClient } from "@/lib/supabase/client";
@@ -49,6 +53,7 @@ interface UserProfile {
     email?: string;
     created_at: string;
     status?: string;
+    account_status?: string;
 }
 
 interface SubscriptionPlan {
@@ -293,7 +298,8 @@ export default function AdminDashboard() {
                     ...p,
                     email: p.email || "N/A",
                     date: new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-                    status: "Active"
+                    account_status: p.account_status || 'approved',
+                    status: p.account_status === 'pending_approval' ? 'Pending' : p.account_status === 'suspended' ? 'Suspended' : p.account_status === 'rejected' ? 'Rejected' : 'Active'
                 })));
 
                 setStats((prev: any) => ({
@@ -550,6 +556,56 @@ export default function AdminDashboard() {
         }
     };
 
+    const approveAccount = async (userId: string) => {
+        const supabase = createClient();
+        const { error } = await supabase
+            .from('profiles')
+            .update({ account_status: 'approved' })
+            .eq('id', userId);
+
+        if (error) {
+            logError("Failed to approve account", error);
+            showToast("Failed to approve account", "error");
+        } else {
+            setUsers((prev: UserProfile[]) => prev.map((u: UserProfile) => u.id === userId ? { ...u, account_status: 'approved', status: 'Active' } : u));
+            showToast("Account approved successfully!", "success");
+        }
+    };
+
+    const suspendAccount = async (userId: string) => {
+        if (!confirm("Are you sure you want to suspend this account?")) return;
+        const supabase = createClient();
+        const { error } = await supabase
+            .from('profiles')
+            .update({ account_status: 'suspended' })
+            .eq('id', userId);
+
+        if (error) {
+            logError("Failed to suspend account", error);
+            showToast("Failed to suspend account", "error");
+        } else {
+            setUsers((prev: UserProfile[]) => prev.map((u: UserProfile) => u.id === userId ? { ...u, account_status: 'suspended', status: 'Suspended' } : u));
+            showToast("Account suspended", "info");
+        }
+    };
+
+    const rejectAccount = async (userId: string) => {
+        if (!confirm("Are you sure you want to reject this account? The user will not be able to log in.")) return;
+        const supabase = createClient();
+        const { error } = await supabase
+            .from('profiles')
+            .update({ account_status: 'rejected' })
+            .eq('id', userId);
+
+        if (error) {
+            logError("Failed to reject account", error);
+            showToast("Failed to reject account", "error");
+        } else {
+            setUsers((prev: UserProfile[]) => prev.map((u: UserProfile) => u.id === userId ? { ...u, account_status: 'rejected', status: 'Rejected' } : u));
+            showToast("Account rejected", "info");
+        }
+    };
+
     const inviteUser = async () => {
         const email = prompt("Enter user email to invite:");
         if (email) {
@@ -796,8 +852,8 @@ export default function AdminDashboard() {
                     {/* Stats Grid - 4 Columns */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
-                            { label: "TOTAL USERS", value: stats.activePlanners.toString(), icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
-                            { label: "PENDING TICKETS", value: "0", icon: LifeBuoy, color: "text-purple-500", bg: "bg-purple-500/10" },
+                            { label: "TOTAL USERS", value: users.length.toString(), icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
+                            { label: "PENDING APPROVALS", value: users.filter(u => u.account_status === 'pending_approval').length.toString(), icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10" },
                             { label: "PENDING KYC", value: pendingPlanners.length.toString(), icon: ShieldAlert, color: "text-orange-500", bg: "bg-orange-500/10" },
                             { label: "THIS MONTH TRANSACTIONS", value: "0", icon: CreditCard, color: "text-green-500", bg: "bg-green-500/10" },
                         ].map((stat, i) => (
@@ -894,9 +950,19 @@ export default function AdminDashboard() {
                                                 </td>
                                                 <td className="p-4 text-muted-foreground">{user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</td>
                                                 <td className="p-4">
-                                                    <div className="flex items-center gap-1.5 text-green-500 font-bold">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                                                        Active
+                                                    <div className={`flex items-center gap-1.5 font-bold ${
+                                                        user.account_status === 'approved' ? 'text-green-500' :
+                                                        user.account_status === 'pending_approval' ? 'text-amber-500' :
+                                                        user.account_status === 'suspended' ? 'text-red-500' :
+                                                        user.account_status === 'rejected' ? 'text-red-400' : 'text-green-500'
+                                                    }`}>
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${
+                                                            user.account_status === 'approved' ? 'bg-green-500' :
+                                                            user.account_status === 'pending_approval' ? 'bg-amber-500 animate-pulse' :
+                                                            user.account_status === 'suspended' ? 'bg-red-500' :
+                                                            user.account_status === 'rejected' ? 'bg-red-400' : 'bg-green-500'
+                                                        }`} />
+                                                        {user.status}
                                                     </div>
                                                 </td>
                                                 <td className="p-4 text-right relative group">
@@ -904,6 +970,30 @@ export default function AdminDashboard() {
                                                         <MoreVertical size={14} className="text-muted-foreground" />
                                                     </button>
                                                     <div className="absolute right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center bg-background border border-foreground/10 rounded-lg shadow-xl overflow-hidden z-10 pointer-events-none group-hover:pointer-events-auto">
+                                                        {user.account_status === 'pending_approval' && (
+                                                            <button
+                                                                onClick={(e) => { e.preventDefault(); approveAccount(user.id); }}
+                                                                className="px-3 py-1.5 text-[10px] uppercase font-black tracking-widest text-green-500 hover:bg-green-500/10 flex items-center gap-1"
+                                                            >
+                                                                <UserCheck size={12} /> Approve
+                                                            </button>
+                                                        )}
+                                                        {user.account_status === 'approved' && (
+                                                            <button
+                                                                onClick={(e) => { e.preventDefault(); suspendAccount(user.id); }}
+                                                                className="px-3 py-1.5 text-[10px] uppercase font-black tracking-widest text-amber-500 hover:bg-amber-500/10 flex items-center gap-1"
+                                                            >
+                                                                <Ban size={12} /> Suspend
+                                                            </button>
+                                                        )}
+                                                        {(user.account_status === 'suspended' || user.account_status === 'rejected') && (
+                                                            <button
+                                                                onClick={(e) => { e.preventDefault(); approveAccount(user.id); }}
+                                                                className="px-3 py-1.5 text-[10px] uppercase font-black tracking-widest text-green-500 hover:bg-green-500/10 flex items-center gap-1"
+                                                            >
+                                                                <RotateCcw size={12} /> Reactivate
+                                                            </button>
+                                                        )}
                                                         <button
                                                             onClick={(e) => { e.preventDefault(); deleteUser(user.id); }}
                                                             className="px-3 py-1.5 text-[10px] uppercase font-black tracking-widest text-red-500 hover:bg-red-500/10 flex items-center gap-1"
@@ -1059,6 +1149,60 @@ export default function AdminDashboard() {
                         </div>
                     </Card>
 
+                    {/* Pending Account Approvals */}
+                    {users.filter(u => u.account_status === 'pending_approval').length > 0 && (
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-end">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <Clock className="text-amber-500" size={20} />
+                                    Action Required: Pending Account Approvals
+                                </h3>
+                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full">
+                                    {users.filter(u => u.account_status === 'pending_approval').length} Pending
+                                </span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {users.filter(u => u.account_status === 'pending_approval').map((user) => (
+                                    <Card key={user.id} className="p-5 border-amber-500/20 bg-amber-500/[0.02]" hover={false}>
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center font-bold text-amber-400">
+                                                    {(user.full_name || "U").charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p className="font-bold text-sm">{user.full_name || 'New User'}</p>
+                                                    <p className="text-[10px] text-muted-foreground">{user.email}</p>
+                                                </div>
+                                            </div>
+                                            <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider ${user.role === 'planner' ? 'bg-blue-500/10 text-blue-500' : 'bg-foreground/10 text-muted-foreground'}`}>
+                                                {user.role}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                                            <Clock size={12} />
+                                            Registered {(user as any).date || new Date(user.created_at).toLocaleDateString()}
+                                        </div>
+                                        <div className="flex gap-2 pt-3 border-t border-foreground/5">
+                                            <Button
+                                                variant="outline"
+                                                className="flex-1 border-red-500/30 text-red-500 hover:bg-red-500/10 text-xs"
+                                                onClick={() => rejectAccount(user.id)}
+                                            >
+                                                <X size={14} className="mr-1" /> Reject
+                                            </Button>
+                                            <Button
+                                                className="flex-1 bg-green-600 hover:bg-green-700 text-xs"
+                                                onClick={() => approveAccount(user.id)}
+                                            >
+                                                <UserCheck size={14} className="mr-1" /> Approve
+                                            </Button>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Pending KYC Approvals */}
                     {pendingPlanners.length > 0 && (
                         <div className="space-y-4">
@@ -1186,15 +1330,65 @@ export default function AdminDashboard() {
                                                 <td className="p-5 text-gray-400">{(user as any).date}</td>
                                                 <td className="p-5">
                                                     <div className="flex items-center gap-2">
-                                                        <div className={`w-1.5 h-1.5 rounded-full ${user.status === 'Active' ? 'bg-green-500' : 'bg-red-500'}`} />
-                                                        <span className="text-xs">{user.status}</span>
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${
+                                                            user.account_status === 'approved' ? 'bg-green-500' :
+                                                            user.account_status === 'pending_approval' ? 'bg-amber-500 animate-pulse' :
+                                                            user.account_status === 'suspended' ? 'bg-red-500' :
+                                                            user.account_status === 'rejected' ? 'bg-red-400' : 'bg-green-500'
+                                                        }`} />
+                                                        <span className={`text-xs font-bold ${
+                                                            user.account_status === 'approved' ? 'text-green-500' :
+                                                            user.account_status === 'pending_approval' ? 'text-amber-500' :
+                                                            user.account_status === 'suspended' ? 'text-red-500' :
+                                                            user.account_status === 'rejected' ? 'text-red-400' : 'text-green-500'
+                                                        }`}>{user.status}</span>
                                                     </div>
                                                 </td>
                                                 <td className="p-5 text-right">
-                                                    <div className="flex justify-end gap-2">
-                                                        <button className="p-3 hover:bg-foreground/5 rounded-xl text-muted-foreground hover:text-foreground transition-all"><MoreVertical size={18} /></button>
-                                                        <button className="p-3 hover:bg-yellow-500/10 rounded-xl text-muted-foreground hover:text-yellow-500 transition-all"><ShieldAlert size={18} /></button>
-                                                        <button className="p-3 hover:bg-red-500/10 rounded-xl text-muted-foreground hover:text-red-500 transition-all"><Trash2 size={18} /></button>
+                                                    <div className="flex justify-end gap-1">
+                                                        {user.account_status === 'pending_approval' && (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => approveAccount(user.id)}
+                                                                    className="p-2.5 hover:bg-green-500/10 rounded-xl text-muted-foreground hover:text-green-500 transition-all"
+                                                                    title="Approve Account"
+                                                                >
+                                                                    <UserCheck size={16} />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => rejectAccount(user.id)}
+                                                                    className="p-2.5 hover:bg-red-500/10 rounded-xl text-muted-foreground hover:text-red-500 transition-all"
+                                                                    title="Reject Account"
+                                                                >
+                                                                    <Ban size={16} />
+                                                                </button>
+                                                            </>
+                                                        )}
+                                                        {user.account_status === 'approved' && (
+                                                            <button
+                                                                onClick={() => suspendAccount(user.id)}
+                                                                className="p-2.5 hover:bg-amber-500/10 rounded-xl text-muted-foreground hover:text-amber-500 transition-all"
+                                                                title="Suspend Account"
+                                                            >
+                                                                <Ban size={16} />
+                                                            </button>
+                                                        )}
+                                                        {(user.account_status === 'suspended' || user.account_status === 'rejected') && (
+                                                            <button
+                                                                onClick={() => approveAccount(user.id)}
+                                                                className="p-2.5 hover:bg-green-500/10 rounded-xl text-muted-foreground hover:text-green-500 transition-all"
+                                                                title="Reactivate Account"
+                                                            >
+                                                                <RotateCcw size={16} />
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            onClick={() => deleteUser(user.id)}
+                                                            className="p-2.5 hover:bg-red-500/10 rounded-xl text-muted-foreground hover:text-red-500 transition-all"
+                                                            title="Delete User"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>

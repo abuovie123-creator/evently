@@ -52,12 +52,13 @@ export default function PlannerRegisterPage() {
             return;
         }
 
-        // 3. Update profile to requires_verification
+        // 3. Update profile to requires_verification & set account_status to pending_approval
         const { error: profileError } = await supabase
             .from('profiles')
             .update({
                 full_name: `${formData.firstName} ${formData.lastName}`,
-                verification_status: 'requires_verification'
+                verification_status: 'requires_verification',
+                account_status: 'pending_approval'
             })
             .eq('id', user.id);
 
@@ -67,9 +68,10 @@ export default function PlannerRegisterPage() {
             return;
         }
 
+        // Sign out so they cannot access dashboard until approved by admin
+        await supabase.auth.signOut();
         setIsRedirecting(true);
-        router.refresh();
-        router.push("/dashboard/planner");
+        router.push("/auth/login?status=pending_approval");
     };
 
     if (isRedirecting) {

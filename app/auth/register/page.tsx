@@ -65,12 +65,17 @@ export default function RegisterPage() {
             showToast("Account created! Let's set up your profile.");
             router.push(`/auth/register-planner${redirectUrl ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`);
         } else {
-            showToast("Account created successfully!");
+            // Set account_status to pending_approval for new clients
+            const supabase2 = createClient();
+            if (data.user) {
+                await supabase2
+                    .from('profiles')
+                    .update({ account_status: 'pending_approval' })
+                    .eq('id', data.user.id);
+            }
+            showToast("Account created! Awaiting admin approval.");
             setSuccess(true);
             setLoading(false);
-            if (redirectUrl) {
-                router.push(redirectUrl);
-            }
         }
     };
 
@@ -139,8 +144,8 @@ export default function RegisterPage() {
                     )}
 
                     {success && (
-                        <div className="bg-green-50 border border-green-200 text-green-700 text-[10px] uppercase tracking-widest font-bold p-4 rounded-sm text-center shadow-sm">
-                            Verification dispatch sent! Check your inbox.
+                        <div className="bg-amber-50 border border-amber-200 text-amber-700 text-[10px] uppercase tracking-widest font-bold p-4 rounded-sm text-center shadow-sm">
+                            Account created! Your account is pending admin approval. You will be able to log in once approved.
                         </div>
                     )}
 
