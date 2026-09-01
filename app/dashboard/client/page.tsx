@@ -208,10 +208,10 @@ export default function ClientDashboard() {
             </div>
 
             {/* Header Section */}
-            <div className="space-y-4 pt-8 md:pt-2">
+            <div className="space-y-4 pt-4 md:pt-0">
                 <h1 className="text-4xl md:text-6xl font-serif italic text-charcoal leading-tight">Welcome back, {profileName.split(' ')[0] || "Client"}.</h1>
                 <p className="text-[11px] font-sans uppercase tracking-[0.15em] text-muted-foreground max-w-2xl opacity-70">
-                    The Estate has curated new architectural inspirations and updated your consultation status for the heritage gala.
+                    Discover and manage your upcoming events and favorite planners.
                 </p>
             </div>
 
@@ -220,7 +220,7 @@ export default function ClientDashboard() {
                 <div className="lg:col-span-2 space-y-8">
                     <div className="flex justify-between items-center border-b border-om-border/50 pb-4">
                         <h2 className="text-3xl font-serif text-charcoal">My Favorites</h2>
-                        <Link href="/planners" className="text-[10px] font-bold uppercase tracking-widest text-[#6B5E4E] hover:text-charcoal border-b border-transparent hover:border-charcoal transition-all">View All Collections</Link>
+                        <Link href="/planners" className="text-[10px] font-bold uppercase tracking-widest text-[#6B5E4E] hover:text-charcoal border-b border-transparent hover:border-charcoal transition-all">View All Planners</Link>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-8 pt-2">

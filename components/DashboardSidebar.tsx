@@ -138,7 +138,7 @@ function SidebarContent({
 }: SidebarContentProps) {
     return (
         <div className="flex flex-col h-full bg-cream border border-om-border/40 py-6 transition-colors duration-700 overflow-hidden rounded-2xl">
-            <div className="px-6 mb-8 mt-2 flex items-center justify-center">
+            <div className="px-6 mb-8 mt-2 flex items-center justify-start">
                 <span className="text-3xl font-black bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">Evently</span>
             </div>
 
@@ -255,7 +255,7 @@ function SidebarContent({
                 )}
 
                 {role === 'client' && (
-                    <div className="pt-8 mt-8 border-t border-om-border/10 space-y-1">
+                    <div className="pt-4 mt-4 space-y-1">
                         {externalLinks.length > 0 && (
                             <div className="pt-6 px-4">
                                 <a
@@ -456,8 +456,8 @@ export function DashboardSidebar() {
         ],
         client: [
             { label: "Overview", href: "/dashboard/client", icon: LayoutDashboard },
-            { label: "Events", href: "/dashboard/client#bookings", icon: Calendar },
-            { label: "Favorites", href: "/dashboard/client#saved", icon: Star },
+            { label: "Events", href: "/dashboard/client/events", icon: Calendar },
+            { label: "Favorites", href: "/dashboard/client/favorites", icon: Star },
             { label: "Messages", href: "/dashboard/messages", icon: MessageSquare },
             { label: "Settings", href: "/dashboard/client/settings", icon: Settings },
         ]
@@ -513,7 +513,7 @@ export function DashboardSidebar() {
             </aside>
 
             <div className={`md:hidden fixed inset-0 z-[60] transition-opacity duration-500 ${isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-                <div className="absolute inset-0 bg-charcoal/40" onClick={() => setIsMobileOpen(false)} />
+                <div className="absolute inset-0 bg-charcoal/40 backdrop-blur-sm" onClick={() => setIsMobileOpen(false)} />
                 <div className={`absolute top-0 left-0 bottom-0 w-80 transform transition-transform duration-700 cubic-bezier(0.16, 1, 0.3, 1) ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     <SidebarContent {...commonProps} />
                 </div>
