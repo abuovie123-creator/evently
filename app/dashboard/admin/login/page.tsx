@@ -92,7 +92,7 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAF8F3] flex items-center justify-center p-6 pt-20 sm:pt-32 relative overflow-hidden">
+        <div className="min-h-screen bg-[#FAF8F3] flex items-center justify-center p-4 relative overflow-hidden">
             {/* Subtle warm background texture */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[radial-gradient(ellipse,rgba(196,165,90,0.06),transparent_70%)]" />
