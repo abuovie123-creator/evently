@@ -82,13 +82,25 @@ export function Footer() {
                     <p className="text-sm font-light text-[#FAF8F3]/70">
                         {settings.footer_newsletter_description || "Join our legacy network for exclusive insights."}
                     </p>
-                    <form className="relative group">
+                    <form 
+                        className="relative group"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            const form = e.target as HTMLFormElement;
+                            const input = form.elements[0] as HTMLInputElement;
+                            if(input.value) {
+                                alert("Thank you for subscribing to our newsletter!");
+                                input.value = "";
+                            }
+                        }}
+                    >
                         <input
                             type="email"
+                            required
                             placeholder="Email Address"
                             className="w-full bg-transparent border-b border-[#FAF8F3]/20 py-3 text-sm font-light focus:outline-none focus:border-[#C4A55A] transition-colors pr-10"
                         />
-                        <button className="absolute right-0 top-1/2 -translate-y-1/2 text-[#C4A55A] group-hover:translate-x-1 transition-transform duration-300">
+                        <button type="submit" className="absolute right-0 top-1/2 -translate-y-1/2 text-[#C4A55A] group-hover:translate-x-1 transition-transform duration-300">
                             <ArrowRight size={20} />
                         </button>
                     </form>

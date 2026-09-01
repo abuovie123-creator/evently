@@ -113,6 +113,8 @@ export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<"overview" | "branding" | "users" | "settings" | "payments" | "platform" | "homepage">("overview");
     const [searchQuery, setSearchQuery] = useState("");
     const [roleFilter, setRoleFilter] = useState<string>("all");
+    const [transactionFilter, setTransactionFilter] = useState<"this_month" | "last_month">("this_month");
+    const [openDropdownUserId, setOpenDropdownUserId] = useState<string | null>(null);
 
     // Payment Gateway State
     const [selectedGateway, setSelectedGateway] = useState<"paystack" | "flutterwave" | "manual">("paystack");
@@ -832,8 +834,18 @@ export default function AdminDashboard() {
                                 <p className="text-[10px] text-muted-foreground mt-1">DEPOSIT: 0 NGN</p>
                             </div>
                             <div className="flex gap-2">
-                                <button className="px-3 py-1 rounded-lg bg-foreground/5 text-[10px] font-bold text-foreground">This Month</button>
-                                <button className="px-3 py-1 rounded-lg text-[10px] font-bold text-muted-foreground hover:bg-foreground/5 transition-colors">Last Month</button>
+                                <button 
+                                    onClick={() => setTransactionFilter("this_month")}
+                                    className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-colors ${transactionFilter === 'this_month' ? 'bg-foreground/5 text-foreground' : 'text-muted-foreground hover:bg-foreground/5'}`}
+                                >
+                                    This Month
+                                </button>
+                                <button 
+                                    onClick={() => setTransactionFilter("last_month")}
+                                    className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-colors ${transactionFilter === 'last_month' ? 'bg-foreground/5 text-foreground' : 'text-muted-foreground hover:bg-foreground/5'}`}
+                                >
+                                    Last Month
+                                </button>
                             </div>
                         </div>
                         <div className="h-[200px] w-full bg-foreground/[0.02] rounded-xl flex items-end px-4 pb-8 relative overflow-hidden">
@@ -965,11 +977,14 @@ export default function AdminDashboard() {
                                                         {user.status}
                                                     </div>
                                                 </td>
-                                                <td className="p-4 text-right relative group">
-                                                    <button className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors">
+                                                <td className="p-4 text-right relative">
+                                                    <button 
+                                                        onClick={() => setOpenDropdownUserId(openDropdownUserId === user.id ? null : user.id)}
+                                                        className="p-1.5 rounded-lg hover:bg-foreground/10 transition-colors"
+                                                    >
                                                         <MoreVertical size={14} className="text-muted-foreground" />
                                                     </button>
-                                                    <div className="absolute right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center bg-background border border-foreground/10 rounded-lg shadow-xl overflow-hidden z-10 pointer-events-none group-hover:pointer-events-auto">
+                                                    <div className={`absolute right-10 top-1/2 -translate-y-1/2 transition-opacity flex items-center bg-background border border-foreground/10 rounded-lg shadow-xl overflow-hidden z-10 ${openDropdownUserId === user.id ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                                                         {user.account_status === 'pending_approval' && (
                                                             <button
                                                                 onClick={(e) => { e.preventDefault(); approveAccount(user.id); }}
@@ -1597,7 +1612,7 @@ export default function AdminDashboard() {
                                         <h3 className="text-xl font-bold">Recent Transactions</h3>
                                         <p className="text-sm text-gray-400">Latest subscription payments from planners.</p>
                                     </div>
-                                    <Button variant="outline" size="sm">View All</Button>
+                                    <Button variant="outline" size="sm" onClick={() => setActiveTab('payments')}>View All</Button>
                                 </div>
                                 <div className="space-y-3">
                                     {recentTransactions.length === 0 ? (
