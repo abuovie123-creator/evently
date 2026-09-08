@@ -573,27 +573,27 @@ export default function PlannerPortfolio() {
     }
 
     return (
-        <main className="min-h-screen p-6 md:p-8 pt-24 md:pt-32 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+        <div className="w-full space-y-6 md:space-y-8 animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm p-6 md:p-8 rounded-3xl border-foreground/5 bg-foreground/[0.02]">
-                <div className="flex items-center gap-4 w-full lg:w-auto">
-                    <Link href="/dashboard/planner" className="p-3 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl hover:bg-white/10 transition-colors shrink-0">
-                        <ArrowLeft size={20} className="text-gray-400" />
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-surface/80 border border-border/60 backdrop-blur-md shadow-sm p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl">
+                <div className="flex items-center gap-4 w-full lg:w-auto min-w-0">
+                    <Link href="/dashboard/planner" className="p-2.5 sm:p-3 bg-surface border border-border/60 rounded-2xl sm:rounded-3xl hover:bg-black/5 transition-colors shrink-0">
+                        <ArrowLeft size={18} className="text-muted-foreground" />
                     </Link>
                     <div className="flex-1 min-w-0">
-                        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight truncate">Portfolio & Albums</h1>
-                        <p className="text-gray-400 text-xs md:text-sm truncate">Manage your event albums shown publicly.</p>
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-serif italic font-bold tracking-tight text-charcoal truncate">Portfolio & Albums</h1>
+                        <p className="text-muted-foreground text-xs sm:text-sm truncate">Manage your event albums shown publicly.</p>
                     </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:gap-6 w-full lg:w-auto">
                     {/* Usage Indicator */}
-                    <div className="flex flex-col items-center sm:items-end w-full sm:w-auto">
-                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5">Image Usage</span>
+                    <div className="flex flex-col items-start sm:items-end w-full sm:w-auto">
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5">Image Usage</span>
                         <div className="flex items-center gap-3 w-full sm:w-auto">
                             <div className="flex-1 sm:w-32 h-2 bg-foreground/5 rounded-full overflow-hidden border border-foreground/5">
                                 <div
-                                    className={`h-full rounded-full transition-all duration-1000 ${currentImageCount >= imageLimit ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-amber-600 shadow-[0_0_10px_rgba(59,130,246,0.5)]'}`}
+                                    className={`h-full rounded-full transition-all duration-1000 ${currentImageCount >= imageLimit ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-gold shadow-[0_0_10px_rgba(196,165,90,0.5)]'}`}
                                     style={{ width: `${Math.min(100, (currentImageCount / imageLimit) * 100)}%` }}
                                 />
                             </div>
@@ -601,24 +601,24 @@ export default function PlannerPortfolio() {
                         </div>
                     </div>
 
-                    <Button onClick={() => setShowAddModal(true)} className="bg-charcoal text-cream hover:bg-charcoal/90 w-full sm:w-auto h-12 px-8 rounded-3xl shadow-lg shadow-xl shadow-charcoal/20 text-sm font-bold shrink-0">
-                        <Plus size={18} className="mr-2" /> New Album
+                    <Button onClick={() => setShowAddModal(true)} className="bg-charcoal text-cream hover:bg-charcoal/90 w-full sm:w-auto h-11 sm:h-12 px-6 sm:px-8 rounded-2xl sm:rounded-3xl shadow-lg shadow-charcoal/20 text-xs sm:text-sm font-bold shrink-0">
+                        <Plus size={16} className="mr-2" /> New Album
                     </Button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                 {/* Events Sidebar/List */}
-                <div className="lg:col-span-4 space-y-6">
+                <div className="lg:col-span-4 space-y-6 min-w-0 w-full">
                     {/* Portfolio Highlights Editor */}
-                    <Card className="p-5 border-charcoal/10 bg-charcoal/[]" hover={false}>
+                    <Card className="p-4 sm:p-5 border-border/60 bg-surface/80 rounded-2xl" hover={false}>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600">Portfolio Highlights</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Portfolio Highlights</h4>
                                 <Button
                                     size="sm"
                                     variant="glass"
-                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-charcoal/10 text-amber-600 hover:bg-charcoal/5"
+                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-border/60 text-accent hover:bg-black/5"
                                     onClick={handleSaveStats}
                                     disabled={isSavingStats}
                                 >
@@ -629,11 +629,11 @@ export default function PlannerPortfolio() {
 
                             <div className="space-y-3">
                                 <div className="space-y-1">
-                                    <label className="text-[9px] font-bold text-gray-500 uppercase">Events Completed</label>
+                                    <label className="text-[9px] font-bold text-muted-foreground uppercase">Events Completed</label>
                                     <div className="relative">
                                         <Input
                                             type="number"
-                                            className="h-9 bg-foreground/[0.03] border-foreground/5 text-xs font-bold pl-3 pr-8"
+                                            className="h-9 bg-surface border-border/60 text-xs font-bold pl-3 pr-8"
                                             value={stats.events_completed}
                                             onChange={(e) => setStats({ ...stats, events_completed: parseInt(e.target.value) || 0 })}
                                         />
@@ -641,27 +641,27 @@ export default function PlannerPortfolio() {
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[9px] font-bold text-gray-500 uppercase">Years of Experience</label>
+                                    <label className="text-[9px] font-bold text-muted-foreground uppercase">Years of Experience</label>
                                     <div className="relative">
                                         <Input
                                             type="number"
-                                            className="h-9 bg-white/50 border-border text-xs font-bold pl-3 pr-8"
+                                            className="h-9 bg-surface border-border/60 text-xs font-bold pl-3 pr-8"
                                             value={stats.years_experience}
                                             onChange={(e) => setStats({ ...stats, years_experience: parseInt(e.target.value) || 0 })}
                                         />
-                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-600">+</span>
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">+</span>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-[9px] font-bold text-gray-500 uppercase">Happy Clients</label>
+                                    <label className="text-[9px] font-bold text-muted-foreground uppercase">Happy Clients</label>
                                     <div className="relative">
                                         <Input
                                             type="number"
-                                            className="h-9 bg-white/50 border-border text-xs font-bold pl-3 pr-8"
+                                            className="h-9 bg-surface border-border/60 text-xs font-bold pl-3 pr-8"
                                             value={stats.clients_served}
                                             onChange={(e) => setStats({ ...stats, clients_served: parseInt(e.target.value) || 0 })}
                                         />
-                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-gray-600">+</span>
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">+</span>
                                     </div>
                                 </div>
                             </div>
@@ -669,14 +669,14 @@ export default function PlannerPortfolio() {
                     </Card>
 
                     {/* Social & Contact Links */}
-                    <Card className="p-5 border-charcoal/10 bg-charcoal/[]" hover={false}>
+                    <Card className="p-4 sm:p-5 border-border/60 bg-surface/80 rounded-2xl" hover={false}>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600">Social & Contact</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Social & Contact</h4>
                                 <Button
                                     size="sm"
                                     variant="glass"
-                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-charcoal/10 text-amber-600 hover:bg-charcoal/5"
+                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-border/60 text-accent hover:bg-black/5"
                                     onClick={handleSaveSocial}
                                     disabled={isSavingSocial}
                                 >
@@ -688,57 +688,57 @@ export default function PlannerPortfolio() {
                             <div className="space-y-4">
                                 <div className="space-y-3">
                                     <div className="relative group">
-                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-pink-500 transition-colors">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-600 transition-colors">
                                             <Instagram size={14} />
                                         </div>
                                         <Input
                                             placeholder="Instagram URL"
-                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                            className="h-9 pl-10 bg-surface border-border/60 text-xs"
                                             value={socialLinks.instagram_url}
                                             onChange={(e) => setSocialLinks({ ...socialLinks, instagram_url: e.target.value })}
                                         />
                                     </div>
                                     <div className="relative group">
-                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-amber-600 transition-colors">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-accent transition-colors">
                                             <Twitter size={14} />
                                         </div>
                                         <Input
                                             placeholder="Twitter URL"
-                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                            className="h-9 pl-10 bg-surface border-border/60 text-xs"
                                             value={socialLinks.twitter_url}
                                             onChange={(e) => setSocialLinks({ ...socialLinks, twitter_url: e.target.value })}
                                         />
                                     </div>
                                     <div className="relative group">
-                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-700 transition-colors">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-blue-700 transition-colors">
                                             <Linkedin size={14} />
                                         </div>
                                         <Input
                                             placeholder="LinkedIn URL"
-                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                            className="h-9 pl-10 bg-surface border-border/60 text-xs"
                                             value={socialLinks.linkedin_url}
                                             onChange={(e) => setSocialLinks({ ...socialLinks, linkedin_url: e.target.value })}
                                         />
                                     </div>
                                     <div className="relative group">
-                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-charcoal transition-colors">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-charcoal transition-colors">
                                             <Facebook size={14} />
                                         </div>
                                         <Input
                                             placeholder="Facebook URL"
-                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                            className="h-9 pl-10 bg-surface border-border/60 text-xs"
                                             value={socialLinks.facebook_url}
                                             onChange={(e) => setSocialLinks({ ...socialLinks, facebook_url: e.target.value })}
                                         />
                                     </div>
-                                    <div className="pt-2 border-t border-foreground/5">
+                                    <div className="pt-2 border-t border-border/40">
                                         <div className="relative group">
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-yellow-500 transition-colors">
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-gold transition-colors">
                                                 <Mail size={14} />
                                             </div>
                                             <Input
                                                 placeholder="Public Business Email"
-                                                className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs"
+                                                className="h-9 pl-10 bg-surface border-border/60 text-xs"
                                                 value={socialLinks.public_email}
                                                 onChange={(e) => setSocialLinks({ ...socialLinks, public_email: e.target.value })}
                                             />
@@ -750,14 +750,14 @@ export default function PlannerPortfolio() {
                     </Card>
 
                     {/* Profile & Cover Images */}
-                    <Card className="p-5 border-charcoal/10 bg-charcoal/[]" hover={false}>
+                    <Card className="p-4 sm:p-5 border-border/60 bg-surface/80 rounded-2xl" hover={false}>
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600">Profile Defaults</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">Profile Defaults</h4>
                                 <Button
                                     size="sm"
                                     variant="glass"
-                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-charcoal/10 text-amber-600 hover:bg-charcoal/5"
+                                    className="h-7 px-3 text-[9px] font-black uppercase tracking-widest border-border/60 text-accent hover:bg-black/5"
                                     onClick={handleSaveImages}
                                     disabled={isSavingImages}
                                 >
@@ -770,32 +770,31 @@ export default function PlannerPortfolio() {
                                 {/* Cover Image */}
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <label className="text-[9px] font-bold text-gray-500 uppercase">Cover Image</label>
-                                        <div className="relative">
-                                            <Button size="sm" variant="outline" className="h-7 text-[10px] px-3 border-foreground/10" disabled={isSavingImages}>
-                                                <Plus size={12} className="mr-1" /> Upload Image
-                                            </Button>
+                                        <label className="text-[9px] font-bold text-muted-foreground uppercase">Cover Image</label>
+                                        <label className={`relative inline-flex items-center justify-center cursor-pointer rounded-lg border border-border/60 bg-surface px-2.5 py-1 text-[10px] font-semibold text-charcoal shadow-sm hover:bg-black/5 transition-all select-none shrink-0 ${isSavingImages ? 'opacity-50 pointer-events-none' : ''}`}>
+                                            <Plus size={11} className="mr-1 shrink-0" />
+                                            <span>Upload</span>
                                             <input
                                                 type="file"
                                                 accept="image/*"
                                                 onChange={handleCoverUpload}
                                                 disabled={isSavingImages}
-                                                className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-wait"
+                                                className="sr-only"
                                             />
-                                        </div>
+                                        </label>
                                     </div>
                                     <div className="relative group">
-                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 transition-colors">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors">
                                             <ImageIcon size={14} />
                                         </div>
                                         <Input
                                             placeholder="Or paste an image URL..."
-                                            className="h-9 pl-10 bg-foreground/[0.03] border-foreground/5 text-xs text-gray-400"
+                                            className="h-9 pl-10 bg-surface border-border/60 text-xs text-muted-foreground"
                                             value={profileImages.cover_image_url}
                                             onChange={(e) => setProfileImages({ ...profileImages, cover_image_url: e.target.value })}
                                         />
                                     </div>
-                                    <div className="h-24 w-full rounded-3xl overflow-hidden bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border border-foreground/5 relative group cursor-crosshair">
+                                    <div className="h-24 w-full rounded-2xl overflow-hidden bg-surface border border-border/60 relative group cursor-crosshair">
                                         <img src={profileImages.cover_image_url} className="w-full h-full object-cover" alt="Cover Preview" onError={(e) => (e.currentTarget.src = "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1600&q=80")} />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <span className="text-xs font-bold text-white tracking-widest uppercase">Cover Preview</span>
@@ -804,32 +803,31 @@ export default function PlannerPortfolio() {
                                 </div>
 
                                 {/* Avatar Selection */}
-                                <div className="space-y-4 pt-4 border-t border-foreground/5">
+                                <div className="space-y-4 pt-4 border-t border-border/40">
                                     <div className="flex items-start gap-4">
-                                        <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 border border-foreground/10 bg-black/50">
+                                        <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-full overflow-hidden shrink-0 border border-border/60 bg-black/10">
                                             <img src={profileImages.avatar_url || "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback"} className="w-full h-full object-cover" alt="Current Avatar" onError={(e) => (e.currentTarget.src = "https://api.dicebear.com/7.x/avataaars/svg?seed=fallback")} />
                                         </div>
-                                        <div className="space-y-2 flex-1">
+                                        <div className="space-y-2 flex-1 min-w-0">
                                             <div className="flex items-center justify-between">
-                                                <label className="text-[9px] font-bold text-gray-500 uppercase">Profile Avatar</label>
-                                                <div className="relative">
-                                                    <Button size="sm" variant="outline" className="h-7 text-[10px] px-3 border-foreground/10" disabled={isSavingImages}>
-                                                        <Plus size={12} className="mr-1" /> Upload Image
-                                                    </Button>
+                                                <label className="text-[9px] font-bold text-muted-foreground uppercase">Profile Avatar</label>
+                                                <label className={`relative inline-flex items-center justify-center cursor-pointer rounded-lg border border-border/60 bg-surface px-2.5 py-1 text-[10px] font-semibold text-charcoal shadow-sm hover:bg-black/5 transition-all select-none shrink-0 ${isSavingImages ? 'opacity-50 pointer-events-none' : ''}`}>
+                                                    <Plus size={11} className="mr-1 shrink-0" />
+                                                    <span>Upload</span>
                                                     <input
                                                         type="file"
                                                         accept="image/*"
                                                         onChange={handleAvatarUpload}
                                                         disabled={isSavingImages}
-                                                        className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-wait"
+                                                        className="sr-only"
                                                     />
-                                                </div>
+                                                </label>
                                             </div>
 
                                             <div className="relative group">
                                                 <Input
                                                     placeholder="Or Custom Image URL..."
-                                                    className="h-8 bg-foreground/[0.03] border-foreground/5 text-xs text-gray-400 pl-3"
+                                                    className="h-8 bg-surface border-border/60 text-xs text-muted-foreground pl-3"
                                                     value={profileImages.avatar_url}
                                                     onChange={(e) => setProfileImages({ ...profileImages, avatar_url: e.target.value })}
                                                 />
@@ -838,14 +836,14 @@ export default function PlannerPortfolio() {
                                     </div>
 
                                     <div className="pt-2">
-                                        <label className="text-[9px] font-bold text-gray-500 uppercase mb-2 block">Or choose a preset</label>
-                                        <div className="grid grid-cols-5 gap-2">
+                                        <label className="text-[9px] font-bold text-muted-foreground uppercase mb-2 block">Or choose a preset</label>
+                                        <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
                                             {PRESET_AVATARS.map((avatar, i) => (
                                                 <button
                                                     key={i}
                                                     onClick={() => setProfileImages({ ...profileImages, avatar_url: avatar })}
-                                                    className={`aspect-square rounded-3xl overflow-hidden border-2 transition-all hover:scale-105 ${profileImages.avatar_url === avatar
-                                                        ? "border-charcoal/30 shadow-[0_0_15px_rgba(59,130,246,0.5)] scale-110 z-10"
+                                                    className={`aspect-square rounded-xl sm:rounded-2xl overflow-hidden border-2 transition-all hover:scale-105 ${profileImages.avatar_url === avatar
+                                                        ? "border-gold shadow-md scale-105 z-10"
                                                         : "border-transparent opacity-60 hover:opacity-100"
                                                         }`}
                                                 >
@@ -859,135 +857,134 @@ export default function PlannerPortfolio() {
                         </div>
                     </Card>
 
-                    <h3 className="text-lg font-bold flex items-center gap-2">
-                        <LayoutGrid size={18} className="text-amber-600" /> Your Albums
+                    <h3 className="text-lg font-serif italic font-bold flex items-center gap-2 text-charcoal">
+                        <LayoutGrid size={18} className="text-accent shrink-0" /> Your Albums
                     </h3>
 
                     <div className="grid grid-cols-1 gap-3">
                         {events.length === 0 ? (
-                            <Card className="p-16 text-center border-dashed border-border flex flex-col items-center space-y-6" hover={false}>
-                                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-500">
-                                    <Images size={32} />
+                            <Card className="p-8 sm:p-12 text-center border-dashed border-border/80 flex flex-col items-center space-y-4 rounded-2xl bg-surface/60" hover={false}>
+                                <div className="w-14 h-14 bg-foreground/5 rounded-full flex items-center justify-center text-muted-foreground">
+                                    <Images size={28} />
                                 </div>
-                                <div className="space-y-2">
-                                    <p className="text-gray-400 font-bold">No albums yet</p>
-                                    <p className="text-gray-600 text-xs max-w-[200px] mx-auto italic">Showcase your best work to attract more clients.</p>
+                                <div className="space-y-1">
+                                    <p className="text-charcoal font-bold text-sm">No albums yet</p>
+                                    <p className="text-muted-foreground text-xs max-w-[220px] mx-auto italic">Showcase your best work to attract more clients.</p>
                                 </div>
-                                <Button onClick={() => setShowAddModal(true)} size="sm" className="bg-charcoal text-cream hover:bg-charcoal/90 rounded-3xl">
-                                    <Plus size={16} className="mr-2" /> Create First Album
+                                <Button onClick={() => setShowAddModal(true)} size="sm" className="bg-charcoal text-cream hover:bg-charcoal/90 rounded-2xl text-xs font-bold">
+                                    <Plus size={14} className="mr-1.5" /> Create First Album
                                 </Button>
                             </Card>
                         ) : events.map((event) => (
                             <button
                                 key={event.id}
                                 onClick={() => setSelectedEvent(event)}
-                                className={`w-full text-left p-4 rounded-3xl border transition-all group flex items-center justify-between ${selectedEvent?.id === event.id
-                                    ? "bg-foreground/10 border-charcoal/30/50 shadow-lg shadow-blue-500/5"
-                                    : "bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border-foreground/5 hover:border-foreground/20"
+                                className={`w-full text-left p-3.5 sm:p-4 rounded-2xl border transition-all group flex items-center justify-between gap-3 ${selectedEvent?.id === event.id
+                                    ? "bg-foreground/5 border-gold shadow-sm"
+                                    : "bg-surface/80 border-border/60 hover:border-gold/50"
                                     }`}
                             >
-                                <div className="space-y-1">
-                                    <h4 className="font-bold text-sm group-hover:text-amber-600 transition-colors">{event.title}</h4>
-                                    <div className="flex items-center gap-3 text-[10px] text-gray-500 font-medium">
-                                        <span className="flex items-center gap-1"><Calendar size={10} /> {new Date(event.date).toLocaleDateString()}</span>
-                                        <span className="flex items-center gap-1 font-bold text-amber-600 uppercase tracking-tighter bg-charcoal/5 px-1.5 py-0.5 rounded-md">{event.category}</span>
+                                <div className="space-y-1 min-w-0 flex-1">
+                                    <h4 className="font-bold text-sm text-charcoal group-hover:text-accent transition-colors truncate">{event.title}</h4>
+                                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground font-medium">
+                                        <span className="flex items-center gap-1 shrink-0"><Calendar size={10} /> {new Date(event.date).toLocaleDateString()}</span>
+                                        <span className="flex items-center gap-1 font-bold text-accent uppercase tracking-tighter bg-foreground/5 px-1.5 py-0.5 rounded-md shrink-0">{event.category}</span>
                                     </div>
                                 </div>
-                                <ChevronRight size={16} className={`text-gray-600 transition-transform ${selectedEvent?.id === event.id ? "rotate-90 text-amber-600" : ""}`} />
+                                <ChevronRight size={16} className={`text-muted-foreground shrink-0 transition-transform ${selectedEvent?.id === event.id ? "rotate-90 text-accent" : ""}`} />
                             </button>
                         ))}
                     </div>
                 </div>
 
                 {/* Media Management Area */}
-                <div className="lg:col-span-8">
+                <div className="lg:col-span-8 min-w-0 w-full">
                     {!selectedEvent ? (
-                        <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-border space-y-4 border-dashed">
-                            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-gray-600">
-                                <Images size={32} />
+                        <div className="h-full min-h-[320px] sm:min-h-[400px] flex flex-col items-center justify-center bg-surface/80 border border-border/60 rounded-2xl sm:rounded-3xl p-6 sm:p-10 space-y-4 border-dashed text-center">
+                            <div className="w-14 h-14 bg-foreground/5 rounded-full flex items-center justify-center text-muted-foreground">
+                                <Images size={28} />
                             </div>
-                            <div className="text-center">
-                                <h3 className="text-lg font-bold text-gray-400">Select an album to manage</h3>
-                                <p className="text-sm text-gray-600">Choose an existing album or create a new one to start adding media.</p>
+                            <div className="space-y-1">
+                                <h3 className="text-base sm:text-lg font-bold text-charcoal">Select an album to manage</h3>
+                                <p className="text-xs sm:text-sm text-muted-foreground max-w-sm">Choose an existing album or create a new one to start adding media.</p>
                             </div>
                         </div>
                     ) : (
-                        <Card className="space-y-8 p-8" hover={false}>
+                        <Card className="space-y-6 sm:space-y-8 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl border-border/60 bg-surface/80 shadow-sm" hover={false}>
                             {/* Selected Event Header */}
-                            <div className="flex flex-col md:flex-row justify-between items-start gap-6 border-b border-border pb-8">
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-3">
-                                        <h2 className="text-2xl font-black">{selectedEvent.title}</h2>
-                                        <Link href={`/events/${selectedEvent.slug}`} target="_blank" className="p-2 hover:bg-white/5 rounded-lg text-gray-500 hover:text-amber-600 transition-all">
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-6 border-b border-border/60 pb-6 sm:pb-8">
+                                <div className="space-y-3 flex-1 min-w-0 w-full">
+                                    <div className="flex items-center gap-3 flex-wrap">
+                                        <h2 className="text-xl sm:text-2xl font-black text-charcoal break-words">{selectedEvent.title}</h2>
+                                        <Link href={`/events/${selectedEvent.slug}`} target="_blank" className="p-2 hover:bg-black/5 rounded-lg text-muted-foreground hover:text-gold transition-all shrink-0">
                                             <ExternalLink size={16} />
                                         </Link>
                                     </div>
-                                    <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><Calendar size={14} className="text-charcoal" /> {new Date(selectedEvent.date).toLocaleDateString()}</span>
-                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><MapPin size={14} className="text-charcoal" /> {selectedEvent.location || "Online"}</span>
-                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-foreground/5"><Tag size={14} className="text-charcoal" /> {selectedEvent.category}</span>
+                                    <div className="flex flex-wrap gap-2 sm:gap-3 text-xs text-muted-foreground">
+                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-border/40 shrink-0"><Calendar size={13} className="text-charcoal shrink-0" /> {new Date(selectedEvent.date).toLocaleDateString()}</span>
+                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-border/40 shrink-0"><MapPin size={13} className="text-charcoal shrink-0" /> {selectedEvent.location || "Online"}</span>
+                                        <span className="flex items-center gap-1.5 bg-foreground/5 px-2.5 py-1.5 rounded-lg border border-border/40 shrink-0"><Tag size={13} className="text-charcoal shrink-0" /> {selectedEvent.category}</span>
                                     </div>
-                                    <p className="text-sm text-gray-500 max-w-xl italic">"{selectedEvent.description || "No description provided."}"</p>
+                                    <p className="text-xs sm:text-sm text-muted-foreground max-w-xl italic break-words">"{selectedEvent.description || "No description provided."}"</p>
                                 </div>
-                                <div className="flex gap-2">
-                                    <Button variant="outline" size="sm" onClick={() => handleDeleteEvent(selectedEvent.id)} className="text-red-400 hover:text-red-500 hover:bg-red-500/10 border-red-500/20">
-                                        <Trash2 size={14} className="mr-2" /> Delete Album
+                                <div className="flex gap-2 w-full sm:w-auto justify-end shrink-0">
+                                    <Button variant="outline" size="sm" onClick={() => handleDeleteEvent(selectedEvent.id)} className="text-red-500 hover:text-red-600 hover:bg-red-500/10 border-red-500/30 w-full sm:w-auto text-xs">
+                                        <Trash2 size={13} className="mr-1.5 shrink-0" /> Delete Album
                                     </Button>
                                 </div>
                             </div>
 
                             {/* Media Section */}
                             <div className="space-y-6">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="text-lg font-bold flex items-center gap-2">
-                                        <ImageIcon size={18} className="text-amber-600" /> Album Media
-                                        <span className="text-[10px] font-bold text-muted-foreground ml-2 bg-foreground/5 px-2 py-0.5 rounded-full">{eventMedia.length} Items</span>
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+                                    <h3 className="text-base sm:text-lg font-bold flex items-center gap-2 text-charcoal">
+                                        <ImageIcon size={18} className="text-accent shrink-0" />
+                                        <span>Album Media</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground bg-foreground/5 px-2 py-0.5 rounded-full shrink-0">{eventMedia.length} Items</span>
                                     </h3>
 
-                                    <div className="flex gap-2">
-                                        <div className="relative">
-                                            <Button size="sm" variant="outline" className="text-xs h-9 px-4" disabled={isUploading || currentImageCount >= imageLimit}>
-                                                <Plus size={14} className="mr-2" /> Add Images
-                                            </Button>
+                                    <div className="flex flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                                        <label className={`relative inline-flex items-center justify-center cursor-pointer rounded-xl border border-border/80 bg-surface px-3 sm:px-4 py-2 text-xs font-semibold text-charcoal shadow-sm hover:bg-black/5 transition-all text-center flex-1 sm:flex-initial select-none shrink-0 ${isUploading || currentImageCount >= imageLimit ? 'opacity-50 pointer-events-none' : ''}`}>
+                                            <Plus size={14} className="mr-1.5 shrink-0" />
+                                            <span>Add Images</span>
                                             <input
                                                 type="file"
                                                 multiple
                                                 accept="image/*"
                                                 onChange={(e) => handleMediaUpload(e, 'image')}
                                                 disabled={isUploading || currentImageCount >= imageLimit}
-                                                className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-wait"
+                                                className="sr-only"
                                             />
-                                        </div>
-                                        <div className="relative">
-                                            <Button size="sm" variant="outline" className="text-xs h-9 px-4" disabled={isUploading}>
-                                                <Plus size={14} className="mr-2" /> Add Video
-                                            </Button>
+                                        </label>
+                                        <label className={`relative inline-flex items-center justify-center cursor-pointer rounded-xl border border-border/80 bg-surface px-3 sm:px-4 py-2 text-xs font-semibold text-charcoal shadow-sm hover:bg-black/5 transition-all text-center flex-1 sm:flex-initial select-none shrink-0 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                                            <Plus size={14} className="mr-1.5 shrink-0" />
+                                            <span>Add Video</span>
                                             <input
                                                 type="file"
                                                 accept="video/*"
                                                 onChange={(e) => handleMediaUpload(e, 'video')}
                                                 disabled={isUploading}
-                                                className="absolute inset-0 opacity-0 cursor-pointer disabled:cursor-wait"
+                                                className="sr-only"
                                             />
-                                        </div>
+                                        </label>
                                     </div>
                                 </div>
 
                                 {isUploading && (
-                                    <div className="p-4 bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border-charcoal/10 rounded-3xl flex items-center justify-center gap-3 animate-pulse">
+                                    <div className="p-3.5 sm:p-4 bg-surface border border-border/60 shadow-sm rounded-2xl flex items-center justify-center gap-3 animate-pulse">
                                         <Loader2 size={16} className="animate-spin text-charcoal" />
-                                        <span className="text-xs font-bold text-amber-600">Uploading media to secure storage...</span>
+                                        <span className="text-xs font-bold text-accent">Uploading media to secure storage...</span>
                                     </div>
                                 )}
 
                                 {eventMedia.length === 0 ? (
-                                    <div className="p-16 text-center bg-white/50 border border-border/50 backdrop-blur-md shadow-sm rounded-3xl border-border border-dashed">
-                                        <p className="text-gray-500 text-sm italic">This album is empty. Upload some gorgeous photos or videos of your work!</p>
+                                    <div className="p-8 sm:p-16 text-center bg-surface/60 border border-border/80 rounded-2xl sm:rounded-3xl border-dashed">
+                                        <p className="text-muted-foreground text-xs sm:text-sm italic">This album is empty. Upload some gorgeous photos or videos of your work!</p>
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
                                         {eventMedia.map((media, i) => (
-                                            <div key={media.id} className="relative aspect-square rounded-3xl overflow-hidden bg-white/50 border border-border/50 backdrop-blur-md shadow-sm border-foreground/10 group bg-background/40 backdrop-blur-md">
+                                            <div key={media.id} className="relative aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-surface border border-border/60 group shadow-sm">
                                                 {media.media_type === 'image' ? (
                                                     <img src={media.media_url} alt="Event Media" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                                                 ) : (
@@ -1027,7 +1024,7 @@ export default function PlannerPortfolio() {
                                                     </Button>
                                                 </div>
 
-                                                <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-background/50 backdrop-blur-md text-[8px] font-bold uppercase tracking-widest border border-foreground/10">
+                                                <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-background/80 backdrop-blur-md text-[8px] font-bold uppercase tracking-widest border border-border/40 text-charcoal">
                                                     {media.media_type}
                                                 </div>
                                             </div>
@@ -1042,22 +1039,22 @@ export default function PlannerPortfolio() {
 
             {/* Add Event Modal Overlay */}
             {showAddModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 transition-all animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 transition-all animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !isSaving && setShowAddModal(false)} />
-                    <Card className="relative w-full max-w-lg p-8 space-y-8 animate-in zoom-in-95 duration-300" hover={false}>
+                    <Card className="relative w-full max-w-lg p-5 sm:p-8 space-y-5 sm:space-y-6 animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto rounded-2xl sm:rounded-3xl border-border/80 bg-surface shadow-2xl" hover={false}>
                         <div className="flex justify-between items-start">
                             <div className="space-y-1">
-                                <h3 className="text-2xl font-black">Create New Album</h3>
-                                <p className="text-gray-400 text-sm">Group your beautiful event media into a single album.</p>
+                                <h3 className="text-xl sm:text-2xl font-serif italic font-bold text-charcoal">Create New Album</h3>
+                                <p className="text-muted-foreground text-xs sm:text-sm">Group your beautiful event media into a single album.</p>
                             </div>
-                            <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-white/5 rounded-3xl transition-colors text-gray-400">
-                                <X size={20} />
+                            <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-black/5 rounded-full transition-colors text-muted-foreground">
+                                <X size={18} />
                             </button>
                         </div>
 
                         <div className="space-y-5">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Event Title</label>
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Event Title</label>
                                 <Input
                                     placeholder="e.g. Summer Beach Wedding"
                                     value={newEvent.title}
@@ -1065,23 +1062,23 @@ export default function PlannerPortfolio() {
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Category</label>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Category</label>
                                     <select
-                                        className="w-full bg-foreground/5 border border-foreground/10 rounded-3xl px-4 py-3 text-sm text-foreground focus:outline-none appearance-none"
+                                        className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none appearance-none"
                                         value={newEvent.category}
                                         onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })}
                                     >
-                                        <option value="Wedding" className="bg-background">Wedding</option>
-                                        <option value="Corporate" className="bg-background">Corporate</option>
-                                        <option value="Birthday" className="bg-background">Birthday</option>
-                                        <option value="Concert" className="bg-background">Concert</option>
-                                        <option value="Other" className="bg-background">Other</option>
+                                        <option value="Wedding" className="bg-surface">Wedding</option>
+                                        <option value="Corporate" className="bg-surface">Corporate</option>
+                                        <option value="Birthday" className="bg-surface">Birthday</option>
+                                        <option value="Concert" className="bg-surface">Concert</option>
+                                        <option value="Other" className="bg-surface">Other</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Event Date</label>
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Event Date</label>
                                     <Input
                                         type="date"
                                         value={newEvent.date}
@@ -1091,7 +1088,7 @@ export default function PlannerPortfolio() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Location</label>
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Location</label>
                                 <Input
                                     placeholder="e.g. Lagos, Nigeria"
                                     value={newEvent.location}
@@ -1100,7 +1097,7 @@ export default function PlannerPortfolio() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-bold uppercase tracking-widest text-gray-500">Description</label>
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Description</label>
                                 <Textarea
                                     placeholder="Briefly describe the theme, highlight or special moments of this event..."
                                     value={newEvent.description}
@@ -1110,7 +1107,7 @@ export default function PlannerPortfolio() {
                             </div>
                         </div>
 
-                        <div className="flex gap-4 pt-4 border-t border-border">
+                        <div className="flex gap-4 pt-4 border-t border-border/60">
                             <Button
                                 variant="outline"
                                 className="flex-1"
@@ -1130,6 +1127,6 @@ export default function PlannerPortfolio() {
                     </Card>
                 </div>
             )}
-        </main>
+        </div>
     );
 }

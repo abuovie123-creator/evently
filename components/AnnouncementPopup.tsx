@@ -75,11 +75,6 @@ export function AnnouncementPopup() {
                         </div>
 
                         <div className="space-y-4 w-full">
-                            <div className="flex flex-col items-center">
-                                <span className="section-label mb-2">Institutional Notice</span>
-                                <div className="gold-divider mb-4" />
-                            </div>
-
                             <h3 className="text-3xl md:text-4xl font-serif text-charcoal leading-tight">
                                 {announcement.title}
                             </h3>
@@ -108,7 +103,7 @@ export function AnnouncementPopup() {
                                     className="w-full sm:flex-1"
                                 >
                                     <Button className="w-full h-12 text-[11px] tracking-[0.2em]">
-                                        Explore Details <ExternalLink size={14} className="ml-2" />
+                                        View Details <ExternalLink size={14} className="ml-2" />
                                     </Button>
                                 </a>
                             )}
@@ -117,7 +112,7 @@ export function AnnouncementPopup() {
                                 onClick={handleClose}
                                 className={`h-12 text-[11px] tracking-[0.2em] ${announcement.link_url ? "w-full sm:w-40" : "w-full"}`}
                             >
-                                Dismiss
+                                Close
                             </Button>
                         </div>
                     </div>
