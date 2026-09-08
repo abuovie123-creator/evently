@@ -77,7 +77,7 @@ export default function ClientFavoritesPage() {
     }
 
     return (
-        <main className="space-y-10 animate-in fade-in duration-700 max-w-6xl mx-auto p-4 md:p-8 lg:p-12 pt-8 md:pt-4">
+        <main className="space-y-10 animate-in fade-in duration-700 max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-om-border/20 pb-8">
                 <div className="flex items-center gap-6">
                     <Link href="/dashboard/client">

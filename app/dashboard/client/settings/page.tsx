@@ -127,7 +127,7 @@ export default function ClientSettings() {
     }
 
     return (
-        <main className="space-y-12 animate-in fade-in duration-700 max-w-5xl mx-auto p-4 md:p-8 lg:p-12 pt-8 md:pt-4">
+        <main className="space-y-12 animate-in fade-in duration-700 max-w-5xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 border-b border-om-border/20 pb-12">
                 <div className="flex items-center gap-6">
                     <Link href="/dashboard/client">

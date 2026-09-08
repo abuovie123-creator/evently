@@ -69,7 +69,7 @@ export default function PlannerBillingPage() {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto p-4 md:p-6 lg:p-8 pt-8">
+        <div className="space-y-8 animate-in fade-in duration-500 max-w-6xl mx-auto">
             <div className="flex items-center justify-between pb-6 border-b border-foreground/10">
                 <div className="flex items-center gap-4">
                     <Link href="/dashboard/planner">
