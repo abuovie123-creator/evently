@@ -3,10 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Instagram, Twitter, Linkedin, ArrowRight } from "lucide-react";
+import { Instagram, Twitter, Linkedin, ArrowRight, Loader2 } from "lucide-react";
+import { useToast } from "./ui/Toast";
 
 export function Footer() {
     const [settings, setSettings] = useState<Record<string, string>>({});
+    const [isSubscribing, setIsSubscribing] = useState(false);
+    const { showToast } = useToast();
     const supabase = createClient();
 
     useEffect(() => {
@@ -42,7 +45,7 @@ export function Footer() {
                         {settings.footer_tagline || "Curating excellence in the world's most prestigious event planning circles."}
                     </p>
                     <div className="flex gap-5 pt-2">
-                        {socialLinks.map((social, i) => (
+                        {socialLinks.filter(s => s.href && s.href !== "#").map((social, i) => (
                             <a
                                 key={i}
                                 href={social.href}
@@ -84,24 +87,50 @@ export function Footer() {
                     </p>
                     <form 
                         className="relative group"
-                        onSubmit={(e) => {
+                        onSubmit={async (e) => {
                             e.preventDefault();
+                            if (isSubscribing) return;
+                            
                             const form = e.target as HTMLFormElement;
                             const input = form.elements[0] as HTMLInputElement;
-                            if(input.value) {
-                                alert("Thank you for subscribing to our newsletter!");
-                                input.value = "";
+                            
+                            if (input.value) {
+                                setIsSubscribing(true);
+                                try {
+                                    const res = await fetch('/api/newsletter', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ email: input.value })
+                                    });
+                                    const data = await res.json();
+                                    
+                                    if (res.ok) {
+                                        showToast(data.message || "Successfully subscribed!", "success");
+                                        input.value = "";
+                                    } else {
+                                        showToast(data.error || "Failed to subscribe.", "error");
+                                    }
+                                } catch (error) {
+                                    showToast("Network error. Please try again.", "error");
+                                } finally {
+                                    setIsSubscribing(false);
+                                }
                             }
                         }}
                     >
                         <input
                             type="email"
                             required
+                            disabled={isSubscribing}
                             placeholder="Email Address"
-                            className="w-full bg-transparent border-b border-[#FAF8F3]/20 py-3 text-sm font-light focus:outline-none focus:border-[#C4A55A] transition-colors pr-10"
+                            className="w-full bg-transparent border-b border-[#FAF8F3]/20 py-3 text-sm font-light focus:outline-none focus:border-[#C4A55A] transition-colors pr-10 disabled:opacity-50"
                         />
-                        <button type="submit" className="absolute right-0 top-1/2 -translate-y-1/2 text-[#C4A55A] group-hover:translate-x-1 transition-transform duration-300">
-                            <ArrowRight size={20} />
+                        <button 
+                            type="submit" 
+                            disabled={isSubscribing}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 text-[#C4A55A] group-hover:translate-x-1 transition-transform duration-300 disabled:opacity-50"
+                        >
+                            {isSubscribing ? <Loader2 size={20} className="animate-spin" /> : <ArrowRight size={20} />}
                         </button>
                     </form>
                 </div>

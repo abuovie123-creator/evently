@@ -783,15 +783,15 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#050505] -m-4 md:-m-8 p-4 md:p-8 animate-in fade-in duration-500">
+        <div className="min-h-screen bg-white text-charcoal -m-4 md:-m-8 p-4 md:p-8 animate-in fade-in duration-500">
             {/* Admin Header */}
-            <header className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white dark:bg-[#0A0A0A] p-4 rounded-2xl border border-foreground/5 shadow-sm">
+            <header className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white p-4 border-b border-om-border/30">
                 <div className="relative w-full md:w-96 group">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-blue-500 transition-colors" size={16} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-charcoal/40 group-focus-within:text-gold transition-colors" size={16} />
                     <input
                         type="text"
                         placeholder="Search for a menu"
-                        className="w-full bg-foreground/5 border-none rounded-xl py-2.5 pl-10 pr-4 text-sm focus:ring-1 focus:ring-blue-500/50 outline-none transition-all"
+                        className="w-full bg-transparent border border-om-border/30 py-2.5 pl-10 pr-4 text-xs font-sans uppercase tracking-widest text-charcoal placeholder:text-charcoal/40 focus:border-gold outline-none transition-all"
                     />
                 </div>
 
@@ -799,35 +799,227 @@ export default function AdminDashboard() {
                     <Link
                         href="/"
                         target="_blank"
-                        className="p-2.5 rounded-xl bg-foreground/5 hover:bg-blue-500/10 text-muted-foreground hover:text-blue-500 transition-all"
+                        className="p-2.5 bg-charcoal text-cream hover:bg-gold hover:text-charcoal transition-all border border-transparent"
                         title="View Website"
                     >
                         <ExternalLink size={20} />
                     </Link>
                     <button
-                        className="p-2.5 rounded-xl bg-foreground/5 hover:bg-blue-500/10 text-muted-foreground hover:text-blue-500 transition-all"
+                        className="p-2.5 bg-charcoal text-cream hover:bg-gold hover:text-charcoal transition-all border border-transparent"
                         title="Quick Actions"
                     >
                         <LayoutDashboard size={20} />
                     </button>
-                    <div className="h-8 w-[1px] bg-foreground/10 mx-2 hidden md:block" />
+                    <div className="h-8 w-[1px] bg-om-border/30 mx-2 hidden md:block" />
                     <div className="flex items-center gap-3 pl-2">
                         <div className="text-right hidden sm:block">
-                            <p className="text-xs font-bold text-foreground">Administrator</p>
-                            <p className="text-[10px] text-muted-foreground">Super Admin</p>
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-charcoal">Administrator</p>
+                            <p className="text-[9px] uppercase tracking-[0.2em] text-charcoal/60">Super Admin</p>
                         </div>
-                        <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black shadow-lg shadow-blue-600/20">
+                        <div className="w-10 h-10 bg-charcoal text-cream flex items-center justify-center font-serif text-lg italic border border-gold/30">
                             A
                         </div>
                     </div>
                 </div>
             </header>
 
+
             {/* Overview Content */}
             {activeTab === "overview" && (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    {/* Top Full-Width Chart Card */}
-                    <Card className="p-6 overflow-hidden border-none shadow-sm bg-white dark:bg-[#0A0A0A]" hover={false}>
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+                    {/* Page Title */}
+                    <div className="border-b border-om-border/30 pb-6">
+                        <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-charcoal/50 mb-1">Platform Command</p>
+                        <h2 className="text-3xl font-serif text-charcoal">Overview</h2>
+                    </div>
+
+                    {/* Stats Grid - 4 Columns */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            { label: "Total Users", value: users.length.toString(), icon: Users, accent: "border-charcoal" },
+                            { label: "Pending Approvals", value: users.filter(u => u.account_status === 'pending_approval').length.toString(), icon: Clock, accent: "border-gold" },
+                            { label: "Pending KYC", value: pendingPlanners.length.toString(), icon: ShieldAlert, accent: "border-gold" },
+                            { label: "Platform Revenue", value: stats.platformRevenue, icon: CreditCard, accent: "border-charcoal" },
+                        ].map((stat, i) => (
+                            <div key={i} className={`bg-white border border-om-border/40 border-l-2 ${stat.accent} p-6 hover:shadow-md transition-shadow`}>
+                                <div className="flex justify-between items-start mb-4">
+                                    <stat.icon size={18} className="text-charcoal/50" />
+                                    <TrendingUp size={12} className="text-gold" />
+                                </div>
+                                <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-charcoal/50 mb-2">{stat.label}</p>
+                                <span className="text-3xl font-serif text-charcoal">{stat.value}</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Recent Transactions & Revenue Summary */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Transaction Chart placeholder */}
+                        <div className="lg:col-span-2 bg-white border border-om-border/40 p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <div>
+                                    <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-charcoal/50 mb-1">Financial Activity</p>
+                                    <h3 className="text-lg font-serif text-charcoal">Transaction History</h3>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setTransactionFilter("this_month")}
+                                        className={`px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest transition-colors border ${transactionFilter === 'this_month' ? 'bg-charcoal text-cream border-charcoal' : 'text-charcoal/50 border-om-border/30 hover:border-charcoal'}`}
+                                    >
+                                        This Month
+                                    </button>
+                                    <button
+                                        onClick={() => setTransactionFilter("last_month")}
+                                        className={`px-4 py-1.5 text-[9px] font-bold uppercase tracking-widest transition-colors border ${transactionFilter === 'last_month' ? 'bg-charcoal text-cream border-charcoal' : 'text-charcoal/50 border-om-border/30 hover:border-charcoal'}`}
+                                    >
+                                        Last Month
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="h-[200px] w-full bg-[#FAF8F3] flex items-end gap-2 px-4 pb-8 relative overflow-hidden border border-om-border/20">
+                                <div className="absolute inset-x-0 bottom-0 h-[1px] bg-om-border/40 w-full" />
+                                <svg className="w-full h-full text-charcoal/20 opacity-80" viewBox="0 0 1000 100" preserveAspectRatio="none">
+                                    <path d="M0,80 L100,75 L200,85 L300,70 L400,75 L500,60 L600,65 L700,50 L800,55 L900,40 L1000,45" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                                </svg>
+                                <div className="absolute bottom-2 left-0 w-full flex justify-between px-4 text-[8px] text-charcoal/40 font-mono uppercase tracking-widest">
+                                    <span>Day 01</span><span>Day 05</span><span>Day 10</span><span>Day 15</span><span>Day 20</span><span>Day 25</span><span>Day 30</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Revenue summary */}
+                        <div className="bg-white border border-om-border/40 p-6 flex flex-col justify-between">
+                            <div>
+                                <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-charcoal/50 mb-1">Total Earnings</p>
+                                <h3 className="text-lg font-serif text-charcoal">Platform Revenue</h3>
+                                <p className="text-4xl font-serif text-charcoal mt-4">{stats.platformRevenue}</p>
+                            </div>
+                            <div className="pt-6 border-t border-om-border/20 space-y-3">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] uppercase tracking-widest font-bold text-charcoal/50">This Week</span>
+                                    <span className="text-[11px] font-bold text-charcoal">₦0</span>
+                                </div>
+                                <div className="w-full bg-om-border/20 h-[2px] overflow-hidden">
+                                    <div className="bg-charcoal h-full w-[10%]" />
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] uppercase tracking-widest font-bold text-charcoal/50">Active Planners</span>
+                                    <span className="text-[11px] font-bold text-charcoal">{stats.activePlanners}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Latest Users Table */}
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-end border-b border-om-border/30 pb-4">
+                            <div>
+                                <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-charcoal/50 mb-1">Registry</p>
+                                <h3 className="text-lg font-serif text-charcoal">Latest Users</h3>
+                            </div>
+                            <button
+                                onClick={() => setActiveTab("users")}
+                                className="text-[9px] font-bold uppercase tracking-widest text-charcoal/50 hover:text-charcoal flex items-center gap-1 transition-colors"
+                            >
+                                View All <ArrowRight size={12} />
+                            </button>
+                        </div>
+                        <div className="bg-white border border-om-border/40 overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left text-xs min-w-[800px]">
+                                    <thead className="bg-[#FAF8F3] text-charcoal/60 font-bold border-b border-om-border/30">
+                                        <tr>
+                                            <th className="p-4 text-[9px] uppercase tracking-[0.2em]">User</th>
+                                            <th className="p-4 text-[9px] uppercase tracking-[0.2em]">Email</th>
+                                            <th className="p-4 text-[9px] uppercase tracking-[0.2em]">Role</th>
+                                            <th className="p-4 text-[9px] uppercase tracking-[0.2em]">Joined</th>
+                                            <th className="p-4 text-[9px] uppercase tracking-[0.2em]">Status</th>
+                                            <th className="p-4 text-right text-[9px] uppercase tracking-[0.2em]">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-om-border/20">
+                                        {users.slice(0, 5).map((user) => (
+                                            <tr key={user.id} className="hover:bg-[#FAF8F3]/60 transition-colors">
+                                                <td className="p-4 font-bold flex items-center gap-3">
+                                                    <div className="w-8 h-8 bg-charcoal text-cream flex items-center justify-center text-[10px] font-serif italic border border-gold/20">
+                                                        {user.full_name?.[0] || 'U'}
+                                                    </div>
+                                                    <span className="text-charcoal text-[11px] font-bold">{user.full_name}</span>
+                                                </td>
+                                                <td className="p-4 text-charcoal/50 text-[11px]">{user.email}</td>
+                                                <td className="p-4">
+                                                    <span className={`px-3 py-1 text-[9px] font-bold uppercase tracking-widest border ${user.role === 'admin' ? 'border-charcoal text-charcoal bg-charcoal/5' : user.role === 'planner' ? 'border-gold text-charcoal/80 bg-gold/5' : 'border-om-border text-charcoal/60'}`}>
+                                                        {user.role}
+                                                    </span>
+                                                </td>
+                                                <td className="p-4 text-charcoal/50 text-[11px]">{user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</td>
+                                                <td className="p-4">
+                                                    <div className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest ${
+                                                        user.account_status === 'approved' ? 'text-green-700' :
+                                                        user.account_status === 'pending_approval' ? 'text-amber-600' :
+                                                        user.account_status === 'suspended' ? 'text-red-700' :
+                                                        user.account_status === 'rejected' ? 'text-red-600' : 'text-green-700'
+                                                    }`}>
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${
+                                                            user.account_status === 'approved' ? 'bg-green-600' :
+                                                            user.account_status === 'pending_approval' ? 'bg-amber-500 animate-pulse' :
+                                                            user.account_status === 'suspended' ? 'bg-red-700' :
+                                                            user.account_status === 'rejected' ? 'bg-red-600' : 'bg-green-600'
+                                                        }`} />
+                                                        {user.status}
+                                                    </div>
+                                                </td>
+                                                <td className="p-4 text-right relative">
+                                                    <button
+                                                        onClick={() => setOpenDropdownUserId(openDropdownUserId === user.id ? null : user.id)}
+                                                        className="p-1.5 border border-om-border/30 hover:border-charcoal hover:bg-charcoal hover:text-cream transition-all"
+                                                    >
+                                                        <MoreVertical size={14} className="text-charcoal/50" />
+                                                    </button>
+                                                    <div className={`absolute right-10 top-1/2 -translate-y-1/2 transition-opacity flex items-center bg-white border border-om-border/40 shadow-xl overflow-hidden z-10 ${openDropdownUserId === user.id ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                                                        {user.account_status === 'pending_approval' && (
+                                                            <button
+                                                                onClick={(e) => { e.preventDefault(); approveAccount(user.id); }}
+                                                                className="px-3 py-2 text-[9px] uppercase font-bold tracking-widest text-green-700 hover:bg-green-700 hover:text-white flex items-center gap-1 transition-colors"
+                                                            >
+                                                                <UserCheck size={12} /> Approve
+                                                            </button>
+                                                        )}
+                                                        {user.account_status === 'approved' && (
+                                                            <button
+                                                                onClick={(e) => { e.preventDefault(); suspendAccount(user.id); }}
+                                                                className="px-3 py-2 text-[9px] uppercase font-bold tracking-widest text-amber-700 hover:bg-amber-700 hover:text-white flex items-center gap-1 transition-colors"
+                                                            >
+                                                                <Ban size={12} /> Suspend
+                                                            </button>
+                                                        )}
+                                                        {(user.account_status === 'suspended' || user.account_status === 'rejected') && (
+                                                            <button
+                                                                onClick={(e) => { e.preventDefault(); approveAccount(user.id); }}
+                                                                className="px-3 py-2 text-[9px] uppercase font-bold tracking-widest text-green-700 hover:bg-green-700 hover:text-white flex items-center gap-1 transition-colors"
+                                                            >
+                                                                <RotateCcw size={12} /> Reactivate
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            onClick={(e) => { e.preventDefault(); deleteUser(user.id); }}
+                                                            className="px-3 py-2 text-[9px] uppercase font-bold tracking-widest text-red-700 hover:bg-red-700 hover:text-white flex items-center gap-1 transition-colors"
+                                                        >
+                                                            <Trash2 size={12} /> Delete
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
                         <div className="flex justify-between items-center mb-6">
                             <div>
                                 <h3 className="text-sm font-black text-foreground uppercase tracking-wider">Recent Transaction</h3>

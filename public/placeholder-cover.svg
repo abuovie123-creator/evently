@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+    <rect width="800" height="600" fill="#FAF8F3"/>
+    <rect width="800" height="600" fill="url(#pattern)" opacity="0.5"/>
+    <defs>
+        <pattern id="pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 40 M 0 0 L 40 40" stroke="#D4C5A9" stroke-width="0.5" opacity="0.3"/>
+        </pattern>
+    </defs>
+    <text x="400" y="300" font-family="serif" font-size="24" fill="#8B7355" text-anchor="middle" dominant-baseline="middle" opacity="0.6">Evently</text>
+</svg>

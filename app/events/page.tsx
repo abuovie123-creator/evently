@@ -61,7 +61,7 @@ export default function EventsPage() {
                     date: event.date ? new Date(event.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'N/A',
                     location: event.location,
                     slug: event.slug,
-                    image: event.album_media?.[0]?.media_url || "https://images.unsplash.com/photo-1519741497674-611481863552?w=800",
+                    image: event.album_media?.[0]?.media_url || "/placeholder-cover.svg",
                     planner_name: event.profiles?.full_name
                 }));
                 setEvents(formattedEvents);

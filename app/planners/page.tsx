@@ -57,12 +57,12 @@ export default function PlannersPage() {
             } else if (data) {
                 setPlanners(data.map((p: any) => ({
                     ...p,
-                    full_name: p.full_name || "Anonymous Artisan",
+                    full_name: p.full_name || (p.username ? `@${p.username}` : "Unknown Planner"),
                     category: p.category || "Elite Concierge",
                     location: p.location || "Destinations Worldwide",
                     rating: p.rating || 5.0,
                     review_count: p.review_count || 0,
-                    avatar_url: p.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${p.username || p.id}`,
+                    avatar_url: p.avatar_url || "/placeholder-avatar.svg",
                     is_verified: p.planners?.is_verified || false
                 })));
             }
@@ -284,7 +284,7 @@ export default function PlannersPage() {
                                 <Link key={planner.id} href={`/planner/${planner.username}`} className="group block">
                                     <div className="relative aspect-[4/5] bg-[#EAE4D9]/30 overflow-hidden mb-6">
                                         <img
-                                            src={planner.cover_image_url || "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=800"}
+                                            src={planner.cover_image_url || "/placeholder-cover.svg"}
                                             alt={`${planner.full_name} Cover`}
                                             className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                                         />
