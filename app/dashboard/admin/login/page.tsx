@@ -45,10 +45,8 @@ export default function AdminLoginPage() {
 
         const supabase = createClient();
 
-        // 1. Clear any existing "client" session to prevent interference
-        await supabase.auth.signOut();
 
-        // 2. Fetch the current authorized admin username from platform_settings
+        // Fetch the current authorized admin username from platform_settings
         const { data: psData } = await supabase
             .from('platform_settings')
             .select('admin_username')
@@ -57,7 +55,7 @@ export default function AdminLoginPage() {
 
         const authorizedUsername = psData?.admin_username || 'admin';
 
-        // 3. Map username to internal admin email
+        // Map username to internal admin email
         const loginEmail = username === authorizedUsername ? 'admin@evently.com' : username;
 
         const { data, error: signInError } = await supabase.auth.signInWithPassword({

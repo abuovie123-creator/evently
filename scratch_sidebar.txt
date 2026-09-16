@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
@@ -28,8 +28,7 @@ import {
     ShieldAlert,
     Wallet,
     Bell,
-    Star,
-    Globe
+    Star
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useToast } from "./ui/Toast";
@@ -433,6 +432,13 @@ export function DashboardSidebar() {
                 ]
             },
             {
+                category: "CONTENT MANAGEMENT",
+                items: [
+                    { label: "Announcements", href: "/dashboard/admin/content#announcements", icon: Bell },
+                    { label: "External Links", href: "/dashboard/admin/content#links", icon: ExternalLink },
+                ]
+            },
+            {
                 category: "SUPPORT & TICKETS",
                 items: [
                     { label: "Support Center", href: "/dashboard/admin/support", icon: LifeBuoy },
@@ -486,17 +492,7 @@ export function DashboardSidebar() {
 
                 <div className="flex items-center gap-1.5">
                     {role === 'admin' ? (
-                        <>
-                            <Link
-                                href="/"
-                                target="_blank"
-                                className="p-2 rounded-full hover:bg-charcoal/5 transition-all text-charcoal hover:text-charcoal/70 group"
-                                title="View Website"
-                            >
-                                <Globe size={20} className="transition-colors" />
-                            </Link>
-                            <AdminNotificationBell />
-                        </>
+                        <AdminNotificationBell />
                     ) : (
                         <>
                             <NotificationBell />

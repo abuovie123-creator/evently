@@ -1,8 +1,10 @@
 "use client";
 
+import { AdminNotificationBell } from "@/components/AdminNotificationBell";
 import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
@@ -25,6 +27,7 @@ import {
     ArrowRight,
     Palette,
     ExternalLink,
+    Globe,
     AlertCircle,
     Copy,
     Check,
@@ -795,21 +798,16 @@ export default function AdminDashboard() {
                     />
                 </div>
 
-                <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto justify-end">
+                <div className="hidden md:flex items-center gap-2 md:gap-4 w-full md:w-auto justify-end">
+                    <AdminNotificationBell />
                     <Link
                         href="/"
                         target="_blank"
-                        className="p-2.5 bg-charcoal text-cream hover:bg-gold hover:text-charcoal transition-all border border-transparent"
+                        className="p-2 rounded-full hover:bg-charcoal/5 transition-all text-charcoal hover:text-charcoal/70 group"
                         title="View Website"
                     >
-                        <ExternalLink size={20} />
+                        <Globe size={20} className="transition-colors" />
                     </Link>
-                    <button
-                        className="p-2.5 bg-charcoal text-cream hover:bg-gold hover:text-charcoal transition-all border border-transparent"
-                        title="Quick Actions"
-                    >
-                        <LayoutDashboard size={20} />
-                    </button>
                     <div className="h-8 w-[1px] bg-om-border/30 mx-2 hidden md:block" />
                     <div className="flex items-center gap-3 pl-2">
                         <div className="text-right hidden sm:block">
