@@ -137,7 +137,7 @@ function SidebarContent({
     user
 }: SidebarContentProps) {
     return (
-        <div className="flex flex-col h-full bg-cream border border-om-border/40 py-6 transition-colors duration-700 overflow-hidden rounded-2xl">
+        <div className={`flex flex-col h-full ${role === 'admin' ? 'bg-[#111111] border-white/10 text-cream' : 'bg-cream border-om-border/40'} py-6 transition-colors duration-700 overflow-hidden rounded-2xl`}>
             <div className="px-6 mb-8 mt-2 flex items-center justify-start">
                 <span className="text-3xl font-black bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">Evently</span>
             </div>

@@ -147,7 +147,7 @@ export default function SupportDashboard() {
                         <LifeBuoy className="text-blue-500" />
                         Support Center
                     </h1>
-                    <p className="text-muted-foreground text-sm">Manage user inquiries and platform support requests.</p>
+                    <p className="text-white/60 text-sm">Manage user inquiries and platform support requests.</p>
                 </div>
                 <div className="flex gap-3">
                     {['all', 'open', 'in_progress', 'resolved'].map((s) => (
@@ -156,7 +156,7 @@ export default function SupportDashboard() {
                             onClick={() => setStatusFilter(s)}
                             className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${statusFilter === s
                                     ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20'
-                                    : 'bg-foreground/5 border-foreground/5 text-muted-foreground hover:bg-foreground/10'
+                                    : 'bg-white/5 border-white/20/5 text-white/60 hover:bg-white/10'
                                 }`}
                         >
                             {s.replace('_', ' ')}
@@ -168,9 +168,9 @@ export default function SupportDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                 {/* Ticket List */}
                 <Card className={`lg:col-span-1 p-0 overflow-hidden ${selectedTicket ? 'hidden lg:block' : ''}`} hover={false}>
-                    <div className="p-4 border-b border-foreground/5 bg-foreground/[0.01] flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recent Tickets</span>
-                        <span className="bg-foreground/5 px-2 py-0.5 rounded text-[10px] font-bold">{tickets.length}</span>
+                    <div className="p-4 border-b border-white/20/5 bg-white/[0.01] flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Recent Tickets</span>
+                        <span className="bg-white/5 px-2 py-0.5 rounded text-[10px] font-bold">{tickets.length}</span>
                     </div>
                     <div className="max-h-[700px] overflow-y-auto custom-scrollbar divide-y divide-foreground/5">
                         {isLoading ? (
@@ -179,37 +179,37 @@ export default function SupportDashboard() {
                             </div>
                         ) : tickets.length === 0 ? (
                             <div className="p-12 text-center space-y-4">
-                                <CheckCircle2 size={40} className="mx-auto text-muted-foreground/10" />
-                                <p className="text-sm text-muted-foreground font-medium">No tickets found!</p>
+                                <CheckCircle2 size={40} className="mx-auto text-white/60/10" />
+                                <p className="text-sm text-white/60 font-medium">No tickets found!</p>
                             </div>
                         ) : tickets.map((ticket) => (
                             <button
                                 key={ticket.id}
                                 onClick={() => setSelectedTicket(ticket)}
-                                className={`w-full p-6 text-left hover:bg-foreground/[0.02] transition-all relative block ${selectedTicket?.id === ticket.id ? 'bg-blue-500/[0.03]' : ''}`}
+                                className={`w-full p-6 text-left hover:bg-white/[0.02] transition-all relative block ${selectedTicket?.id === ticket.id ? 'bg-blue-500/[0.03]' : ''}`}
                             >
                                 {selectedTicket?.id === ticket.id && (
                                     <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 rounded-r-full" />
                                 )}
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-start gap-3">
-                                        <h4 className="font-bold text-sm leading-tight text-foreground line-clamp-1">{ticket.subject}</h4>
+                                        <h4 className="font-bold text-sm leading-tight text-cream line-clamp-1">{ticket.subject}</h4>
                                         <span className={`flex-shrink-0 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest border ${getStatusColor(ticket.status)}`}>
                                             {ticket.status}
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between text-[10px]">
-                                        <span className="text-muted-foreground font-medium flex items-center gap-1.5">
+                                        <span className="text-white/60 font-medium flex items-center gap-1.5">
                                             <User size={10} />
                                             {ticket.profiles.full_name}
                                         </span>
-                                        <span className="text-muted-foreground flex items-center gap-1.5 font-medium italic">
+                                        <span className="text-white/60 flex items-center gap-1.5 font-medium italic">
                                             <Clock size={10} />
                                             {new Date(ticket.created_at).toLocaleDateString()}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-40">Priority:</span>
+                                        <span className="text-[9px] font-black text-white/60 uppercase tracking-widest opacity-40">Priority:</span>
                                         <span className={`text-[9px] uppercase tracking-widest ${getPriorityColor(ticket.priority)}`}>{ticket.priority}</span>
                                     </div>
                                 </div>
@@ -219,11 +219,11 @@ export default function SupportDashboard() {
                 </Card>
 
                 {/* Ticket Detail */}
-                <Card className={`lg:col-span-2 p-0 overflow-hidden min-h-[600px] flex flex-col ${!selectedTicket ? 'hidden lg:flex items-center justify-center p-20 text-center bg-foreground/[0.01]' : ''}`} hover={false}>
+                <Card className={`lg:col-span-2 p-0 overflow-hidden min-h-[600px] flex flex-col ${!selectedTicket ? 'hidden lg:flex items-center justify-center p-20 text-center bg-white/[0.01]' : ''}`} hover={false}>
                     {selectedTicket ? (
                         <>
                             {/* Header */}
-                            <div className="p-8 border-b border-foreground/5 bg-foreground/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                            <div className="p-8 border-b border-white/20/5 bg-white/[0.01] flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                                 <div className="space-y-2">
                                     <button
                                         onClick={() => setSelectedTicket(null)}
@@ -236,11 +236,11 @@ export default function SupportDashboard() {
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${getStatusColor(selectedTicket.status)}`}>
                                             {selectedTicket.status}
                                         </span>
-                                        <span className={`text-[10px] uppercase font-black tracking-widest px-3 py-1 bg-foreground/5 rounded-full ${getPriorityColor(selectedTicket.priority)}`}>
+                                        <span className={`text-[10px] uppercase font-black tracking-widest px-3 py-1 bg-white/5 rounded-full ${getPriorityColor(selectedTicket.priority)}`}>
                                             {selectedTicket.priority} Priority
                                         </span>
-                                        <div className="h-4 w-px bg-foreground/10" />
-                                        <span className="text-[10px] font-bold text-muted-foreground">ID: {selectedTicket.id.slice(0, 8)}</span>
+                                        <div className="h-4 w-px bg-white/10" />
+                                        <span className="text-[10px] font-bold text-white/60">ID: {selectedTicket.id.slice(0, 8)}</span>
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
@@ -276,23 +276,23 @@ export default function SupportDashboard() {
                                         </div>
                                         <div>
                                             <p className="text-sm font-black">{selectedTicket.profiles.full_name}</p>
-                                            <p className="text-[10px] text-muted-foreground font-bold">{selectedTicket.profiles.role.toUpperCase()} • {new Date(selectedTicket.created_at).toLocaleString()}</p>
+                                            <p className="text-[10px] text-white/60 font-bold">{selectedTicket.profiles.role.toUpperCase()} • {new Date(selectedTicket.created_at).toLocaleString()}</p>
                                         </div>
                                     </div>
-                                    <div className="bg-foreground/[0.02] border border-foreground/5 p-6 rounded-[2rem] text-sm text-muted-foreground leading-relaxed">
+                                    <div className="bg-white/[0.02] border border-white/20/5 p-6 rounded-[2rem] text-sm text-white/60 leading-relaxed">
                                         {selectedTicket.description}
                                     </div>
                                 </div>
 
                                 {/* Placeholder for message thread */}
                                 <div className="relative py-4">
-                                    <div className="absolute inset-x-0 top-1/2 h-px bg-foreground/5" />
-                                    <span className="relative z-10 mx-auto w-fit bg-background px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50 block">Discussion started</span>
+                                    <div className="absolute inset-x-0 top-1/2 h-px bg-white/5" />
+                                    <span className="relative z-10 mx-auto w-fit bg-background px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-white/60 opacity-50 block">Discussion started</span>
                                 </div>
                             </div>
 
                             {/* Reply Box */}
-                            <div className="p-8 border-t border-foreground/5 bg-foreground/[0.01]">
+                            <div className="p-8 border-t border-white/20/5 bg-white/[0.01]">
                                 <div className="space-y-4">
                                     <div className="relative">
                                         <textarea
@@ -300,14 +300,14 @@ export default function SupportDashboard() {
                                             onChange={(e) => setReply(e.target.value)}
                                             placeholder="Write your response here..."
                                             rows={4}
-                                            className="w-full rounded-[2rem] bg-foreground/5 border border-foreground/10 focus:border-blue-500/50 outline-none p-6 text-sm resize-none transition-all pr-12"
+                                            className="w-full rounded-[2rem] bg-white/5 border border-white/20/10 focus:border-blue-500/50 outline-none p-6 text-sm resize-none transition-all pr-12"
                                         />
-                                        <div className="absolute right-6 bottom-6 flex items-center gap-4 text-muted-foreground opacity-50">
+                                        <div className="absolute right-6 bottom-6 flex items-center gap-4 text-white/60 opacity-50">
                                             <span className="text-[9px] font-bold">Markdown supported</span>
                                         </div>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <p className="text-[10px] text-muted-foreground italic font-medium">Replying as Admin • Notifications will be sent automatically</p>
+                                        <p className="text-[10px] text-white/60 italic font-medium">Replying as Admin • Notifications will be sent automatically</p>
                                         <Button
                                             onClick={handleReply}
                                             disabled={!reply.trim() || isSubmitting}
@@ -333,7 +333,7 @@ export default function SupportDashboard() {
                             </div>
                             <div className="space-y-2">
                                 <h4 className="text-xl font-bold">No Ticket Selected</h4>
-                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                <p className="text-sm text-white/60 leading-relaxed">
                                     Choose a ticket from the left sidebar to view details, update status, and communicate with the user.
                                 </p>
                             </div>

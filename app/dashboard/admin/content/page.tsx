@@ -190,36 +190,36 @@ export default function ContentManager() {
                         <Layout className="text-blue-500" />
                         Site Content Manager
                     </h1>
-                    <p className="text-muted-foreground text-sm">Manage dynamic content for the home page and platform footers.</p>
+                    <p className="text-white/60 text-sm">Manage dynamic content for the home page and platform footers.</p>
                 </div>
-                <div className="flex flex-wrap gap-2 p-1 bg-foreground/5 rounded-2xl border border-foreground/10">
+                <div className="flex flex-wrap gap-2 p-1 bg-white/5 rounded-2xl border border-white/20/10">
                     <button
                         onClick={() => setActiveTab("faqs")}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "faqs" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "faqs" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-white/60 hover:text-cream'}`}
                     >
                         FAQs
                     </button>
                     <button
                         onClick={() => setActiveTab("features")}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "features" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "features" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-white/60 hover:text-cream'}`}
                     >
                         Philosophy
                     </button>
                     <button
                         onClick={() => setActiveTab("reasons")}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "reasons" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "reasons" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-white/60 hover:text-cream'}`}
                     >
                         Why Us
                     </button>
                     <button
                         onClick={() => setActiveTab("photos")}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "photos" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "photos" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-white/60 hover:text-cream'}`}
                     >
                         Photos
                     </button>
                     <button
                         onClick={() => setActiveTab("settings")}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "settings" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === "settings" ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-white/60 hover:text-cream'}`}
                     >
                         Settings
                     </button>
@@ -249,19 +249,19 @@ export default function ContentManager() {
 
                     <div className="space-y-4">
                         {faqs.map((faq, index) => (
-                            <Card key={index} className="p-6 border-foreground/5 relative group" hover={false}>
+                            <Card key={index} className="p-6 border-white/20/5 relative group" hover={false}>
                                 <div className="flex items-start gap-6">
                                     <div className="flex flex-col gap-2 mt-2">
-                                        <button onClick={() => moveFAQ(index, 'up')} className="p-1 hover:text-blue-500 text-muted-foreground transition-colors disabled:opacity-30" disabled={index === 0}>
+                                        <button onClick={() => moveFAQ(index, 'up')} className="p-1 hover:text-blue-500 text-white/60 transition-colors disabled:opacity-30" disabled={index === 0}>
                                             <ChevronUp size={18} />
                                         </button>
-                                        <button onClick={() => moveFAQ(index, 'down')} className="p-1 hover:text-blue-500 text-muted-foreground transition-colors disabled:opacity-30" disabled={index === faqs.length - 1}>
+                                        <button onClick={() => moveFAQ(index, 'down')} className="p-1 hover:text-blue-500 text-white/60 transition-colors disabled:opacity-30" disabled={index === faqs.length - 1}>
                                             <ChevronDown size={18} />
                                         </button>
                                     </div>
                                     <div className="flex-1 space-y-4">
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Question</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-white/60 ml-1">Question</label>
                                             <Input
                                                 value={faq.question}
                                                 onChange={(e) => {
@@ -270,11 +270,11 @@ export default function ContentManager() {
                                                     setFaqs(newFaqs);
                                                 }}
                                                 placeholder="Enter question..."
-                                                className="h-12 rounded-2xl bg-foreground/[0.02] border-foreground/5 focus:border-blue-500/50"
+                                                className="h-12 rounded-2xl bg-white/[0.02] border-white/20/5 focus:border-blue-500/50"
                                             />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Answer</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-white/60 ml-1">Answer</label>
                                             <textarea
                                                 value={faq.answer}
                                                 onChange={(e) => {
@@ -284,13 +284,13 @@ export default function ContentManager() {
                                                 }}
                                                 placeholder="Enter answer..."
                                                 rows={3}
-                                                className="w-full rounded-2xl bg-foreground/[0.02] border border-foreground/5 focus:border-blue-500/50 outline-none p-4 text-sm resize-none transition-all"
+                                                className="w-full rounded-2xl bg-white/[0.02] border border-white/20/5 focus:border-blue-500/50 outline-none p-4 text-sm resize-none transition-all"
                                             />
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => handleRemoveFAQ(faq.id)}
-                                        className="p-2 text-muted-foreground hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                        className="p-2 text-white/60 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                                     >
                                         <Trash2 size={20} />
                                     </button>
@@ -316,10 +316,10 @@ export default function ContentManager() {
                         </div>
                     </div>
 
-                    <Card className="p-6 border-foreground/5 space-y-6" hover={false}>
+                    <Card className="p-6 border-white/20/5 space-y-6" hover={false}>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Section Label</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-white/60">Section Label</label>
                                 <Input
                                     value={settings.find(s => s.key === 'grow_section_label')?.value || ""}
                                     onChange={(e) => {
@@ -337,7 +337,7 @@ export default function ContentManager() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Section Title</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-white/60">Section Title</label>
                                 <Input
                                     value={settings.find(s => s.key === 'grow_section_title')?.value || ""}
                                     onChange={(e) => {
@@ -355,7 +355,7 @@ export default function ContentManager() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Section Subtitle</label>
+                                <label className="text-[10px] font-black uppercase tracking-widest text-white/60">Section Subtitle</label>
                                 <Input
                                     value={settings.find(s => s.key === 'grow_section_subtitle')?.value || ""}
                                     onChange={(e) => {
@@ -376,17 +376,17 @@ export default function ContentManager() {
                     </Card>
 
                     <div className="space-y-4">
-                        <div className="flex items-center gap-3 p-4 bg-foreground/5 rounded-2xl border border-foreground/10">
+                        <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/20/10">
                             <Info size={16} className="text-blue-500" />
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Individual Philosophy Items</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-white/60">Individual Philosophy Items</p>
                         </div>
                         <div className="space-y-4">
                             {features.map((feature, index) => (
-                                <Card key={index} className="p-6 border-foreground/5" hover={false}>
+                                <Card key={index} className="p-6 border-white/20/5" hover={false}>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="space-y-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Title</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/60">Title</label>
                                                 <Input
                                                     value={feature.title}
                                                     onChange={(e) => {
@@ -398,7 +398,7 @@ export default function ContentManager() {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Description</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/60">Description</label>
                                                 <textarea
                                                     value={feature.description}
                                                     onChange={(e) => {
@@ -406,13 +406,13 @@ export default function ContentManager() {
                                                         next[index].description = e.target.value;
                                                         setFeatures(next);
                                                     }}
-                                                    className="w-full h-24 p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5 outline-none text-sm resize-none"
+                                                    className="w-full h-24 p-4 rounded-2xl bg-white/[0.02] border border-white/20/5 outline-none text-sm resize-none"
                                                 />
                                             </div>
                                         </div>
                                         <div className="space-y-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Icon (Lucide Name)</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/60">Icon (Lucide Name)</label>
                                                 <Input
                                                     value={feature.icon}
                                                     onChange={(e) => {
@@ -424,15 +424,15 @@ export default function ContentManager() {
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Screenshot Image</label>
+                                                <label className="text-[10px] font-black uppercase tracking-widest text-white/60">Screenshot Image</label>
                                                 <div
-                                                    className="w-full h-32 rounded-xl border border-dashed border-foreground/10 flex flex-col items-center justify-center cursor-pointer hover:bg-foreground/[0.02] transition-all relative overflow-hidden group"
+                                                    className="w-full h-32 rounded-xl border border-dashed border-white/20/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.02] transition-all relative overflow-hidden group"
                                                     onClick={() => document.getElementById(`feature-upload-${index}`)?.click()}
                                                 >
                                                     {feature.image_url ? (
                                                         <img src={feature.image_url} className="absolute inset-0 w-full h-full object-cover" alt="Feature screenshot" />
                                                     ) : (
-                                                        <Layout className="text-muted-foreground/30" size={24} />
+                                                        <Layout className="text-white/60/30" size={24} />
                                                     )}
                                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                         <p className="text-white text-[8px] font-bold uppercase tracking-widest">Change</p>
@@ -461,7 +461,7 @@ export default function ContentManager() {
                                                         }
                                                     }}
                                                 />
-                                                <p className="text-[8px] text-muted-foreground truncate italic">Current: {feature.image_url}</p>
+                                                <p className="text-[8px] text-white/60 truncate italic">Current: {feature.image_url}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -485,7 +485,7 @@ export default function ContentManager() {
                     </div>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {reasons.map((reason, index) => (
-                            <Card key={index} className="p-6 border-foreground/5" hover={false}>
+                            <Card key={index} className="p-6 border-white/20/5" hover={false}>
                                 <div className="space-y-4">
                                     <Input
                                         value={reason.title}
@@ -505,7 +505,7 @@ export default function ContentManager() {
                                             setReasons(next);
                                         }}
                                         placeholder="Reason Description"
-                                        className="w-full h-20 p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5 outline-none text-sm resize-none"
+                                        className="w-full h-20 p-4 rounded-2xl bg-white/[0.02] border border-white/20/5 outline-none text-sm resize-none"
                                     />
                                     <Input
                                         value={reason.icon}
@@ -530,7 +530,7 @@ export default function ContentManager() {
                                 <ImageIcon size={20} className="text-blue-500" />
                                 Landing Page Photos
                             </h2>
-                            <p className="text-sm text-muted-foreground mt-1">Upload images that appear on the public homepage.</p>
+                            <p className="text-sm text-white/60 mt-1">Upload images that appear on the public homepage.</p>
                         </div>
                         <Button
                             onClick={handleSaveSettings}
@@ -542,14 +542,14 @@ export default function ContentManager() {
                     </div>
 
                     {/* Hero Background */}
-                    <Card className="p-6 border-foreground/5" hover={false}>
+                    <Card className="p-6 border-white/20/5" hover={false}>
                         <div className="space-y-4">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Hero Background</p>
-                                <p className="text-xs text-muted-foreground/70">The full-screen image behind the homepage headline and search bar.</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-white/60 mb-1">Hero Background</p>
+                                <p className="text-xs text-white/60/70">The full-screen image behind the homepage headline and search bar.</p>
                             </div>
                             <div
-                                className="w-full h-52 rounded-xl border border-dashed border-foreground/10 flex flex-col items-center justify-center cursor-pointer hover:bg-foreground/[0.02] transition-all relative overflow-hidden group"
+                                className="w-full h-52 rounded-xl border border-dashed border-white/20/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.02] transition-all relative overflow-hidden group"
                                 onClick={() => document.getElementById('hero-bg-upload')?.click()}
                             >
                                 {settings.find(s => s.key === 'hero_bg_url')?.value ? (
@@ -559,7 +559,7 @@ export default function ContentManager() {
                                         alt="Hero preview"
                                     />
                                 ) : (
-                                    <div className="flex flex-col items-center gap-2 text-muted-foreground/40">
+                                    <div className="flex flex-col items-center gap-2 text-white/60/40">
                                         <Upload size={28} />
                                         <p className="text-[10px] font-bold uppercase tracking-widest">Click to upload</p>
                                     </div>
@@ -585,18 +585,18 @@ export default function ContentManager() {
                                     finally { setIsSaving(false); }
                                 }}
                             />
-                            <p className="text-[10px] text-muted-foreground/50 italic truncate">
+                            <p className="text-[10px] text-white/60/50 italic truncate">
                                 Current: {settings.find(s => s.key === 'hero_bg_url')?.value || 'Default (Unsplash)'}
                             </p>
                         </div>
                     </Card>
 
                     {/* Discovery Grid */}
-                    <Card className="p-6 border-foreground/5" hover={false}>
+                    <Card className="p-6 border-white/20/5" hover={false}>
                         <div className="space-y-6">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Discovery Grid Photos</p>
-                                <p className="text-xs text-muted-foreground/70">Three images in the "Architectural of Elegance" grid section. Photo 1 is large (left), Photos 2 &amp; 3 are stacked (right).</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-white/60 mb-1">Discovery Grid Photos</p>
+                                <p className="text-xs text-white/60/70">Three images in the "Architectural of Elegance" grid section. Photo 1 is large (left), Photos 2 &amp; 3 are stacked (right).</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {[
@@ -605,9 +605,9 @@ export default function ContentManager() {
                                     { key: 'discovery_img_3', label: 'Photo 3 — Bottom Right', id: 'disc-3-upload' },
                                 ].map(({ key, label, id }) => (
                                     <div key={key} className="space-y-3">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</p>
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-white/60">{label}</p>
                                         <div
-                                            className="w-full h-40 rounded-xl border border-dashed border-foreground/10 flex flex-col items-center justify-center cursor-pointer hover:bg-foreground/[0.02] transition-all relative overflow-hidden group"
+                                            className="w-full h-40 rounded-xl border border-dashed border-white/20/10 flex flex-col items-center justify-center cursor-pointer hover:bg-white/[0.02] transition-all relative overflow-hidden group"
                                             onClick={() => document.getElementById(id)?.click()}
                                         >
                                             {settings.find(s => s.key === key)?.value ? (
@@ -617,7 +617,7 @@ export default function ContentManager() {
                                                     alt={label}
                                                 />
                                             ) : (
-                                                <div className="flex flex-col items-center gap-2 text-muted-foreground/40">
+                                                <div className="flex flex-col items-center gap-2 text-white/60/40">
                                                     <Upload size={20} />
                                                     <p className="text-[9px] font-bold uppercase tracking-widest">Upload</p>
                                                 </div>
@@ -652,7 +652,7 @@ export default function ContentManager() {
                                                 }
                                             }}
                                         />
-                                        <p className="text-[9px] text-muted-foreground/50 italic truncate">
+                                        <p className="text-[9px] text-white/60/50 italic truncate">
                                             {settings.find(s => s.key === key)?.value ? 'Custom image set' : 'Default (Unsplash)'}
                                         </p>
                                     </div>
@@ -684,15 +684,15 @@ export default function ContentManager() {
                         {settings.map((setting) => (
                             <div key={setting.key} className="space-y-2">
                                 <div className="flex justify-between items-center pl-1">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{setting.description}</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-white/60">{setting.description}</label>
                                     <span className="text-[9px] font-bold text-blue-500/50 font-mono uppercase">{setting.key}</span>
                                 </div>
                                 <div className="relative">
-                                    <LinkIcon size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                                    <LinkIcon size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60/50" />
                                     <Input
                                         value={setting.value}
                                         onChange={(e) => handleSettingChange(setting.key, e.target.value)}
-                                        className="h-12 pl-10 rounded-2xl bg-foreground/[0.01] border-foreground/5 focus:border-blue-500/50"
+                                        className="h-12 pl-10 rounded-2xl bg-white/[0.01] border-white/20/5 focus:border-blue-500/50"
                                     />
                                 </div>
                             </div>

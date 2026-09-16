@@ -92,7 +92,7 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAF8F3] flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 relative overflow-hidden">
             {/* Subtle warm background texture */}
             <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[radial-gradient(ellipse,rgba(196,165,90,0.06),transparent_70%)]" />
@@ -104,8 +104,8 @@ export default function AdminLoginPage() {
 
                     {/* Header */}
                     <div className="text-center space-y-3 mb-6">
-                        <p className="section-label" style={{ color: 'var(--accent)' }}>Restricted Access</p>
-                        <h1 className="text-4xl md:text-5xl font-serif" style={{ color: 'var(--charcoal)' }}>
+                        <p className="section-label" style={{ color: 'var(--gold)' }}>Restricted Access</p>
+                        <h1 className="text-4xl md:text-5xl font-serif" style={{ color: 'var(--cream)' }}>
                             Admin
                         </h1>
                         <p className="text-sm font-light italic" style={{ color: 'var(--muted-foreground)' }}>
@@ -118,12 +118,12 @@ export default function AdminLoginPage() {
                         {/* Username */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-widest ml-1"
-                                style={{ color: 'var(--accent)' }}>
+                                style={{ color: 'var(--gold)' }}>
                                 Admin Username
                             </label>
                             <div className="relative">
                                 <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                                    style={{ color: 'var(--accent)' }}>
+                                    style={{ color: 'var(--gold)' }}>
                                     <Users size={16} />
                                 </div>
                                 <Input
@@ -140,12 +140,12 @@ export default function AdminLoginPage() {
                         {/* Password */}
                         <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-widest ml-1"
-                                style={{ color: 'var(--accent)' }}>
+                                style={{ color: 'var(--gold)' }}>
                                 Access Key
                             </label>
                             <div className="relative">
                                 <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                                    style={{ color: 'var(--accent)' }}>
+                                    style={{ color: 'var(--gold)' }}>
                                     <Lock size={16} />
                                 </div>
                                 <Input
@@ -169,7 +169,7 @@ export default function AdminLoginPage() {
 
                         {/* Error */}
                         {error && (
-                            <div className="bg-red-50 border border-red-200 text-red-600 text-[10px] uppercase tracking-widest font-bold p-4 rounded-sm animate-in fade-in duration-300">
+                            <div className="bg-red-900/20 border border-red-200 text-red-600 text-[10px] uppercase tracking-widest font-bold p-4 rounded-sm animate-in fade-in duration-300">
                                 Access Denied: {error}
                             </div>
                         )}
@@ -191,7 +191,7 @@ export default function AdminLoginPage() {
                         <button
                             onClick={() => router.push("/")}
                             className="hover:underline transition-colors"
-                            style={{ color: 'var(--accent)' }}
+                            style={{ color: 'var(--gold)' }}
                         >
                             Back to Home
                         </button>
