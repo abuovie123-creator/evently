@@ -10,7 +10,7 @@ interface LoadingScreenProps {
 
 export function LoadingScreen({
     message = "Preparing your dashboard...",
-    subMessage = "Get ready for excellence..."
+    subMessage
 }: LoadingScreenProps) {
     return (
         <div className="min-h-screen fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--cream)] transition-colors duration-500 overflow-hidden">
@@ -32,9 +32,11 @@ export function LoadingScreen({
                     <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] text-[var(--charcoal)] font-sans-body">
                         {message}
                     </h3>
-                    <p className="text-[10px] md:text-[11px] font-medium italic text-[var(--charcoal)]/60 font-serif">
-                        {subMessage}
-                    </p>
+                    {subMessage && (
+                        <p className="text-[10px] md:text-[11px] font-medium italic text-[var(--charcoal)]/60 font-serif">
+                            {subMessage}
+                        </p>
+                    )}
                 </div>
             </div>
 

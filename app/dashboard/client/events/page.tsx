@@ -118,34 +118,42 @@ export default function ClientEventsPage() {
                 </div>
                 
                 <div className="flex flex-col gap-4 w-full md:w-auto">
-                    <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                        <div className="relative">
+                    <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                        <div className="relative w-full md:w-64">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal/40" size={16} />
                             <Input 
                                 placeholder="Search events..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="pl-10 h-12 w-full md:w-64 rounded-xl bg-surface border-om-border/30 focus:border-charcoal font-sans text-sm"
+                                className="pl-10 h-12 w-full rounded-xl bg-surface border-om-border/30 focus:border-charcoal font-sans text-sm"
                             />
                         </div>
-                        <Input 
-                            type="month"
-                            value={monthFilter}
-                            onChange={(e) => {
-                                setMonthFilter(e.target.value);
-                                setDateFilter(""); // Clear date if month is used
-                            }}
-                            className="h-12 w-full md:w-40 rounded-xl bg-surface border-om-border/30 focus:border-charcoal font-sans text-sm text-charcoal/80"
-                        />
-                        <Input 
-                            type="date"
-                            value={dateFilter}
-                            onChange={(e) => {
-                                setDateFilter(e.target.value);
-                                setMonthFilter(""); // Clear month if date is used
-                            }}
-                            className="h-12 w-full md:w-40 rounded-xl bg-surface border-om-border/30 focus:border-charcoal font-sans text-sm text-charcoal/80"
-                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:flex gap-3 w-full md:w-auto">
+                            <div className="relative w-full md:w-40">
+                                <Input 
+                                    type="month"
+                                    title="Filter by month"
+                                    value={monthFilter}
+                                    onChange={(e) => {
+                                        setMonthFilter(e.target.value);
+                                        setDateFilter(""); // Clear date if month is used
+                                    }}
+                                    className="h-12 w-full rounded-xl bg-surface border-om-border/30 focus:border-charcoal font-sans text-sm text-charcoal/80 cursor-pointer"
+                                />
+                            </div>
+                            <div className="relative w-full md:w-40">
+                                <Input 
+                                    type="date"
+                                    title="Filter by specific date"
+                                    value={dateFilter}
+                                    onChange={(e) => {
+                                        setDateFilter(e.target.value);
+                                        setMonthFilter(""); // Clear month if date is used
+                                    }}
+                                    className="h-12 w-full rounded-xl bg-surface border-om-border/30 focus:border-charcoal font-sans text-sm text-charcoal/80 cursor-pointer"
+                                />
+                            </div>
+                        </div>
                     </div>
                     <div className="flex bg-surface border border-om-border/30 rounded-xl p-1 w-full overflow-x-auto scrollbar-hide justify-between md:justify-start gap-1">
                         {(["all", "today", "upcoming", "completed"] as const).map(f => (

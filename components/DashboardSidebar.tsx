@@ -532,7 +532,7 @@ export function DashboardSidebar() {
             </div>
 
             {isLoggingOut && (
-                <LoadingScreen message="Departing the Estate" subMessage="Preparing your safe travels..." />
+                <LoadingScreen message="Signing out..." />
             )}
         </>
     );
