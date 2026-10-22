@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 export default function LoginPage() {
-    const [email, setEmail] = useState("");
+    const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const { showToast } = useToast();
     const router = useRouter();
@@ -75,15 +75,85 @@ export default function LoginPage() {
         setLoading(true);
         setError(null);
 
+        const cleanIdentifier = identifier.trim();
+        if (!cleanIdentifier) {
+            setError("Please enter your email or username.");
+            setLoading(false);
+            return;
+        }
+
+        if (!password) {
+            setError("Please enter your password.");
+            setLoading(false);
+            return;
+        }
+
         const supabase = createClient();
+        let emailToAuth = cleanIdentifier;
+        const isEmail = cleanIdentifier.includes("@");
+
+        if (!isEmail) {
+            // Identifier is a username: look up corresponding email in profiles
+            const { data: profileByUsername, error: usernameLookupError } = await supabase
+                .from('profiles')
+                .select('email, id')
+                .ilike('username', cleanIdentifier)
+                .maybeSingle();
+
+            if (usernameLookupError || !profileByUsername) {
+                setError("Incorrect username. No account found with this username.");
+                setLoading(false);
+                return;
+            }
+
+            if (!profileByUsername.email) {
+                setError("No email address is linked to this username. Please sign in with your email address.");
+                setLoading(false);
+                return;
+            }
+
+            emailToAuth = profileByUsername.email;
+        }
 
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
-            email,
+            email: emailToAuth,
             password,
         });
 
         if (signInError) {
-            setError(signInError.message);
+            const rawMessage = (signInError.message || "").toLowerCase();
+
+            if (rawMessage.includes("invalid login credentials") || signInError.status === 400) {
+                if (!isEmail) {
+                    // Username was already verified to exist in profiles, so password is incorrect
+                    setError("Incorrect password. Please double-check your password and try again.");
+                } else {
+                    // Check if this email exists in profiles
+                    const { data: profileByEmail } = await supabase
+                        .from('profiles')
+                        .select('id')
+                        .ilike('email', emailToAuth)
+                        .maybeSingle();
+
+                    if (!profileByEmail) {
+                        setError("Incorrect email. No account exists with this email address.");
+                    } else {
+                        setError("Incorrect password. Please double-check your password and try again.");
+                    }
+                }
+            } else if (rawMessage.includes("email not confirmed")) {
+                setError("Your email address has not been confirmed yet. Please check your inbox for the confirmation email.");
+            } else if (rawMessage.includes("too many requests") || rawMessage.includes("rate limit")) {
+                setError("Too many failed login attempts. Please wait a few moments before trying again.");
+            } else if (rawMessage.includes("user not found")) {
+                setError(isEmail ? "Incorrect email. No account found with this email." : "Incorrect username. No account found with this username.");
+            } else {
+                const cleanedMessage = (signInError.message || "")
+                    .replace(/^protocol\s*(error|issue):\s*/i, "")
+                    .trim();
+                setError(cleanedMessage || "Unable to sign in. Please verify your credentials.");
+            }
+
             setLoading(false);
             return;
         }
@@ -91,7 +161,7 @@ export default function LoginPage() {
         // Get user profile to check account status and role
         let { data: profile } = await supabase
             .from('profiles')
-            .select('role, account_status')
+            .select('role, account_status, email')
             .eq('id', data.user.id)
             .single();
 
@@ -103,12 +173,20 @@ export default function LoginPage() {
                     id: data.user.id,
                     role: data.user.user_metadata?.role || 'client',
                     full_name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
+                    email: data.user.email,
+                    username: data.user.user_metadata?.username || data.user.email?.split('@')[0],
                     account_status: 'approved'
                 })
                 .select()
                 .single();
 
             if (!profileError) profile = newProfile;
+        } else if (!profile.email && data.user.email) {
+            // Keep email populated in profiles table
+            await supabase
+                .from('profiles')
+                .update({ email: data.user.email })
+                .eq('id', data.user.id);
         }
 
         // Account approval check (Admin accounts bypass approval check)
@@ -170,12 +248,15 @@ export default function LoginPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase tracking-widest text-accent ml-1">Email Address</label>
+                        <label className="text-xs font-bold uppercase tracking-widest text-accent ml-1">Email or Username</label>
                         <Input
-                            type="email"
-                            placeholder="name@example.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            type="text"
+                            placeholder="name@example.com or username"
+                            value={identifier}
+                            onChange={(e) => setIdentifier(e.target.value)}
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            spellCheck={false}
                             required
                         />
                     </div>
@@ -206,8 +287,12 @@ export default function LoginPage() {
                     </div>
 
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-600 text-[10px] uppercase tracking-widest font-bold p-4 rounded-sm animate-in fade-in duration-300 shadow-sm">
-                            Protocol Error: {error}
+                        <div className="bg-red-50/90 border border-red-200 text-red-700 text-xs font-medium p-4 rounded-xl flex items-start gap-2.5 animate-in fade-in duration-300 shadow-sm">
+                            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                            <div className="flex-1 leading-relaxed">
+                                <span className="font-semibold block text-red-800 mb-0.5">Authentication Failed</span>
+                                <span>{error}</span>
+                            </div>
                         </div>
                     )}
 
